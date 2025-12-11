@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TECHRUM Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    input, textarea, button {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    input {
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    textarea {
+      height: 300px;
+      padding: 12px;
+      font-size: 15px;
+      margin-top: 20px;
+      resize: vertical;
+    }
+    button {
+      padding: 12px;
+      background: #0070f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #005fcc;
+    }
+    .loading {
+      margin-top: 10px;
+      display: none;
+      color: #333;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>TECHRUM Article Converter</h1>
+
+  <input id="urlInput" type="text" placeholder="Nhập URL bài viết cần convert…">
+
+  <button id="convertBtn">Convert</button>
+
+  <p class="loading" id="loadingText">Đang xử lý, vui lòng đợi...</p>
+
+  <textarea id="outputArea" placeholder="Kết quả sẽ hiển thị ở đây..."></textarea>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
