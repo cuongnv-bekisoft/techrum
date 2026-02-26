@@ -4,67 +4,201 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TECHRUM Converter</title>
+
   <style>
+    :root {
+      --bg: #f4f4f4;
+      --text: #111;
+      --card: #ffffff;
+      --border: #ddd;
+      --button: #0070f3;
+      --button-hover: #005fcc;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #e6e6e6;
+      --card: #1e1e1e;
+      --border: #333;
+      --button: #4f9cff;
+      --button-hover: #2d7fe6;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: var(--bg);
+      color: var(--text);
       padding: 40px;
-      max-width: 700px;
+      max-width: 900px;
       margin: auto;
+      transition: .3s;
     }
+
     h1 {
       text-align: center;
-      margin-bottom: 30px;
     }
+
     input, textarea, button {
       width: 100%;
       box-sizing: border-box;
     }
+
     input {
       padding: 12px;
-      margin-bottom: 15px;
+      margin: 15px 0;
       font-size: 16px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
+
     textarea {
-      height: 300px;
+      height: 250px;
       padding: 12px;
-      font-size: 15px;
-      margin-top: 20px;
+      margin-top: 15px;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
       resize: vertical;
     }
+
     button {
       padding: 12px;
-      background: #0070f3;
+      background: var(--button);
       color: white;
       border: none;
       cursor: pointer;
-      font-size: 16px;
       font-weight: bold;
-    }
-    button:hover {
-      background: #005fcc;
-    }
-    .loading {
       margin-top: 10px;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row button {
+      flex: 1;
+    }
+
+    .loading {
       display: none;
-      color: #333;
       font-style: italic;
+      margin-top: 10px;
+    }
+
+    .history {
+      margin-top: 40px;
+    }
+
+    .history-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    .history-item small {
+      opacity: 0.6;
+    }
+
+    .history-buttons {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: auto;
+      padding: 6px 10px;
+      font-size: 18px;
+      border-radius: 8px;
+    }
+    .output-wrapper {
+      position: relative;
+    }
+
+    #outputArea {
+      height: 300px;
+      padding: 12px;
+      padding-right: 90px;
+      font-size: 15px;
+      resize: vertical;
+    }
+
+    .output-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .output-actions button {
+      width: auto;
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Preview */
+    .preview {
+      margin-top: 15px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+
+    .preview img {
+      max-width: 100%;
+      display: block;
+      margin: 10px auto;
     }
   </style>
 </head>
+
 <body>
 
-  <h1>TECHRUM Article Converter</h1>
+<button id="themeToggle" class="theme-toggle">🌙</button>
 
-  <input id="urlInput" type="text" placeholder="Nhập URL bài viết cần convert…">
+<h1>TECHRUM Article Converter</h1>
 
+<input id="urlInput" type="text" placeholder="Nhập URL bài viết…">
+
+<div class="row">
   <button id="convertBtn">Convert</button>
+</div>
 
-  <p class="loading" id="loadingText">Đang xử lý, vui lòng đợi...</p>
+<p id="loadingText" class="loading">Đang xử lý...</p>
 
+<div class="output-wrapper">
   <textarea id="outputArea" placeholder="Kết quả sẽ hiển thị ở đây..."></textarea>
 
-  <script src="script.js"></script>
+  <div class="output-actions">
+    <button id="bbViewBtn">BBCode</button>
+    <button id="copyBtn">📋</button>
+  </div>
+</div>
 
+<!-- Preview area -->
+<div id="previewArea" class="preview" style="display:none;"></div>
+
+<div class="history">
+  <h2>Lịch sử</h2>
+  <button id="clearHistoryBtn">Xóa toàn bộ</button>
+  <div id="historyList"></div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
