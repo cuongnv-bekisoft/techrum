@@ -214,6 +214,15 @@ toggleBtn.addEventListener("click", () => {
   setTheme(isDark ? "light" : "dark");
 });
 
+
+const params = new URLSearchParams(window.location.search);
+const incomingUrl = params.get("url");
+
+if (incomingUrl) {
+  const input = document.getElementById("urlInput");
+  input.value = incomingUrl;
+}
+
 // =============================
 // 🌓 LOAD HISTORY khi mở trang
 // =============================
