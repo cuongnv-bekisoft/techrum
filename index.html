@@ -1,204 +1,391 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TECHRUM Converter</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TECHRUM Converter</title>
 
-  <style>
-    :root {
-      --bg: #f4f4f4;
-      --text: #111;
-      --card: #ffffff;
-      --border: #ddd;
-      --button: #0070f3;
-      --button-hover: #005fcc;
-    }
+    <style>
+      :root {
+        --bg: #f4f4f4;
+        --text: #111;
+        --card: #ffffff;
+        --border: #ddd;
+        --button: #0070f3;
+        --button-hover: #005fcc;
+      }
 
-    body.dark {
-      --bg: #121212;
-      --text: #e6e6e6;
-      --card: #1e1e1e;
-      --border: #333;
-      --button: #4f9cff;
-      --button-hover: #2d7fe6;
-    }
+      body.dark {
+        --bg: #121212;
+        --text: #e6e6e6;
+        --card: #1e1e1e;
+        --border: #333;
+        --button: #4f9cff;
+        --button-hover: #2d7fe6;
+      }
 
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 40px;
-      max-width: 900px;
-      margin: auto;
-      transition: .3s;
-    }
+      body {
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 40px;
+        max-width: 900px;
+        margin: auto;
+        transition: 0.3s;
+      }
 
-    h1 {
-      text-align: center;
-    }
+      h1 {
+        text-align: center;
+      }
 
-    input, textarea, button {
-      width: 100%;
-      box-sizing: border-box;
-    }
+      input,
+      textarea,
+      button {
+        width: 100%;
+        box-sizing: border-box;
+      }
 
-    input {
-      padding: 12px;
-      margin: 15px 0;
-      font-size: 16px;
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+      input {
+        padding: 12px;
+        margin: 15px 0;
+        font-size: 16px;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
 
-    textarea {
-      height: 250px;
-      padding: 12px;
-      margin-top: 15px;
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-      resize: vertical;
-    }
+      textarea {
+        height: 250px;
+        padding: 12px;
+        margin-top: 15px;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+        resize: vertical;
+      }
 
-    button {
-      padding: 12px;
-      background: var(--button);
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 10px;
-    }
+      button {
+        padding: 12px;
+        background: var(--button);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+      }
 
-    button:hover {
-      background: var(--button-hover);
-    }
+      button:hover {
+        background: var(--button-hover);
+      }
 
-    .row {
-      display: flex;
-      gap: 10px;
-    }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
 
-    .row button {
-      flex: 1;
-    }
+      .row button {
+        flex: 1;
+      }
 
-    .loading {
-      display: none;
-      font-style: italic;
-      margin-top: 10px;
-    }
+      .loading {
+        display: none;
+        font-style: italic;
+        margin-top: 10px;
+      }
 
-    .history {
-      margin-top: 40px;
-    }
+      .history {
+        margin-top: 40px;
+      }
 
-    .history-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
+      .history-item {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+      }
 
-    .history-item small {
-      opacity: 0.6;
-    }
+      .history-item small {
+        opacity: 0.6;
+      }
 
-    .history-buttons {
-      display: flex;
-      gap: 5px;
-      margin-top: 5px;
-    }
+      .history-buttons {
+        display: flex;
+        gap: 5px;
+        margin-top: 5px;
+      }
 
-    .theme-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: auto;
-      padding: 6px 10px;
-      font-size: 18px;
-      border-radius: 8px;
-    }
-    .output-wrapper {
-      position: relative;
-    }
+      .theme-toggle {
+        position: absolute;
+        right: 50px;
+        width: auto;
+        padding: 6px 10px;
+        font-size: 18px;
+        border-radius: 8px;
+        margin-top: 0 !important;
+      }
+      .output-wrapper {
+        position: relative;
+      }
 
-    #outputArea {
-      height: 300px;
-      padding: 12px;
-      padding-right: 90px;
-      font-size: 15px;
-      resize: vertical;
-    }
+      #outputArea {
+        height: 300px;
+        padding: 12px;
+        padding-right: 90px;
+        font-size: 15px;
+        resize: vertical;
+      }
 
-    .output-actions {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      display: flex;
-      gap: 6px;
-    }
+      .output-actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 6px;
+      }
 
-    .output-actions button {
-      width: auto;
-      padding: 6px 10px;
-      font-size: 13px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+      .output-actions button {
+        width: auto;
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
 
-    /* Preview */
-    .preview {
-      margin-top: 15px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 6px;
-      line-height: 1.6;
-    }
+      /* Preview */
+      .preview {
+        margin-top: 15px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 6px;
+        line-height: 1.6;
+      }
 
-    .preview img {
-      max-width: 100%;
-      display: block;
-      margin: 10px auto;
-    }
-  </style>
-</head>
+      .preview img {
+        max-width: 100%;
+        display: block;
+        margin: 10px auto;
+      }
 
-<body>
+      /* ===== SIDEBAR ===== */
 
-<button id="themeToggle" class="theme-toggle">🌙</button>
+      .menu-btn {
+        position: fixed;
+        left: 20px;
+        width: auto;
+        padding: 8px 12px;
+        font-size: 20px;
+        border-radius: 8px;
+        z-index: 1001;
+        margin-top: 0 !important;
+      }
 
-<h1>TECHRUM Article Converter</h1>
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 250px;
+        height: 100%;
+        background: var(--card);
+        border-right: 1px solid var(--border);
+        padding: 60px 20px;
+        transition: 0.3s ease;
+        z-index: 1002;
+      }
 
-<input id="urlInput" type="text" placeholder="Nhập URL bài viết…">
+      .sidebar.active {
+        left: 0;
+      }
 
-<div class="row">
-  <button id="convertBtn">Convert</button>
-</div>
+      .sidebar a {
+        display: block;
+        padding: 12px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        color: var(--text);
+        border-radius: 6px;
+      }
 
-<p id="loadingText" class="loading">Đang xử lý...</p>
+      .sidebar a:hover {
+        background: var(--border);
+      }
 
-<div class="output-wrapper">
-  <textarea id="outputArea" placeholder="Kết quả sẽ hiển thị ở đây..."></textarea>
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+        z-index: 1000;
+      }
 
-  <div class="output-actions">
-    <button id="bbViewBtn">BBCode</button>
-    <button id="copyBtn">📋</button>
-  </div>
-</div>
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+      /* ===== NAVBAR ===== */
 
-<!-- Preview area -->
-<div id="previewArea" class="preview" style="display:none;"></div>
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 1100;
+      }
 
-<div class="history">
-  <h2>Lịch sử</h2>
-  <button id="clearHistoryBtn">Xóa toàn bộ</button>
-  <div id="historyList"></div>
-</div>
+      .nav-left,
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
 
-<script src="script.js"></script>
-</body>
+      .nav-left a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .nav-left a:hover {
+        opacity: 0.7;
+      }
+
+      .logo {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .nav-center {
+        display: none;
+      }
+
+      .theme-toggle {
+        width: auto;
+        padding: 6px 12px;
+        border-radius: 8px;
+      }
+
+      body {
+        padding-top: 80px;
+      }
+
+      @media (max-width: 768px) {
+        .nav-left a {
+          display: none;
+        }
+
+        .logo {
+          display: none;
+        }
+
+        .nav-center {
+          display: block;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .menu-btn {
+          display: block;
+          background: var(--button);
+          color: white;
+          border: none;
+          padding: 6px 10px;
+          border-radius: 6px;
+        }
+
+        .nav-right {
+          gap: 10px;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .menu-btn {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-left">
+        <button id="menuBtn" class="menu-btn">☰</button>
+        <div class="logo">TECHRUM</div>
+        <a href="/">Home</a>
+        <a href="/news/news.html">News</a>
+      </div>
+
+      <div class="nav-center">
+        <div class="logo mobile-logo">TECHRUM</div>
+      </div>
+
+      <div class="nav-right">
+        <button id="themeToggle" class="theme-toggle">🌙</button>
+      </div>
+    </nav>
+    <div id="sidebar" class="sidebar">
+      <a href="/">🏠 Home</a>
+      <a href="/news/news.html">📰 News</a>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <h1>TECHRUM Article Converter</h1>
+
+    <input id="urlInput" type="text" placeholder="Nhập URL bài viết…" />
+
+    <div class="row">
+      <button id="convertBtn">Convert</button>
+    </div>
+
+    <p id="loadingText" class="loading">Đang xử lý...</p>
+
+    <div class="output-wrapper">
+      <textarea
+        id="outputArea"
+        placeholder="Kết quả sẽ hiển thị ở đây..."
+      ></textarea>
+
+      <div class="output-actions">
+        <button id="bbViewBtn">BBCode</button>
+        <button id="copyBtn">📋</button>
+      </div>
+    </div>
+
+    <!-- Preview area -->
+    <div id="previewArea" class="preview" style="display: none"></div>
+
+    <div class="history">
+      <h2>Lịch sử</h2>
+      <button id="clearHistoryBtn">Xóa toàn bộ</button>
+      <div id="historyList"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+      overlay.classList.toggle("active");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+    });
+  </script>
 </html>
