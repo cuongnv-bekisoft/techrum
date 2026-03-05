@@ -17,12 +17,14 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
   output.value = "";
 
   try {
-    const res = await fetch(API_BASE + "/", {
+    const engine = document.getElementById("engineSelect").value;
+
+    const res = await fetch(`${API_BASE}/?engine=${engine}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ url })
+      body: JSON.stringify({ url }),
     });
 
     if (!res.ok) {
@@ -39,7 +41,6 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
 
     // ⭐ refresh history sau khi convert
     loadHistory();
-
   } catch (err) {
     output.value = "Lỗi: " + err.message;
   } finally {
@@ -85,7 +86,6 @@ bbBtn.addEventListener("click", () => {
 
     bbBtn.textContent = "Preview";
     isPreview = true;
-
   } else {
     textarea.style.display = "block";
     preview.style.display = "none";
@@ -95,36 +95,44 @@ bbBtn.addEventListener("click", () => {
   }
 });
 
-
 // ===============================
 // 🧠 BBCode → HTML (basic)
 // ===============================
 
 function renderBBCode(text) {
-  return text
-    // ảnh
-    .replace(/\[CENTER\]\[IMG\](.*?)\[\/IMG\]\[\/CENTER\]/gi,
-      '<div style="text-align:center"><img src="$1"></div>')
+  return (
+    text
+      // ảnh
+      .replace(
+        /\[CENTER\]\[IMG\](.*?)\[\/IMG\]\[\/CENTER\]/gi,
+        '<div style="text-align:center"><img src="$1"></div>',
+      )
 
-    // link
-    .replace(/\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
-      '<a href="$1" target="_blank">$2</a>')
+      // link
+      .replace(
+        /\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
+        '<a href="$1" target="_blank">$2</a>',
+      )
 
-    // right
-    .replace(/\[RIGHT\](.*?)\[\/RIGHT\]/gi,
-      '<div style="text-align:right">$1</div>')
+      // right
+      .replace(
+        /\[RIGHT\](.*?)\[\/RIGHT\]/gi,
+        '<div style="text-align:right">$1</div>',
+      )
 
-    // prebreak
-    .replace(/\[prebreak\]\[\/prebreak\]/gi, "<hr>")
+      // prebreak
+      .replace(/\[prebreak\]\[\/prebreak\]/gi, "<hr>")
 
-    // similar tag
-    .replace(/\[similar\](.*?)\[\/similar\]/gi,
-      '<div style="opacity:0.7">$1</div>')
+      // similar tag
+      .replace(
+        /\[similar\](.*?)\[\/similar\]/gi,
+        '<div style="opacity:0.7">$1</div>',
+      )
 
-    // xuống dòng
-    .replace(/\n/g, "<br>");
+      // xuống dòng
+      .replace(/\n/g, "<br>")
+  );
 }
-
 
 // =============================
 // 📚 LOAD HISTORY
@@ -138,7 +146,7 @@ async function loadHistory() {
 
   container.innerHTML = "";
 
-  data.forEach(item => {
+  data.forEach((item) => {
     const div = document.createElement("div");
     div.className = "history-item";
 
@@ -155,7 +163,6 @@ async function loadHistory() {
   });
 }
 
-
 // =============================
 // 👁 XEM BÀI
 // =============================
@@ -163,12 +170,11 @@ async function viewItem(id) {
   const res = await fetch(API_BASE + "/api/history");
   const data = await res.json();
 
-  const item = data.find(i => i.id === id);
+  const item = data.find((i) => i.id === id);
   if (item) {
     document.getElementById("outputArea").value = item.result;
   }
 }
-
 
 // =============================
 // ❌ XÓA 1 BÀI
@@ -178,16 +184,17 @@ async function deleteItem(id) {
   loadHistory();
 }
 
-
 // =============================
 // 💣 CLEAR ALL
 // =============================
-document.getElementById("clearHistoryBtn")?.addEventListener("click", async () => {
-  if (!confirm("Xóa toàn bộ lịch sử?")) return;
+document
+  .getElementById("clearHistoryBtn")
+  ?.addEventListener("click", async () => {
+    if (!confirm("Xóa toàn bộ lịch sử?")) return;
 
-  await fetch(API_BASE + "/api/clear");
-  loadHistory();
-});
+    await fetch(API_BASE + "/api/clear");
+    loadHistory();
+  });
 
 // =============================
 // 🌓 Chuyển Dark Light mode
@@ -214,13 +221,18 @@ toggleBtn.addEventListener("click", () => {
   setTheme(isDark ? "light" : "dark");
 });
 
-
 const params = new URLSearchParams(window.location.search);
 const incomingUrl = params.get("url");
 
 if (incomingUrl) {
   const input = document.getElementById("urlInput");
   input.value = incomingUrl;
+}
+
+const engineParam = params.get("engine");
+if (engineParam) {
+  const select = document.getElementById("engineSelect");
+  select.value = engineParam;
 }
 
 // =============================
