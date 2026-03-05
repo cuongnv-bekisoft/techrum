@@ -78,6 +78,14 @@
         background: var(--button-hover);
       }
 
+      select {
+        padding: 12px;
+        margin-bottom: 10px;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
       .row {
         display: flex;
         gap: 10px;
@@ -342,7 +350,12 @@
     <h1>TECHRUM Article Converter</h1>
 
     <input id="urlInput" type="text" placeholder="Nhập URL bài viết…" />
-
+    <div class="row">
+      <select id="engineSelect">
+        <option value="gemini">Gemini</option>
+        <option value="openai">OpenAI</option>
+      </select>
+    </div>
     <div class="row">
       <button id="convertBtn">Convert</button>
     </div>
