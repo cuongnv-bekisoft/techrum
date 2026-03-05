@@ -108,6 +108,12 @@
         object-fit: contain;
       }
 
+      .source span {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
       /* ================= CONTENT ================= */
 
       .content {
@@ -410,6 +416,17 @@
         <input id="name" placeholder="Tên nguồn" />
         <input id="logo" placeholder="Logo URL" />
         <input id="url" placeholder="RSS URL" />
+        <label
+          style="
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+          "
+        >
+          <input type="checkbox" id="isBot" />
+          Site bị Cloudflare bot check
+        </label>
 
         <button onclick="saveSource()">Lưu</button>
         <button onclick="closeModal()">Hủy</button>
@@ -432,6 +449,7 @@
         editingId = null;
         modalTitle.innerText = "Thêm nguồn tin";
         name.value = logo.value = url.value = "";
+        isBot.checked = false;
         modal.style.display = "flex";
       }
 
@@ -441,6 +459,7 @@
         name.value = s.name;
         logo.value = s.logo || "";
         url.value = s.url;
+        isBot.checked = s.isBot || false;
         modal.style.display = "flex";
       }
 
@@ -455,6 +474,7 @@
           name: document.getElementById("name").value.trim(),
           logo: document.getElementById("logo").value.trim(),
           url: document.getElementById("url").value.trim(),
+          isBot: document.getElementById("isBot").checked,
         };
 
         if (editingId) {
@@ -509,7 +529,7 @@
           div.innerHTML = `
       <div class="source-left">
         <img src="${s.logo || ""}">
-        <span>${s.name}</span>
+        <span>${s.name} ${s.isBot ? "⭐" : ""}</span>
       </div>
 
       <div>
@@ -586,8 +606,16 @@
 
           convertBtn.onclick = (e) => {
             e.stopPropagation();
+
             const encoded = encodeURIComponent(n.link);
-            window.location.href = `/?url=${encoded}`;
+
+            let url = `/?url=${encoded}`;
+
+            if (currentSource?.isBot) {
+              url += "&bot=1";
+            }
+
+            window.location.href = url;
           };
 
           news.appendChild(div);
