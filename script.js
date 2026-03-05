@@ -18,14 +18,15 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
 
   try {
     const engine = document.getElementById("engineSelect").value;
-
-    const res = await fetch(`${API_BASE}/?engine=${engine}`, {
+    let isBot = bot === "1" ? 1 : 0;
+    const res = await fetch(`${API_BASE}/?engine=${engine}&bot=${isBot}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ url }),
     });
+    isBot = 0;
 
     if (!res.ok) {
       throw new Error("API trả về lỗi: " + res.status);
@@ -223,6 +224,7 @@ toggleBtn.addEventListener("click", () => {
 
 const params = new URLSearchParams(window.location.search);
 const incomingUrl = params.get("url");
+const bot = params.get("bot");
 
 if (incomingUrl) {
   const input = document.getElementById("urlInput");
