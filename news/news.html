@@ -157,9 +157,6 @@
         margin-top: 20px;
       }
 
-      .loadmore {
-        margin-top: 10px;
-      }
 
       /* ================= MODAL ================= */
 
@@ -304,6 +301,76 @@
         margin-top: 0 !important;
       }
 
+      .pagination{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:6px;
+        margin-top:20px;
+        flex-wrap:wrap;
+      }
+
+      .pagination button{
+        min-width:36px;
+        height:36px;
+        border-radius:8px;
+        border:1px solid var(--border);
+        background:var(--card);
+        color:var(--text);
+        cursor:pointer;
+        transition:0.2s;
+      }
+
+      .pagination button:hover{
+        background:var(--hover);
+      }
+
+      .pagination button.active{
+        background:var(--button);
+        color:white;
+        border-color:var(--button);
+        font-weight:bold;
+      }
+
+      .pagination button.disabled{
+        opacity:0.4;
+        pointer-events:none;
+      }
+
+      .loadmore-wrap{
+        display:flex;
+        justify-content:center;
+        margin:30px 0;
+      }
+
+      .loadmore{
+        padding:10px 22px;
+        border-radius:999px;
+        border:1px solid var(--border);
+        background:var(--card);
+        color:var(--text);
+        font-size:14px;
+        font-weight:500;
+        cursor:pointer;
+        transition:all .25s ease;
+      }
+
+      .loadmore:hover{
+        background:var(--button);
+        color:white;
+        border-color:var(--button);
+        transform:translateY(-1px);
+      }
+
+      .loadmore:active{
+        transform:scale(.96);
+      }
+
+      .loadmore.loading{
+        opacity:.6;
+        pointer-events:none;
+      }
+
       /* ================= TABLET ================= */
 
       @media (max-width: 1024px) {
@@ -363,6 +430,58 @@
           left: 50%;
           transform: translateX(-50%);
         }
+
+        .item-overlay {
+          inset: auto;
+          top: 6px;
+          right: 6px;
+          background: none;
+          opacity: 1;
+          gap: 6px;
+        }
+
+        .overlay-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 14px;
+          background: rgb(52 191 7 / 60%);
+          color: white;
+        }
+
+        .news-item:hover .item-overlay {
+          opacity: 1;
+        }
+
+        .sidebar-right{
+          position: fixed;
+          top:0;
+          right:-260px;
+          width:260px;
+          height:100%;
+          background:var(--card);
+          border-left:1px solid var(--border);
+          padding:20px;
+          display:flex;
+          flex-direction:column;
+          gap:12px;
+          transition:0.3s;
+          z-index:2000;
+        }
+
+        .sidebar-right.open{
+          right:0;
+        }
+
+        .sidebar-right a{
+          text-decoration:none;
+          color:var(--text);
+          padding:10px;
+          border-radius:8px;
+        }
+
+        .sidebar-right a:hover{
+          background:var(--hover);
+        }
       }
     </style>
   </head>
@@ -383,7 +502,7 @@
       </div>
 
       <div class="nav-right">
-        <button id="themeToggle" class="theme-toggle">🌙</button>
+        <button id="menuBtnRight" class="menu-btn" onclick="toggleRightSidebar()">☰</button>
       </div>
     </nav>
     <div class="sidebar">
@@ -395,6 +514,14 @@
       <div id="sources"></div>
     </div>
 
+    <div id="sidebarRight" class="sidebar-right">
+      <a href="/">🏠 Home</a>
+      <a href="/news/news.html">📰 News</a>
+      <a href="/news/saved.html">💾 Saved</a>
+      <a href="/news/ios.html">🍎 iOS</a>
+      <button id="themeToggle" class="theme-toggle">🌙</button>
+    </div>
+
     <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
     <div class="content">
@@ -404,8 +531,10 @@
 
       <div class="pagination" id="pagination"></div>
 
-      <div style="text-align: center">
-        <button class="loadmore" onclick="loadMore()">Load More</button>
+      <div class="loadmore-wrap">
+        <button id="loadmoreBtn" class="loadmore" onclick="loadMore()">
+          Load More
+        </button>
       </div>
     </div>
 
@@ -619,7 +748,7 @@
               url += "&bot=1";
             }
 
-            window.location.href = url;
+            window.open(url, "_blank");
           };
 
           saveBtn.onclick = async (e) => {
@@ -651,7 +780,7 @@
                 saveBtn.style.background = "#ffd700";
                 alert("Đã lưu bài viết thành công");
               } else {
-                alert("Lưu thất bại");
+                alert("Bài này đã từng lưu rồi!");
               }
             } catch (err) {
               console.error(err);
@@ -670,22 +799,56 @@
       // ================= PAGINATION =================
 
       function renderPagination() {
+
         const box = document.getElementById("pagination");
         box.innerHTML = "";
 
-        for (let i = 1; i <= totalPages; i++) {
+        function createBtn(label, page, disabled=false, active=false){
           const btn = document.createElement("button");
-          btn.innerText = i;
+          btn.innerText = label;
 
-          if (i === currentPage) btn.style.fontWeight = "bold";
+          if(active) btn.classList.add("active");
+          if(disabled) btn.classList.add("disabled");
 
           btn.onclick = () => {
-            currentPage = i;
+            currentPage = page;
             loadNews();
           };
 
           box.appendChild(btn);
         }
+
+        // Prev
+        createBtn("←", currentPage-1, currentPage===1);
+
+        let start = Math.max(1, currentPage - 2);
+        let end   = Math.min(totalPages, currentPage + 2);
+
+        if(start > 1){
+          createBtn(1,1);
+          if(start > 2){
+            const dots = document.createElement("span");
+            dots.innerText = "...";
+            box.appendChild(dots);
+          }
+        }
+
+        for(let i=start;i<=end;i++){
+          createBtn(i,i,false,i===currentPage);
+        }
+
+        if(end < totalPages){
+          if(end < totalPages-1){
+            const dots = document.createElement("span");
+            dots.innerText = "...";
+            box.appendChild(dots);
+          }
+          createBtn(totalPages,totalPages);
+        }
+
+        // Next
+        createBtn("→", currentPage+1, currentPage===totalPages);
+
       }
 
       // ================= LOAD MORE =================
@@ -741,6 +904,25 @@
 
         themeToggle.textContent = isDark ? "☀️" : "🌙";
       });
+
+      function toggleRightSidebar(){
+        const sidebar = document.getElementById("sidebarRight");
+        const overlay = document.getElementById("overlay");
+
+        sidebar.classList.toggle("open");
+        overlay.classList.toggle("show");
+
+      }
+
+      function closeSidebar(){
+
+        document.querySelector(".sidebar").classList.remove("open");
+
+        document.getElementById("sidebarRight").classList.remove("open");
+
+        document.getElementById("overlay").classList.remove("show");
+
+      }
     </script>
   </body>
 </html>
