@@ -157,7 +157,6 @@
         margin-top: 20px;
       }
 
-
       /* ================= MODAL ================= */
 
       .modal {
@@ -301,77 +300,77 @@
         margin-top: 0 !important;
       }
 
-      .pagination{
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        gap:6px;
-        margin-top:20px;
-        flex-wrap:wrap;
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin-top: 20px;
+        flex-wrap: wrap;
       }
 
-      .pagination button{
-        min-width:36px;
-        height:36px;
-        border-radius:8px;
-        border:1px solid var(--border);
-        background:var(--card);
-        color:var(--text);
-        cursor:pointer;
-        transition:0.2s;
+      .pagination button {
+        min-width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        cursor: pointer;
+        transition: 0.2s;
       }
 
-      .pagination button:hover{
-        background:var(--hover);
+      .pagination button:hover {
+        background: var(--hover);
       }
 
-      .pagination button.active{
-        background:var(--button);
-        color:white;
-        border-color:var(--button);
-        font-weight:bold;
+      .pagination button.active {
+        background: var(--button);
+        color: white;
+        border-color: var(--button);
+        font-weight: bold;
       }
 
-      .pagination button.disabled{
-        opacity:0.4;
-        pointer-events:none;
+      .pagination button.disabled {
+        opacity: 0.4;
+        pointer-events: none;
       }
 
-      .loadmore-wrap{
-        display:flex;
-        justify-content:center;
-        margin:30px 0;
+      .loadmore-wrap {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
       }
 
-      .loadmore{
-        padding:10px 22px;
-        border-radius:999px;
-        border:1px solid var(--border);
-        background:var(--card);
-        color:var(--text);
-        font-size:14px;
-        font-weight:500;
-        cursor:pointer;
-        transition:all .25s ease;
+      .loadmore {
+        padding: 10px 22px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.25s ease;
       }
 
-      .loadmore:hover{
-        background:var(--button);
-        color:white;
-        border-color:var(--button);
-        transform:translateY(-1px);
+      .loadmore:hover {
+        background: var(--button);
+        color: white;
+        border-color: var(--button);
+        transform: translateY(-1px);
       }
 
-      .loadmore:active{
-        transform:scale(.96);
+      .loadmore:active {
+        transform: scale(0.96);
       }
 
-      .loadmore.loading{
-        opacity:.6;
-        pointer-events:none;
+      .loadmore.loading {
+        opacity: 0.6;
+        pointer-events: none;
       }
 
-      .sidebar-right{
+      .sidebar-right {
         display: none;
       }
 
@@ -456,35 +455,35 @@
           opacity: 1;
         }
 
-        .sidebar-right{
+        .sidebar-right {
           position: fixed;
-          top:0;
-          right:-260px;
-          width:260px;
-          height:100%;
-          background:var(--card);
-          border-left:1px solid var(--border);
-          padding:20px;
-          display:flex;
-          flex-direction:column;
-          gap:12px;
-          transition:0.3s;
-          z-index:2000;
+          top: 0;
+          right: -260px;
+          width: 260px;
+          height: 100%;
+          background: var(--card);
+          border-left: 1px solid var(--border);
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          transition: 0.3s;
+          z-index: 2000;
         }
 
-        .sidebar-right.open{
-          right:0;
+        .sidebar-right.open {
+          right: 0;
         }
 
-        .sidebar-right a{
-          text-decoration:none;
-          color:var(--text);
-          padding:10px;
-          border-radius:8px;
+        .sidebar-right a {
+          text-decoration: none;
+          color: var(--text);
+          padding: 10px;
+          border-radius: 8px;
         }
 
-        .sidebar-right a:hover{
-          background:var(--hover);
+        .sidebar-right a:hover {
+          background: var(--hover);
         }
       }
     </style>
@@ -506,7 +505,13 @@
       </div>
 
       <div class="nav-right">
-        <button id="menuBtnRight" class="menu-btn" onclick="toggleRightSidebar()">☰</button>
+        <button
+          id="menuBtnRight"
+          class="menu-btn"
+          onclick="toggleRightSidebar()"
+        >
+          ☰
+        </button>
       </div>
     </nav>
     <div class="sidebar">
@@ -690,6 +695,8 @@
 
         pageTitle.innerText = source.name;
 
+        scrollTopMobile();
+
         document
           .querySelectorAll(".source")
           .forEach((el) => el.classList.remove("active"));
@@ -803,19 +810,19 @@
       // ================= PAGINATION =================
 
       function renderPagination() {
-
         const box = document.getElementById("pagination");
         box.innerHTML = "";
 
-        function createBtn(label, page, disabled=false, active=false){
+        function createBtn(label, page, disabled = false, active = false) {
           const btn = document.createElement("button");
           btn.innerText = label;
 
-          if(active) btn.classList.add("active");
-          if(disabled) btn.classList.add("disabled");
+          if (active) btn.classList.add("active");
+          if (disabled) btn.classList.add("disabled");
 
           btn.onclick = () => {
             currentPage = page;
+            scrollTopMobile();
             loadNews();
           };
 
@@ -823,45 +830,47 @@
         }
 
         // Prev
-        createBtn("←", currentPage-1, currentPage===1);
+        createBtn("←", currentPage - 1, currentPage === 1);
 
         let start = Math.max(1, currentPage - 2);
-        let end   = Math.min(totalPages, currentPage + 2);
+        let end = Math.min(totalPages, currentPage + 2);
 
-        if(start > 1){
-          createBtn(1,1);
-          if(start > 2){
+        if (start > 1) {
+          createBtn(1, 1);
+          if (start > 2) {
             const dots = document.createElement("span");
             dots.innerText = "...";
             box.appendChild(dots);
           }
         }
 
-        for(let i=start;i<=end;i++){
-          createBtn(i,i,false,i===currentPage);
+        for (let i = start; i <= end; i++) {
+          createBtn(i, i, false, i === currentPage);
         }
 
-        if(end < totalPages){
-          if(end < totalPages-1){
+        if (end < totalPages) {
+          if (end < totalPages - 1) {
             const dots = document.createElement("span");
             dots.innerText = "...";
             box.appendChild(dots);
           }
-          createBtn(totalPages,totalPages);
+          createBtn(totalPages, totalPages);
         }
 
         // Next
-        createBtn("→", currentPage+1, currentPage===totalPages);
-
+        createBtn("→", currentPage + 1, currentPage === totalPages);
       }
 
       // ================= LOAD MORE =================
 
       function loadMore() {
-        if (currentPage < totalPages) {
-          currentPage++;
-          loadNews(true);
-        }
+        if (currentPage >= totalPages) return;
+
+        currentPage++;
+
+        loadNews(true).then(() => {
+          scrollToPageStart(currentPage);
+        });
       }
 
       // ================= INIT =================
@@ -909,23 +918,41 @@
         themeToggle.textContent = isDark ? "☀️" : "🌙";
       });
 
-      function toggleRightSidebar(){
+      function toggleRightSidebar() {
         const sidebar = document.getElementById("sidebarRight");
         const overlay = document.getElementById("overlay");
 
         sidebar.classList.toggle("open");
         overlay.classList.toggle("show");
-
       }
 
-      function closeSidebar(){
-
+      function closeSidebar() {
         document.querySelector(".sidebar").classList.remove("open");
 
         document.getElementById("sidebarRight").classList.remove("open");
 
         document.getElementById("overlay").classList.remove("show");
+      }
 
+      function scrollTopMobile() {
+        if (window.innerWidth <= 768) {
+          document.querySelector(".content").scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
+      }
+      function scrollToPageStart(page) {
+        const items = document.querySelectorAll(".news-item");
+
+        const index = (page - 1) * limit;
+
+        if (items[index]) {
+          items[index].scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
       }
     </script>
   </body>
