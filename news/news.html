@@ -371,13 +371,14 @@
     <nav class="navbar">
       <div class="nav-left">
         <button id="menuBtn" class="menu-btn">☰</button>
-        <div class="logo">TECHRUM</div>
+        <a href="/"><div class="logo">TECHRUM</div></a>
         <a href="/">Home</a>
         <a href="/news/news.html" class="active-link">News</a>
+        <a href="/news/saved.html">Saved</a>
       </div>
 
       <div class="nav-center">
-        <div class="logo mobile-logo">TECHRUM</div>
+        <a href="/"><div class="logo mobile-logo">TECHRUM</div></a>
       </div>
 
       <div class="nav-right">
@@ -593,11 +594,13 @@
   <div class="item-overlay">
     <button class="overlay-btn open-btn">🚀</button>
     <button class="overlay-btn convert-btn">🔗</button>
+    <button class="overlay-btn save-btn">💾</button>
   </div>
 `;
 
           const openBtn = div.querySelector(".open-btn");
           const convertBtn = div.querySelector(".convert-btn");
+          const saveBtn = div.querySelector(".save-btn");
 
           openBtn.onclick = (e) => {
             e.stopPropagation();
@@ -616,6 +619,43 @@
             }
 
             window.location.href = url;
+          };
+
+          saveBtn.onclick = async (e) => {
+            e.stopPropagation();
+            console.log(1);
+
+            if (!currentSource) return;
+
+            const payload = {
+              title: n.title_vi || "",
+              link: n.link,
+              image: n.image,
+              source_id: currentSource.id,
+            };
+
+            try {
+              const res = await fetch(API + "/saved", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+              });
+
+              const data = await res.json();
+
+              if (res.ok) {
+                saveBtn.innerHTML = "⭐";
+                saveBtn.style.background = "#ffd700";
+                alert("Đã lưu bài viết thành công");
+              } else {
+                alert("Lưu thất bại");
+              }
+            } catch (err) {
+              console.error(err);
+              alert("Lỗi khi lưu");
+            }
           };
 
           news.appendChild(div);
