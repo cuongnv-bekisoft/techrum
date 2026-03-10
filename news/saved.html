@@ -458,7 +458,11 @@
           div.innerHTML = `
       <div class="source-left">
         <img src="${s.logo || ""}">
-        <span>${s.name} ${s.isBot ? "⭐" : ""}</span>
+        <span>
+          ${s.name}
+          (${s.total_articles || 0})
+          ${s.isBot ? "⭐" : ""}
+        </span>
       </div>
     `;
 
