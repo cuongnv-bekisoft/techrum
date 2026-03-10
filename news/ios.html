@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TECHRUM App Converter</title>
+
+    <style>
+      :root {
+        --bg: #f4f4f4;
+        --text: #111;
+        --card: #fff;
+        --border: #ddd;
+        --button: #0070f3;
+        --button-hover: #005fcc;
+      }
+
+      body.dark {
+        --bg: #121212;
+        --text: #e6e6e6;
+        --card: #1e1e1e;
+        --border: #333;
+        --button: #4f9cff;
+        --button-hover: #2d7fe6;
+      }
+
+      body {
+        font-family: Arial;
+        background: var(--bg);
+        color: var(--text);
+        padding: 40px;
+        max-width: 900px;
+        margin: auto;
+        transition: 0.3s;
+        padding-top: 80px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      input,
+      textarea,
+      button {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      input {
+        padding: 12px;
+        margin: 8px 0;
+        font-size: 15px;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      textarea {
+        height: 260px;
+        padding: 12px;
+        margin-top: 15px;
+        background: var(--card);
+        color: var(--text);
+        border: 1px solid var(--border);
+        resize: vertical;
+      }
+
+      button {
+        padding: 12px;
+        background: var(--button);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background: var(--button-hover);
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .row button {
+        flex: 1;
+      }
+
+      /* APP CARD */
+
+      .app-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+      }
+
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .remove-btn {
+        border: #e74c3c;
+        width: auto;
+        padding: 6px 10px;
+      }
+
+      .add-btn {
+        background: #27ae60;
+      }
+
+      /* OUTPUT */
+
+      .output-wrapper {
+        position: relative;
+      }
+
+      .output-actions {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 6px;
+      }
+
+      .output-actions button {
+        width: auto;
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 6px;
+      }
+
+      .loading {
+        display: none;
+        font-style: italic;
+        margin-top: 10px;
+      }
+
+      /* PREVIEW */
+
+      .preview {
+        margin-top: 15px;
+        background: var(--card);
+        padding: 15px;
+        border-radius: 6px;
+        line-height: 1.6;
+      }
+
+      .preview img {
+        max-width: 200px;
+        margin: 5px;
+      }
+
+      /* ===== SIDEBAR ===== */
+
+      .menu-btn {
+        position: fixed;
+        left: 20px;
+        width: auto;
+        padding: 8px 12px;
+        font-size: 20px;
+        border-radius: 8px;
+        z-index: 1001;
+        margin-top: 0 !important;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -300px;
+        width: 250px;
+        height: 100%;
+        background: var(--card);
+        border-right: 1px solid var(--border);
+        padding: 60px 20px;
+        transition: 0.3s ease;
+        z-index: 1002;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .sidebar a {
+        display: block;
+        padding: 12px;
+        margin-bottom: 10px;
+        text-decoration: none;
+        color: var(--text);
+        border-radius: 6px;
+      }
+
+      .sidebar a:hover {
+        background: var(--border);
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+        z-index: 1000;
+      }
+
+      .overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* ===== NAVBAR ===== */
+
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 98%;
+        height: 60px;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 1100;
+      }
+
+      .nav-left,
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .nav-left a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .nav-left a:hover {
+        opacity: 0.7;
+      }
+
+      .logo {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .nav-center {
+        display: none;
+      }
+      theme-toggle {
+        position: absolute;
+        right: 50px;
+        width: auto;
+        padding: 6px 10px;
+        font-size: 18px;
+        border-radius: 8px;
+        margin-top: 0 !important;
+      }
+
+      .theme-toggle {
+        width: auto;
+        padding: 6px 12px;
+        border-radius: 8px;
+      }
+
+      body {
+        padding-top: 80px;
+      }
+
+      @media (max-width: 768px) {
+        .nav-left a {
+          display: none;
+        }
+
+        .logo {
+          display: none;
+        }
+
+        .nav-center {
+          display: block;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .menu-btn {
+          display: block;
+          background: var(--button);
+          color: white;
+          border: none;
+          padding: 6px 10px;
+          border-radius: 6px;
+        }
+
+        .nav-right {
+          gap: 10px;
+        }
+      }
+
+      @media (min-width: 769px) {
+        .menu-btn {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="nav-left">
+        <button id="menuBtn" class="menu-btn">☰</button>
+        <a href="/"><div class="logo">TECHRUM</div></a>
+        <a href="/">Home</a>
+        <a href="/news/news.html" class="active-link">News</a>
+        <a href="/news/saved.html">Saved</a>
+        <a href="/news/ios.html">iOS</a>
+      </div>
+
+      <div class="nav-center">
+        <a href="/"><div class="logo mobile-logo">TECHRUM</div></a>
+      </div>
+
+      <div class="nav-right">
+        <button id="themeToggle" class="theme-toggle">🌙</button>
+      </div>
+    </nav>
+
+    <div id="sidebar" class="sidebar">
+      <a href="/">🏠 Home</a>
+      <a href="/news/news.html">📰 News</a>
+      <a href="/news/saved.html">💾 Saved</a>
+      <a href="/news/ios.html">🍎 iOS</a>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <h1>TECHRUM App BBCode Converter</h1>
+
+    <div id="appsContainer"></div>
+
+    <button id="addAppBtn" class="add-btn">➕ Thêm App</button>
+
+    <div class="row">
+      <button id="convertBtn">Convert</button>
+    </div>
+
+    <p id="loadingText" class="loading">Đang xử lý...</p>
+
+    <div class="output-wrapper">
+      <textarea
+        id="outputArea"
+        placeholder="BBCode sẽ hiển thị ở đây..."
+      ></textarea>
+
+      <div class="output-actions">
+        <button id="bbViewBtn">BBCode</button>
+        <button id="copyBtn">📋 Copy</button>
+      </div>
+    </div>
+
+    <div id="previewArea" class="preview" style="display: none"></div>
+
+    <script>
+      const API_BASE = "https://generateappios.cuongnv.workers.dev";
+
+      /* =========================
+ADD APP
+========================= */
+
+      const container = document.getElementById("appsContainer");
+
+      function createApp() {
+        const div = document.createElement("div");
+        div.className = "app-card";
+
+        div.innerHTML = `
+
+<div class="app-header">
+<b>App</b>
+<button class="remove-btn">❌</button>
+</div>
+
+<input class="url" placeholder="App Store URL">
+
+<input class="price" placeholder="Price (vd: 17.99)">
+
+<input class="code" placeholder="Promo code (optional)">
+
+<label>
+<input type="checkbox" class="lifetime"> Lifetime
+</label>
+
+`;
+
+        div.querySelector(".remove-btn").onclick = () => div.remove();
+
+        container.appendChild(div);
+      }
+
+      document.getElementById("addAppBtn").onclick = createApp;
+
+      // tạo sẵn 1 app
+      createApp();
+
+      /* =========================
+🚀 CONVERT
+========================= */
+
+      const convertBtn = document.getElementById("convertBtn");
+      const outputArea = document.getElementById("outputArea");
+      const previewArea = document.getElementById("previewArea");
+      const loadingText = document.getElementById("loadingText");
+
+      convertBtn.addEventListener("click", async () => {
+        const apps = [];
+
+        console.log(1);
+
+        document.querySelectorAll(".app-card").forEach((card) => {
+          const url = card.querySelector(".url").value.trim();
+
+          if (!url) return;
+
+          apps.push({
+            url,
+            price: card.querySelector(".price").value.trim(),
+            code: card.querySelector(".code").value.trim(),
+            lifetime: card.querySelector(".lifetime").checked,
+          });
+        });
+
+        if (!apps.length) {
+          alert("Vui lòng nhập ít nhất 1 App URL");
+          return;
+        }
+
+        loadingText.style.display = "block";
+        outputArea.value = "";
+
+        try {
+          const res = await fetch(API_BASE + "/generate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ apps }),
+          });
+
+          if (!res.ok) {
+            throw new Error("API lỗi: " + res.status);
+          }
+
+          const text = await res.text();
+
+          if (!text.trim()) {
+            throw new Error("API trả về rỗng");
+          }
+
+          outputArea.value = text;
+        } catch (err) {
+          outputArea.value = "Lỗi: " + err.message;
+        } finally {
+          loadingText.style.display = "none";
+        }
+      });
+
+      /* =========================
+📋 COPY
+========================= */
+
+      document.getElementById("copyBtn").addEventListener("click", async () => {
+        const text = outputArea.value;
+
+        if (!text) {
+          alert("Không có nội dung để copy");
+          return;
+        }
+
+        await navigator.clipboard.writeText(text);
+
+        const btn = document.getElementById("copyBtn");
+
+        btn.textContent = "✅";
+
+        setTimeout(() => {
+          btn.textContent = "📋";
+        }, 1200);
+      });
+
+      /* ===============================
+🔄 BBCode ⇄ Preview
+=============================== */
+
+      const bbBtn = document.getElementById("bbViewBtn");
+
+      let isPreview = false;
+
+      bbBtn.addEventListener("click", () => {
+        if (!isPreview) {
+          const bbcode = outputArea.value;
+
+          if (!bbcode.trim()) return;
+
+          previewArea.innerHTML = renderBBCode(bbcode);
+
+          outputArea.style.display = "none";
+          previewArea.style.display = "block";
+
+          bbBtn.textContent = "BBCode";
+
+          isPreview = true;
+        } else {
+          outputArea.style.display = "block";
+          previewArea.style.display = "none";
+
+          bbBtn.textContent = "Preview";
+
+          isPreview = false;
+        }
+      });
+
+      /* ===============================
+🧠 BBCode → HTML
+=============================== */
+
+      function renderBBCode(text) {
+        return (
+          text
+
+            // IMG
+            .replace(
+              /\[IMG\](.*?)\[\/IMG\]/gi,
+              '<img src="$1" style="max-width:100%;margin:5px;">',
+            )
+
+            // CENTER
+            .replace(
+              /\[CENTER\](.*?)\[\/CENTER\]/gi,
+              '<div style="text-align:center">$1</div>',
+            )
+
+            // URL
+            .replace(
+              /\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
+              '<a href="$1" target="_blank">$2</a>',
+            )
+
+            // SIZE
+            .replace(
+              /\[SIZE=(.*?)\](.*?)\[\/SIZE\]/gi,
+              '<span style="font-size:$1">$2</span>',
+            )
+
+            // COLOR
+            .replace(
+              /\[COLOR=(.*?)\](.*?)\[\/COLOR\]/gi,
+              '<span style="color:$1">$2</span>',
+            )
+
+            // BOLD
+            .replace(/\[B\](.*?)\[\/B\]/gi, "<b>$1</b>")
+
+            // xuống dòng
+            .replace(/\n/g, "<br>")
+        );
+      }
+
+      /* =============================
+🌓 DARK MODE
+============================= */
+
+      const toggleBtn = document.getElementById("themeToggle");
+
+      function setTheme(mode) {
+        if (mode === "dark") {
+          document.body.classList.add("dark");
+          toggleBtn.textContent = "☀️";
+        } else {
+          document.body.classList.remove("dark");
+          toggleBtn.textContent = "🌙";
+        }
+
+        localStorage.setItem("theme", mode);
+      }
+
+      const savedTheme = localStorage.getItem("theme") || "light";
+
+      setTheme(savedTheme);
+
+      toggleBtn.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("dark");
+
+        setTheme(isDark ? "light" : "dark");
+      });
+    </script>
+    <script>
+      const menuBtn = document.getElementById("menuBtn");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+
+      menuBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+        overlay.classList.toggle("active");
+      });
+
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+      });
+    </script>
+  </body>
+</html>
