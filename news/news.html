@@ -371,6 +371,10 @@
         pointer-events:none;
       }
 
+      .sidebar-right{
+        display: none;
+      }
+
       /* ================= TABLET ================= */
 
       @media (max-width: 1024px) {
@@ -519,7 +523,7 @@
       <a href="/news/news.html">📰 News</a>
       <a href="/news/saved.html">💾 Saved</a>
       <a href="/news/ios.html">🍎 iOS</a>
-      <button id="themeToggle" class="theme-toggle">🌙</button>
+      <a id="themeToggle">🌙Dark mode</a>
     </div>
 
     <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
