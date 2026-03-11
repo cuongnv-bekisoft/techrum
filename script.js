@@ -153,6 +153,7 @@ async function loadHistory() {
 
     div.innerHTML = `
       <strong>${item.source}</strong><br>
+      <span class="engine-badge">${item.engine || "unknown"}</span><br>
       <small>${new Date(item.created_at).toLocaleString()}</small>
       <div>
         <button onclick="viewItem(${item.id})">Xem</button>
