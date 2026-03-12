@@ -151,10 +151,14 @@ async function loadHistory() {
     const div = document.createElement("div");
     div.className = "history-item";
 
+    const source = item.source ?? "unknown";
+    const engine = item.engine ?? "unknown";
+    const date = new Date(item.created_at.replace(" ", "T")).toLocaleString();
+
     div.innerHTML = `
-      <strong>${item.source}</strong><br>
-      <span class="engine-badge">${item.engine || "unknown"}</span><br>
-      <small>${new Date(item.created_at).toLocaleString()}</small>
+      <strong>${source}</strong><br>
+      <span class="engine-badge ${engine}">${engine}</span><br>
+      <small>${date}</small>
       <div>
         <button onclick="viewItem(${item.id})">Xem</button>
         <button onclick="deleteItem(${item.id})">Xóa</button>
