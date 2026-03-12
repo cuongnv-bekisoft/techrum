@@ -202,16 +202,14 @@
         padding: 2px 6px;
         margin-left: 6px;
         border-radius: 6px;
-        background: #eee;
+        background: var(--bg);
       }
       .engine-badge.gemini {
-        background: #e8f0ff;
-        color: #1a73e8;
+        color: #009e5c;
       }
 
       .engine-badge.openai {
-        background: #e6fff2;
-        color: #009e5c;
+        color: #1a73e8;
       }
     </style>
   </head>
@@ -249,6 +247,7 @@
     <input id="urlInput" type="text" placeholder="Nhập URL bài viết…" />
     <div class="row">
       <select id="engineSelect">
+        <option value="openrouter">OpenRouter</option>
         <option value="gemini">Gemini</option>
         <option value="openai">OpenAI</option>
       </select>
