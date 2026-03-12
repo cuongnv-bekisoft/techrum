@@ -18,6 +18,21 @@ body.dark {
   --button-hover: #2d7fe6;
 }
 
+#previewArea {
+  display: none;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  color: black;
+}
+
+body.dark #previewArea {
+  background: #1e1e1e;
+  color: #e5e5e5;
+  border-color: #444;
+}
+
 button {
   background: var(--button);
   color: white;
