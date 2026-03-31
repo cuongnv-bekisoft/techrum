@@ -4,486 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>News Aggregator</title>
-
-    <style>
-      :root {
-        --bg: #f4f4f4;
-        --text: #111;
-        --card: #ffffff;
-        --border: #ddd;
-        --hover: #eee;
-        --button: #0070f3;
-        --button-hover: #005fcc;
-      }
-
-      body.dark {
-        --bg: #121212;
-        --text: #e6e6e6;
-        --card: #1e1e1e;
-        --border: #333;
-        --hover: #2a2a2a;
-        --button: #4f9cff;
-        --button-hover: #2d7fe6;
-      }
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        font-family: Arial;
-        display: flex;
-        height: 100vh;
-        background: var(--bg);
-        color: var(--text);
-        transition: 0.3s;
-      }
-
-      button {
-        background: var(--button);
-        color: white;
-        border: 1px solid var(--text);
-        cursor: pointer;
-        font-weight: bold;
-        border-radius: 5px;
-      }
-
-      button:hover {
-        background: var(--button-hover);
-      }
-
-      /* ================= SIDEBAR ================= */
-
-      .sidebar {
-        width: 260px;
-        overflow-y: auto;
-        padding: 10px;
-        background: var(--card);
-        border-right: 1px solid var(--border);
-        transition: 0.3s;
-      }
-
-      .sidebar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-
-      .add-btn {
-        font-size: 22px;
-        cursor: pointer;
-        background: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-      }
-
-      .source {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .source:hover {
-        background: var(--hover);
-      }
-      .source.active {
-        background: var(--border);
-      }
-
-      .source-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .source img {
-        width: 30px;
-        height: 30px;
-        object-fit: contain;
-      }
-
-      .source span {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      /* ================= CONTENT ================= */
-
-      .content {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-      }
-
-      .news-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 16px;
-      }
-
-      .news-item {
-        border: 1px solid var(--border);
-        background: var(--card);
-        border-radius: 8px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: 0.2s;
-      }
-
-      .news-item:hover {
-        transform: translateY(-3px);
-      }
-
-      .news-item img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-      }
-
-      .news-item h4 {
-        margin: 8px;
-        font-size: 14px;
-      }
-
-      .pagination {
-        text-align: center;
-        margin-top: 20px;
-      }
-
-
-      /* ================= MODAL ================= */
-
-      .modal {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .modal-box {
-        background: var(--card);
-        padding: 20px;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 400px;
-      }
-
-      .modal input {
-        width: 100%;
-        margin-bottom: 10px;
-        padding: 8px;
-      }
-
-      .overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        display: none;
-        z-index: 999;
-      }
-
-      .overlay.show {
-        display: block;
-      }
-
-      /* ===== ITEM OVERLAY ===== */
-
-      .news-item {
-        position: relative;
-      }
-
-      .item-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        opacity: 0;
-        transition: 0.3s;
-      }
-
-      .news-item:hover .item-overlay {
-        opacity: 1;
-      }
-
-      .overlay-btn {
-        background: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: 0.2s;
-      }
-
-      .overlay-btn:hover {
-        transform: scale(1.1);
-      }
-
-      /* ================= NAVBAR ================= */
-
-      .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        background: var(--card);
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        z-index: 3000;
-      }
-
-      .nav-left,
-      .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .nav-left a {
-        text-decoration: none;
-        color: var(--text);
-        font-weight: 500;
-      }
-
-      .nav-left a:hover {
-        opacity: 0.7;
-      }
-
-      .active-link {
-        font-weight: bold;
-      }
-
-      .logo {
-        font-weight: bold;
-        font-size: 18px;
-      }
-
-      .nav-center {
-        display: none;
-      }
-
-      .menu-btn {
-        display: none;
-      }
-
-      body {
-        padding-top: 60px;
-      }
-
-      .theme-toggle {
-        position: absolute;
-        right: 50px;
-        width: auto;
-        padding: 6px 12px;
-        font-size: 18px;
-        border-radius: 8px;
-        margin-top: 0 !important;
-      }
-
-      .pagination{
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        gap:6px;
-        margin-top:20px;
-        flex-wrap:wrap;
-      }
-
-      .pagination button{
-        min-width:36px;
-        height:36px;
-        border-radius:8px;
-        border:1px solid var(--border);
-        background:var(--card);
-        color:var(--text);
-        cursor:pointer;
-        transition:0.2s;
-      }
-
-      .pagination button:hover{
-        background:var(--hover);
-      }
-
-      .pagination button.active{
-        background:var(--button);
-        color:white;
-        border-color:var(--button);
-        font-weight:bold;
-      }
-
-      .pagination button.disabled{
-        opacity:0.4;
-        pointer-events:none;
-      }
-
-      .loadmore-wrap{
-        display:flex;
-        justify-content:center;
-        margin:30px 0;
-      }
-
-      .loadmore{
-        padding:10px 22px;
-        border-radius:999px;
-        border:1px solid var(--border);
-        background:var(--card);
-        color:var(--text);
-        font-size:14px;
-        font-weight:500;
-        cursor:pointer;
-        transition:all .25s ease;
-      }
-
-      .loadmore:hover{
-        background:var(--button);
-        color:white;
-        border-color:var(--button);
-        transform:translateY(-1px);
-      }
-
-      .loadmore:active{
-        transform:scale(.96);
-      }
-
-      .loadmore.loading{
-        opacity:.6;
-        pointer-events:none;
-      }
-
-      /* ================= TABLET ================= */
-
-      @media (max-width: 1024px) {
-        .sidebar {
-          width: 200px;
-        }
-
-        .news-grid {
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        }
-      }
-
-      /* ================= MOBILE ================= */
-
-      @media (max-width: 768px) {
-        body {
-          flex-direction: column;
-        }
-
-        .sidebar {
-          position: fixed;
-          left: -260px;
-          top: 0;
-          height: 100%;
-          z-index: 1000;
-          box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar.open {
-          left: 0;
-        }
-
-        .content {
-          padding: 15px;
-        }
-
-        .news-grid {
-          grid-template-columns: 1fr;
-        }
-        .nav-left a,
-        .nav-left .logo {
-          display: none;
-        }
-
-        .menu-btn {
-          display: block;
-          background: #0070f3;
-          color: white;
-          border: none;
-          padding: 6px 10px;
-          border-radius: 6px;
-        }
-
-        .nav-center {
-          display: block;
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-        }
-
-        .item-overlay {
-          inset: auto;
-          top: 6px;
-          right: 6px;
-          background: none;
-          opacity: 1;
-          gap: 6px;
-        }
-
-        .overlay-btn {
-          width: 45px;
-          height: 45px;
-          font-size: 14px;
-          background: rgb(52 191 7 / 60%);
-          color: white;
-        }
-
-        .news-item:hover .item-overlay {
-          opacity: 1;
-        }
-
-        .sidebar-right{
-          position: fixed;
-          top:0;
-          right:-260px;
-          width:260px;
-          height:100%;
-          background:var(--card);
-          border-left:1px solid var(--border);
-          padding:20px;
-          display:flex;
-          flex-direction:column;
-          gap:12px;
-          transition:0.3s;
-          z-index:2000;
-        }
-
-        .sidebar-right.open{
-          right:0;
-        }
-
-        .sidebar-right a{
-          text-decoration:none;
-          color:var(--text);
-          padding:10px;
-          border-radius:8px;
-        }
-
-        .sidebar-right a:hover{
-          background:var(--hover);
-        }
-      }
-    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../main.css" />
   </head>
 
   <body>
@@ -495,46 +20,68 @@
         <a href="/news/news.html" class="active-link">News</a>
         <a href="/news/saved.html">Saved</a>
         <a href="/news/ios.html">iOS</a>
+        <a href="/news/android.html">Android</a>
       </div>
 
       <div class="nav-center">
-        <a href="/"><div class="logo mobile-logo">TECHRUM</div></a>
+        <a href="/" class="logo mobile-logo">TECHRUM<span>.</span></a>
       </div>
 
       <div class="nav-right">
-        <button id="menuBtnRight" class="menu-btn" onclick="toggleRightSidebar()">☰</button>
+        <button id="themeToggle" class="theme-toggle is-pc">🌙</button>
+
+        <button
+          id="menuBtnRight"
+          class="menu-btn"
+          onclick="toggleRightSidebar()"
+        >
+          ☰
+        </button>
       </div>
     </nav>
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <h3>Nguồn tin</h3>
-        <button class="add-btn" onclick="openAdd()">+</button>
+    <div class="news-shell">
+      <div class="news-sidebar" id="newsSidebar">
+        <div class="sidebar-header">
+          <h3>Nguồn tin</h3>
+          <button class="add-btn" onclick="openAdd()">+</button>
+        </div>
+
+        <div id="sourcesLoading" class="loading">
+          <div class="spinner"></div>
+          Đang tải nguồn tin...
+        </div>
+
+        <div id="sources"></div>
       </div>
 
-      <div id="sources"></div>
-    </div>
+      <div id="sidebarRight" class="sidebar-right">
+        <a href="/">🏠 Home</a>
+        <a href="/news/news.html">📰 News</a>
+        <a href="/news/saved.html">💾 Saved</a>
+        <a href="/news/ios.html">🍎 iOS</a>
+        <a href="/news/android.html">📱Android</a>
+        <a id="themeToggle">🌙Dark mode</a>
+      </div>
 
-    <div id="sidebarRight" class="sidebar-right">
-      <a href="/">🏠 Home</a>
-      <a href="/news/news.html">📰 News</a>
-      <a href="/news/saved.html">💾 Saved</a>
-      <a href="/news/ios.html">🍎 iOS</a>
-      <button id="themeToggle" class="theme-toggle">🌙</button>
-    </div>
+      <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+      <div class="news-content">
+        <h2 id="pageTitle">Chọn nguồn tin</h2>
 
-    <div class="content">
-      <h2 id="pageTitle">Chọn nguồn tin</h2>
+        <div id="newsLoading" class="loading">
+          <div class="spinner"></div>
+          Đang tải bài viết...
+        </div>
 
-      <div class="news-grid" id="news"></div>
+        <div class="news-grid" id="news"></div>
 
-      <div class="pagination" id="pagination"></div>
+        <div class="pagination" id="pagination"></div>
 
-      <div class="loadmore-wrap">
-        <button id="loadmoreBtn" class="loadmore" onclick="loadMore()">
-          Load More
-        </button>
+        <div class="loadmore-wrap">
+          <button id="loadmoreBtn" class="loadmore" onclick="loadMore()">
+            Load More
+          </button>
+        </div>
       </div>
     </div>
 
@@ -559,8 +106,10 @@
           Site bị Cloudflare bot check
         </label>
 
-        <button onclick="saveSource()">Lưu</button>
-        <button onclick="closeModal()">Hủy</button>
+        <div class="modal-actions">
+          <button onclick="saveSource()">Lưu</button>
+          <button onclick="closeModal()">Hủy</button>
+        </div>
       </div>
     </div>
 
@@ -645,6 +194,7 @@
       // ================= LOAD SOURCES =================
 
       async function loadSources() {
+        document.getElementById("sourcesLoading")?.classList.add("show");
         const res = await fetch(API + "/sources");
         sourcesData = await res.json();
 
@@ -663,9 +213,11 @@
         <span>${s.name} ${s.isBot ? "⭐" : ""}</span>
       </div>
 
-      <div>
-        <button onclick='event.stopPropagation(); openEdit(${JSON.stringify(s)})'>✏️</button>
-        <button onclick='event.stopPropagation(); deleteSource("${s.id}")'>🗑️</button>
+      <div class="source-actions">
+        <button class="icon-btn edit" title="Sửa" aria-label="Sửa"
+          onclick='event.stopPropagation(); openEdit(${JSON.stringify(s)})'>✏️</button>
+        <button class="icon-btn delete" title="Xoá" aria-label="Xoá"
+          onclick='event.stopPropagation(); deleteSource("${s.id}")'>🗑️</button>
       </div>
     `;
 
@@ -676,6 +228,7 @@
         if (!currentSource && sourcesData.length > 0) {
           selectSource(sourcesData[0]);
         }
+        document.getElementById("sourcesLoading")?.classList.remove("show");
       }
 
       // ================= SELECT SOURCE =================
@@ -685,6 +238,8 @@
         currentPage = 1;
 
         pageTitle.innerText = source.name;
+
+        scrollTopMobile();
 
         document
           .querySelectorAll(".source")
@@ -704,14 +259,21 @@
 
       async function loadNews(append = false) {
         if (!currentSource) return;
+        document.getElementById("newsLoading")?.classList.add("show");
 
-        const res = await fetch(
-          `${API}/?url=${encodeURIComponent(currentSource.url)}&page=${currentPage}&limit=${limit}`,
-        );
+        let data;
+        try {
+          const res = await fetch(
+            `${API}/?url=${encodeURIComponent(currentSource.url)}&page=${currentPage}&limit=${limit}`,
+          );
+          data = await res.json();
+        } finally {
+          document.getElementById("newsLoading")?.classList.remove("show");
+        }
 
-        const data = await res.json();
-
-        if (!append) news.innerHTML = "";
+        if (!append) {
+          news.innerHTML = "";
+        }
 
         data.articles.forEach((n) => {
           const div = document.createElement("div");
@@ -799,19 +361,19 @@
       // ================= PAGINATION =================
 
       function renderPagination() {
-
         const box = document.getElementById("pagination");
         box.innerHTML = "";
 
-        function createBtn(label, page, disabled=false, active=false){
+        function createBtn(label, page, disabled = false, active = false) {
           const btn = document.createElement("button");
           btn.innerText = label;
 
-          if(active) btn.classList.add("active");
-          if(disabled) btn.classList.add("disabled");
+          if (active) btn.classList.add("active");
+          if (disabled) btn.classList.add("disabled");
 
           btn.onclick = () => {
             currentPage = page;
+            scrollTopMobile();
             loadNews();
           };
 
@@ -819,45 +381,47 @@
         }
 
         // Prev
-        createBtn("←", currentPage-1, currentPage===1);
+        createBtn("←", currentPage - 1, currentPage === 1);
 
         let start = Math.max(1, currentPage - 2);
-        let end   = Math.min(totalPages, currentPage + 2);
+        let end = Math.min(totalPages, currentPage + 2);
 
-        if(start > 1){
-          createBtn(1,1);
-          if(start > 2){
+        if (start > 1) {
+          createBtn(1, 1);
+          if (start > 2) {
             const dots = document.createElement("span");
             dots.innerText = "...";
             box.appendChild(dots);
           }
         }
 
-        for(let i=start;i<=end;i++){
-          createBtn(i,i,false,i===currentPage);
+        for (let i = start; i <= end; i++) {
+          createBtn(i, i, false, i === currentPage);
         }
 
-        if(end < totalPages){
-          if(end < totalPages-1){
+        if (end < totalPages) {
+          if (end < totalPages - 1) {
             const dots = document.createElement("span");
             dots.innerText = "...";
             box.appendChild(dots);
           }
-          createBtn(totalPages,totalPages);
+          createBtn(totalPages, totalPages);
         }
 
         // Next
-        createBtn("→", currentPage+1, currentPage===totalPages);
-
+        createBtn("→", currentPage + 1, currentPage === totalPages);
       }
 
       // ================= LOAD MORE =================
 
       function loadMore() {
-        if (currentPage < totalPages) {
-          currentPage++;
-          loadNews(true);
-        }
+        if (currentPage >= totalPages) return;
+
+        currentPage++;
+
+        loadNews(true).then(() => {
+          scrollToPageStart(currentPage);
+        });
       }
 
       // ================= INIT =================
@@ -867,12 +431,13 @@
       const menuBtn = document.getElementById("menuBtn");
 
       menuBtn.addEventListener("click", () => {
-        document.querySelector(".sidebar").classList.toggle("open");
+        document.getElementById("newsSidebar").classList.toggle("open");
         document.getElementById("overlay").classList.toggle("show");
       });
 
       function closeSidebar() {
-        document.querySelector(".sidebar").classList.remove("open");
+        document.getElementById("newsSidebar").classList.remove("open");
+        document.getElementById("sidebarRight").classList.remove("open");
         document.getElementById("overlay").classList.remove("show");
       }
 
@@ -881,7 +446,7 @@
           menuBtn.style.display = "inline-block";
         } else {
           menuBtn.style.display = "none";
-          document.querySelector(".sidebar").classList.remove("open");
+          document.getElementById("newsSidebar").classList.remove("open");
         }
       }
 
@@ -905,23 +470,44 @@
         themeToggle.textContent = isDark ? "☀️" : "🌙";
       });
 
-      function toggleRightSidebar(){
+      function toggleRightSidebar() {
         const sidebar = document.getElementById("sidebarRight");
         const overlay = document.getElementById("overlay");
 
         sidebar.classList.toggle("open");
         overlay.classList.toggle("show");
-
       }
 
-      function closeSidebar(){
+      function scrollTopMobile() {
+        if (window.innerWidth <= 768) {
+          // MOBILE → scroll toàn trang
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
 
-        document.querySelector(".sidebar").classList.remove("open");
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        } else {
+          // PC → scroll container
+          const content = document.querySelector(".news-content");
+          content?.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          });
+        }
+      }
+      function scrollToPageStart(page) {
+        const items = document.querySelectorAll(".news-item");
 
-        document.getElementById("sidebarRight").classList.remove("open");
+        const index = (page - 1) * limit;
 
-        document.getElementById("overlay").classList.remove("show");
-
+        if (items[index]) {
+          items[index].scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
       }
     </script>
   </body>

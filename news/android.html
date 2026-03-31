@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TECHRUM App Converter</title>
+    <title>TECHRUM Android App Converter</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../main.css" />
-
   </head>
 
   <body>
+    <!-- NAVBAR -->
     <nav class="navbar">
       <div class="nav-left">
         <button id="menuBtn" class="menu-btn">☰</button>
@@ -20,19 +20,15 @@
         <a href="/">Home</a>
         <a href="/news/news.html">News</a>
         <a href="/news/saved.html">Saved</a>
-        <a href="/news/ios.html" class="active-link">iOS</a>
-        <a href="/news/android.html">Android</a>
+        <a href="/news/ios.html">iOS</a>
+        <a href="/news/android.html" class="active-link">Android</a>
       </div>
-
-      <div class="nav-center">
-        <a href="/"><div class="logo mobile-logo">TECHRUM</div></a>
-      </div>
-
       <div class="nav-right">
         <button id="themeToggle" class="theme-toggle">🌙</button>
       </div>
     </nav>
 
+    <!-- SIDEBAR -->
     <div id="sidebar" class="sidebar">
       <a href="/">🏠 Home</a>
       <a href="/news/news.html">📰 News</a>
@@ -40,14 +36,14 @@
       <a href="/news/ios.html">🍎 iOS</a>
       <a href="/news/android.html">🤖 Android</a>
     </div>
-
     <div id="overlay" class="overlay"></div>
 
+    <!-- MAIN -->
     <div class="main">
       <div class="page-header">
-        <div class="badge">🍎 iOS</div>
-        <h1>TECHRUM iOS<br />BBCode Converter</h1>
-        <p>Nhập App Store URL và giá — nhận BBCode ngay lập tức</p>
+        <div class="badge">🤖 Android</div>
+        <h1>TECHRUM Android<br />BBCode Converter</h1>
+        <p>Nhập Google Play URL và giá — nhận BBCode ngay lập tức</p>
       </div>
 
       <div id="appsContainer"></div>
@@ -80,87 +76,75 @@
     </div>
 
     <script>
-      const API_BASE = "https://generateappios.cuongnv.workers.dev";
+      const API_URL = "https://generateandroid.cuongnv.workers.dev/generate";
 
-      /* =========================
-ADD APP
-========================= */
-
+      /* ── ADD APP ── */
       const container = document.getElementById("appsContainer");
-
       let appCount = 0;
+
       function createApp() {
         appCount++;
         const div = document.createElement("div");
         div.className = "app-card";
-
         div.innerHTML = `
-
-<div class="app-header">
-<span class="app-label">App ${appCount}</span>
-<button class="remove-btn">❌</button>
-</div>
-
-<div class="input-group">
-  <div>
-    <div class="field-label">App Store URL</div>
-    <input type="url" class="url" placeholder="https://apps.apple.com/...">
-  </div>
-
-  <div>
-    <div class="field-label">Price (vd: 17.99)</div>
-    <input type="text" class="price" placeholder="17.99">
-  </div>
-
-  <div>
-    <div class="field-label">Promo Code (nếu có)</div>
-    <input type="text" class="code" placeholder="VD: VIP2026">
-  </div>
-
-  <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-    <input type="checkbox" class="lifetime" id="lifetime-${appCount}">
-    <label for="lifetime-${appCount}" style="font-size:13px; color:var(--muted); cursor:pointer;">
-      Lifetime
-    </label>
-  </div>
-</div>
-
-`;
-
+          <div class="app-header">
+            <span class="app-label">App ${appCount}</span>
+            <button class="remove-btn">✕ Xoá</button>
+          </div>
+          <div class="input-group">
+            <div>
+              <div class="field-label">Google Play URL</div>
+              <input type="url" class="url" placeholder="https://play.google.com/store/apps/details?id=...">
+            </div>
+            <div>
+              <div class="field-label">Price (vd: 5.49)</div>
+              <input type="text" class="price" placeholder="5.49">
+            </div>
+            <div>
+            <div class="field-label">Promo Code (nếu có)</div>
+                <input type="text" class="code" placeholder="VD: VIP2026">
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+            <input type="checkbox" class="lifetime" id="lifetime-${appCount}">
+            <label for="lifetime-${appCount}" style="font-size:13px; color:var(--muted); cursor:pointer;">
+                Lifetime
+            </label>
+            </div>
+          </div>
+        `;
         div.querySelector(".remove-btn").onclick = () => div.remove();
-
         container.appendChild(div);
       }
 
       document.getElementById("addAppBtn").onclick = createApp;
-
-      // tạo sẵn 1 app
       createApp();
 
-      /* =========================
-🚀 CONVERT
-========================= */
-
+      /* ── CONVERT ── */
       const convertBtn = document.getElementById("convertBtn");
       const outputArea = document.getElementById("outputArea");
+      const outputSection = document.getElementById("outputSection");
       const previewArea = document.getElementById("previewArea");
       const loadingText = document.getElementById("loadingText");
-      const outputSection = document.getElementById("outputSection");
 
       convertBtn.addEventListener("click", async () => {
         const apps = [];
 
         document.querySelectorAll(".app-card").forEach((card) => {
           const url = card.querySelector(".url").value.trim();
-
           if (!url) return;
 
-          apps.push({
-            url,
-            price: card.querySelector(".price").value.trim(),
-            code: card.querySelector(".code").value.trim(),
-            lifetime: card.querySelector(".lifetime").checked,
-          });
+          const entry = { url };
+
+          const price = card.querySelector(".price").value.trim();
+          if (price) entry.price = price;
+
+          const code = card.querySelector(".code").value.trim();
+          if (code) entry.code = code;
+
+          const lifetime = card.querySelector(".lifetime").checked;
+          if (lifetime) entry.lifetime = true;
+
+          apps.push(entry);
         });
 
         if (!apps.length) {
@@ -179,23 +163,15 @@ ADD APP
         document.getElementById("bbViewBtn").textContent = "Preview";
 
         try {
-          const res = await fetch(API_BASE + "/generate", {
+          const res = await fetch(API_URL, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ apps }),
           });
 
-          if (!res.ok) {
-            throw new Error("API lỗi: " + res.status);
-          }
-
+          if (!res.ok) throw new Error("API lỗi: " + res.status);
           const text = await res.text();
-
-          if (!text.trim()) {
-            throw new Error("API trả về rỗng");
-          }
+          if (!text.trim()) throw new Error("API trả về rỗng");
 
           outputArea.value = text;
           outputSection.style.display = "block";
@@ -208,136 +184,81 @@ ADD APP
         }
       });
 
-      /* =========================
-📋 COPY
-========================= */
-
+      /* ── COPY ── */
       document.getElementById("copyBtn").addEventListener("click", async () => {
         const text = outputArea.value;
-
         if (!text) {
           alert("Không có nội dung để copy");
           return;
         }
-
         await navigator.clipboard.writeText(text);
-
         const btn = document.getElementById("copyBtn");
-
         btn.textContent = "✅ Copied";
-
         setTimeout(() => {
           btn.textContent = "📋 Copy";
-        }, 1200);
+        }, 1500);
       });
 
-      /* ===============================
-🔄 BBCode ⇄ Preview
-=============================== */
-
-      const bbBtn = document.getElementById("bbViewBtn");
-
+      /* ── BBCODE PREVIEW ── */
       let isPreview = false;
-
-      bbBtn.addEventListener("click", () => {
+      document.getElementById("bbViewBtn").addEventListener("click", () => {
         if (!isPreview) {
           const bbcode = outputArea.value;
-
           if (!bbcode.trim()) return;
-
           previewArea.innerHTML = renderBBCode(bbcode);
-
           outputArea.style.display = "none";
           previewArea.style.display = "block";
-
-          bbBtn.textContent = "BBCode";
-
+          document.getElementById("bbViewBtn").textContent = "BBCode";
           isPreview = true;
         } else {
           outputArea.style.display = "block";
           previewArea.style.display = "none";
-
-          bbBtn.textContent = "Preview";
-
+          document.getElementById("bbViewBtn").textContent = "Preview";
           isPreview = false;
         }
       });
 
-      /* ===============================
-🧠 BBCode → HTML
-=============================== */
-
       function renderBBCode(text) {
-        return (
-          text
-
-            // IMG
-            .replace(
-              /\[IMG\](.*?)\[\/IMG\]/gi,
-              '<img src="$1" style="max-width:100%;margin:5px;">',
-            )
-
-            // CENTER
-            .replace(
-              /\[CENTER\](.*?)\[\/CENTER\]/gi,
-              '<div style="text-align:center">$1</div>',
-            )
-
-            // URL
-            .replace(
-              /\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
-              '<a href="$1" target="_blank" style="color:var(--accent)">$2</a>',
-            )
-
-            // SIZE
-            .replace(
-              /\[SIZE=(.*?)\](.*?)\[\/SIZE\]/gi,
-              '<span style="font-size:$1">$2</span>',
-            )
-
-            // COLOR
-            .replace(
-              /\[COLOR=(.*?)\](.*?)\[\/COLOR\]/gi,
-              '<span style="color:$1">$2</span>',
-            )
-
-            // BOLD
-            .replace(/\[B\](.*?)\[\/B\]/gi, "<b>$1</b>")
-
-            // xuống dòng
-            .replace(/\n/g, "<br>")
-        );
+        return text
+          .replace(
+            /\[IMG\](.*?)\[\/IMG\]/gi,
+            '<img src="$1" style="max-width:100%;margin:5px;border-radius:6px;">',
+          )
+          .replace(
+            /\[CENTER\]([\s\S]*?)\[\/CENTER\]/gi,
+            '<div style="text-align:center">$1</div>',
+          )
+          .replace(
+            /\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
+            '<a href="$1" target="_blank" style="color:var(--accent)">$2</a>',
+          )
+          .replace(
+            /\[SIZE=(.*?)\](.*?)\[\/SIZE\]/gi,
+            '<span style="font-size:$1">$2</span>',
+          )
+          .replace(
+            /\[COLOR=(.*?)\]([\s\S]*?)\[\/COLOR\]/gi,
+            '<span style="color:$1">$2</span>',
+          )
+          .replace(/\[B\](.*?)\[\/B\]/gi, "<b>$1</b>")
+          .replace(/\n/g, "<br>");
       }
 
-      /* =============================
-🌓 DARK MODE
-============================= */
-
+      /* ── DARK MODE ── */
       const toggleBtn = document.getElementById("themeToggle");
 
       function setTheme(mode) {
-        if (mode === "dark") {
-          document.body.classList.add("dark");
-          toggleBtn.textContent = "☀️";
-        } else {
-          document.body.classList.remove("dark");
-          toggleBtn.textContent = "🌙";
-        }
-
+        document.body.classList.toggle("dark", mode === "dark");
+        toggleBtn.textContent = mode === "dark" ? "☀️" : "🌙";
         localStorage.setItem("theme", mode);
       }
 
-      const savedTheme = localStorage.getItem("theme") || "light";
-
-      setTheme(savedTheme);
-
+      setTheme(localStorage.getItem("theme") || "light");
       toggleBtn.addEventListener("click", () => {
-        const isDark = document.body.classList.contains("dark");
-
-        setTheme(isDark ? "light" : "dark");
+        setTheme(document.body.classList.contains("dark") ? "light" : "dark");
       });
-    </script>
-    <script>
+
+      /* ── SIDEBAR ── */
       const menuBtn = document.getElementById("menuBtn");
       const sidebar = document.getElementById("sidebar");
       const overlay = document.getElementById("overlay");
@@ -346,7 +267,6 @@ ADD APP
         sidebar.classList.toggle("active");
         overlay.classList.toggle("active");
       });
-
       overlay.addEventListener("click", () => {
         sidebar.classList.remove("active");
         overlay.classList.remove("active");

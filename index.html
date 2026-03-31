@@ -4,38 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TECHRUM Converter</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/main.css" />
 
     <style>
-      :root {
-        --bg: #f4f4f4;
-        --text: #111;
-        --card: #ffffff;
-        --border: #ddd;
-        --button: #0070f3;
-        --button-hover: #005fcc;
-      }
-
-      body.dark {
-        --bg: #121212;
-        --text: #e6e6e6;
-        --card: #1e1e1e;
-        --border: #333;
-        --button: #4f9cff;
-        --button-hover: #2d7fe6;
-      }
-
       body {
-        font-family: Arial, sans-serif;
+        margin: 0;
+        font-family: Arial;
         background: var(--bg);
         color: var(--text);
+        transition: 0.3s;
         padding: 40px;
         max-width: 900px;
         margin: auto;
         transition: 0.3s;
+        height: 100vh;
       }
 
       h1 {
         text-align: center;
+      }
+
+      body {
+        padding-top: 80px;
       }
 
       input,
@@ -44,7 +38,6 @@
         width: 100%;
         box-sizing: border-box;
       }
-
       input {
         padding: 12px;
         margin: 15px 0;
@@ -95,12 +88,6 @@
         flex: 1;
       }
 
-      .loading {
-        display: none;
-        font-style: italic;
-        margin-top: 10px;
-      }
-
       .history {
         margin-top: 40px;
       }
@@ -123,15 +110,6 @@
         margin-top: 5px;
       }
 
-      .theme-toggle {
-        position: absolute;
-        right: 50px;
-        width: auto;
-        padding: 6px 10px;
-        font-size: 18px;
-        border-radius: 8px;
-        margin-top: 0 !important;
-      }
       .output-wrapper {
         position: relative;
       }
@@ -160,21 +138,6 @@
         cursor: pointer;
       }
 
-      /* Preview */
-      .preview {
-        margin-top: 15px;
-        background: #fff;
-        padding: 15px;
-        border-radius: 6px;
-        line-height: 1.6;
-      }
-
-      .preview img {
-        max-width: 100%;
-        display: block;
-        margin: 10px auto;
-      }
-
       /* ===== SIDEBAR ===== */
 
       .menu-btn {
@@ -187,6 +150,8 @@
         z-index: 1001;
         margin-top: 0 !important;
       }
+
+      /* ===== SIDEBAR ===== */
 
       .sidebar {
         position: fixed;
@@ -225,100 +190,30 @@
         opacity: 0;
         visibility: hidden;
         transition: 0.3s;
-        z-index: 1000;
+        z-index: 999;
       }
 
       .overlay.active {
         opacity: 1;
         visibility: visible;
       }
-      /* ===== NAVBAR ===== */
 
-      .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 60px;
-        background: var(--card);
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        z-index: 1100;
+      .overlay.show {
+        display: block;
+      }
+      .engine-badge {
+        font-size: 12px;
+        padding: 2px 6px;
+        margin-left: 6px;
+        border-radius: 6px;
+        background: var(--bg);
+      }
+      .engine-badge.gemini {
+        color: #009e5c;
       }
 
-      .nav-left,
-      .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .nav-left a {
-        text-decoration: none;
-        color: var(--text);
-        font-weight: 500;
-      }
-
-      .nav-left a:hover {
-        opacity: 0.7;
-      }
-
-      .logo {
-        font-weight: bold;
-        font-size: 18px;
-      }
-
-      .nav-center {
-        display: none;
-      }
-
-      .theme-toggle {
-        width: auto;
-        padding: 6px 12px;
-        border-radius: 8px;
-      }
-
-      body {
-        padding-top: 80px;
-      }
-
-      @media (max-width: 768px) {
-        .nav-left a {
-          display: none;
-        }
-
-        .logo {
-          display: none;
-        }
-
-        .nav-center {
-          display: block;
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
-        }
-
-        .menu-btn {
-          display: block;
-          background: var(--button);
-          color: white;
-          border: none;
-          padding: 6px 10px;
-          border-radius: 6px;
-        }
-
-        .nav-right {
-          gap: 10px;
-        }
-      }
-
-      @media (min-width: 769px) {
-        .menu-btn {
-          display: none;
-        }
+      .engine-badge.openai {
+        color: #1a73e8;
       }
     </style>
   </head>
@@ -328,10 +223,11 @@
       <div class="nav-left">
         <button id="menuBtn" class="menu-btn">☰</button>
         <a href="/"><div class="logo">TECHRUM</div></a>
-        <a href="/">Home</a>
-        <a href="/news/news.html" class="active-link">News</a>
+        <a href="/" class="active-link">Home</a>
+        <a href="/news/news.html">News</a>
         <a href="/news/saved.html">Saved</a>
         <a href="/news/ios.html">iOS</a>
+        <a href="/news/android.html">Android</a>
       </div>
 
       <div class="nav-center">
@@ -347,6 +243,7 @@
       <a href="/news/news.html">📰 News</a>
       <a href="/news/saved.html">💾 Saved</a>
       <a href="/news/ios.html">🍎 iOS</a>
+      <a href="/news/android.html">📱Android</a>
     </div>
 
     <div id="overlay" class="overlay"></div>
@@ -356,6 +253,7 @@
     <input id="urlInput" type="text" placeholder="Nhập URL bài viết…" />
     <div class="row">
       <select id="engineSelect">
+        <option value="openrouter">OpenRouter</option>
         <option value="gemini">Gemini</option>
         <option value="openai">OpenAI</option>
       </select>
@@ -364,7 +262,10 @@
       <button id="convertBtn">Convert</button>
     </div>
 
-    <p id="loadingText" class="loading">Đang xử lý...</p>
+    <div id="loadingText" class="loading">
+      <div class="spinner"></div>
+      Đang xử lý...
+    </div>
 
     <div class="output-wrapper">
       <textarea
