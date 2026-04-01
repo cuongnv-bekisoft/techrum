@@ -141,8 +141,10 @@
           const code = card.querySelector(".code").value.trim();
           if (code) entry.code = code;
 
-          const lifetime = card.querySelector(".lifetime").checked;
-          if (lifetime) entry.lifetime = true;
+          const lifetimeChecked = card.querySelector(".lifetime").checked;
+          entry.lifetime = lifetimeChecked;
+          entry.isLifetime = lifetimeChecked;
+          entry.is_lifetime = lifetimeChecked;
 
           apps.push(entry);
         });
@@ -173,7 +175,7 @@
           const text = await res.text();
           if (!text.trim()) throw new Error("API trả về rỗng");
 
-          outputArea.value = text;
+          outputArea.value = normalizeApiOutput(text);
           outputSection.style.display = "block";
         } catch (err) {
           outputArea.value = "❌ Lỗi: " + err.message;
@@ -218,8 +220,15 @@
         }
       });
 
-      function renderBBCode(text) {
+      function normalizeApiOutput(text) {
         return text
+          .replace(/^\s*---+\s*$/gm, "")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+
+      function renderBBCode(text) {
+        return normalizeApiOutput(text)
           .replace(
             /\[IMG\](.*?)\[\/IMG\]/gi,
             '<img src="$1" style="max-width:100%;margin:5px;border-radius:6px;">',
@@ -229,7 +238,7 @@
             '<div style="text-align:center">$1</div>',
           )
           .replace(
-            /\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
+            /\[URL=['"]?(.*?)['"]?\](.*?)\[\/URL\]/gi,
             '<a href="$1" target="_blank" style="color:var(--accent)">$2</a>',
           )
           .replace(
@@ -241,6 +250,7 @@
             '<span style="color:$1">$2</span>',
           )
           .replace(/\[B\](.*?)\[\/B\]/gi, "<b>$1</b>")
+          .replace(/\[S\](.*?)\[\/S\]/gi, "<s>$1</s>")
           .replace(/\n/g, "<br>");
       }
 

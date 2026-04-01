@@ -155,11 +155,15 @@ ADD APP
 
           if (!url) return;
 
+          const lifetimeChecked = card.querySelector(".lifetime").checked;
+
           apps.push({
             url,
             price: card.querySelector(".price").value.trim(),
             code: card.querySelector(".code").value.trim(),
-            lifetime: card.querySelector(".lifetime").checked,
+            lifetime: lifetimeChecked,
+            isLifetime: lifetimeChecked,
+            is_lifetime: lifetimeChecked,
           });
         });
 
@@ -197,7 +201,7 @@ ADD APP
             throw new Error("API trả về rỗng");
           }
 
-          outputArea.value = text;
+          outputArea.value = normalizeApiOutput(text);
           outputSection.style.display = "block";
         } catch (err) {
           outputArea.value = "❌ Lỗi: " + err.message;
@@ -267,9 +271,16 @@ ADD APP
 🧠 BBCode → HTML
 =============================== */
 
+      function normalizeApiOutput(text) {
+        return text
+          .replace(/^\s*---+\s*$/gm, "")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+
       function renderBBCode(text) {
         return (
-          text
+          normalizeApiOutput(text)
 
             // IMG
             .replace(
@@ -279,13 +290,13 @@ ADD APP
 
             // CENTER
             .replace(
-              /\[CENTER\](.*?)\[\/CENTER\]/gi,
+              /\[CENTER\]([\s\S]*?)\[\/CENTER\]/gi,
               '<div style="text-align:center">$1</div>',
             )
 
             // URL
             .replace(
-              /\[URL='(.*?)'\](.*?)\[\/URL\]/gi,
+              /\[URL=['"]?(.*?)['"]?\](.*?)\[\/URL\]/gi,
               '<a href="$1" target="_blank" style="color:var(--accent)">$2</a>',
             )
 
@@ -303,6 +314,9 @@ ADD APP
 
             // BOLD
             .replace(/\[B\](.*?)\[\/B\]/gi, "<b>$1</b>")
+
+            // STRIKETHROUGH
+            .replace(/\[S\](.*?)\[\/S\]/gi, "<s>$1</s>")
 
             // xuống dòng
             .replace(/\n/g, "<br>")
