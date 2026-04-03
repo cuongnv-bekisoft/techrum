@@ -29,12 +29,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px;
-    gap: 24px;
+    padding: 40px 20px;
+    gap: 32px;
   }
 
   h1 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #4f7aff, #a78bfa);
@@ -42,6 +42,7 @@
     -webkit-text-fill-color: transparent;
   }
 
+  /* ---- Layout ---- */
   .layout {
     display: flex;
     flex-direction: row;
@@ -51,6 +52,17 @@
     align-items: flex-start;
   }
 
+  @media (max-width: 767px) {
+    body { padding: 20px 16px; gap: 20px; }
+    h1 { font-size: 18px; }
+    .layout { flex-direction: column; gap: 20px; }
+    .preview-wrap { width: 100% !important; }
+    .panel { width: 100% !important; }
+    /* iOS hay bị cắt phần tử khi chiều cao thay đổi theo nội dung */
+    .canvas-outer { overflow: visible; }
+  }
+
+  /* ---- Panel trái ---- */
   .panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -61,13 +73,6 @@
     gap: 16px;
     width: 320px;
     flex-shrink: 0;
-  }
-
-  @media (max-width: 767px) {
-    body { padding: 20px 16px; gap: 20px; }
-    h1 { font-size: 18px; }
-    .layout { flex-direction: column; gap: 20px; }
-    .panel { width: 100%; }
   }
 
   .panel h2 {
@@ -102,7 +107,7 @@
   .dropzone {
     border: 2px dashed var(--border);
     border-radius: 10px;
-    padding: 28px 16px;
+    padding: 24px 16px;
     text-align: center;
     cursor: pointer;
     transition: border-color .2s, background .2s;
@@ -110,11 +115,11 @@
     overflow: hidden;
   }
   .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(79,122,255,.05); }
-  .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .dropzone-icon { font-size: 28px; margin-bottom: 8px; }
+  .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .dropzone-icon { font-size: 26px; margin-bottom: 8px; }
   .dropzone p { font-size: 13px; color: var(--text2); }
   .dropzone p span { color: var(--accent); font-weight: 600; }
-  #preview-thumb { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; }
+  #preview-thumb { width: 100%; max-height: 100px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; }
 
   textarea {
     background: var(--surface2);
@@ -144,14 +149,15 @@
     cursor: pointer;
     border: none;
     transition: opacity .2s, transform .1s;
+    -webkit-appearance: none;
   }
   button:active { transform: scale(.97); }
   button:disabled { opacity: .4; cursor: not-allowed; }
   .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
   .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
-  .preview-wrap { width: 100%; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  /* ---- Preview ---- */
+  .preview-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
   .preview-label { font-size: 13px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
   .canvas-outer {
@@ -162,35 +168,54 @@
     background: #fff;
   }
 
+  /* ---- Composer ---- */
   #composer {
     width: 100%;
-    background: #fff url('https://res.cloudinary.com/dfe28hybo/image/upload/v1775188309/techrum_bg.png') top center / 100% auto no-repeat;
+    display: block;
     position: relative;
-    display: flex;
-    flex-direction: column;
+    background: #fff;
+    font-size: 0; /* remove inline-block gap */
   }
 
-  .composer-inner {
+  /* Ảnh nền: full width, tự cao theo tỉ lệ */
+  #base-img {
+    width: 100%;
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  /* Overlay nằm trên ảnh nền, cùng chiều rộng */
+  #overlay {
     position: relative;
-    z-index: 1;
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding-bottom: 15px;
   }
 
-  /* Logo cao 45px trên ảnh 1016px wide → 45/1016 = 4.4% */
-  .logo-area { padding-top: 4.4%; flex-shrink: 0; }
+  /* Logo placeholder — cao đúng bằng phần logo trên ảnh nền
+     Logo 45px / tổng 712px = 6.32% chiều cao ảnh nền
+     Vì overlay cùng width với ảnh nền (1016px), padding-top tính theo width:
+     45px / 1016px = 4.43% */
+  #logo-placeholder {
+    width: 100%;
+    padding-top: 4.43%;
+    flex-shrink: 0;
+  }
 
-  #content-img-wrap { flex-shrink: 0; width: 100%; margin-top: 0; }
-  #content-img { width: 100%; display: block; object-fit: cover; }
+  /* Ảnh nội dung full width */
+  #content-img {
+    width: 100%;
+    display: none;
+    flex-shrink: 0;
+    /* Không ép/cắt nội dung ảnh khi chữ dài; để layout tự giãn theo nội dung */
+    object-fit: contain;
+  }
 
-  .text-area {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0 5%;
-    margin-top: 15px;
+  /* Text cách ảnh nội dung 15px, cách mép dưới 15px */
+  #text-wrap {
+    width: 100%;
+    padding: 15px 5% 15px;
   }
 
   #disp-text {
@@ -201,10 +226,9 @@
     line-height: 1.8;
     width: 100%;
     word-break: break-word;
-    /* font-size được set động bằng JS theo chiều rộng composer */
+    /* font-size set bằng JS */
   }
 
-  /* Chữ highlight đỏ */
   #disp-text .hl { color: #ef4444; }
 
   .toast {
@@ -230,6 +254,8 @@
 <h1>Techrum Image Builder</h1>
 
 <div class="layout">
+
+  <!-- Panel trái -->
   <div class="panel">
     <h2>Cài đặt</h2>
 
@@ -258,22 +284,29 @@
     </div>
   </div>
 
+  <!-- Preview -->
   <div class="preview-wrap">
     <div class="preview-label">Xem trước</div>
     <div class="canvas-outer">
       <div id="composer">
-        <div class="composer-inner">
-          <div class="logo-area"></div>
-          <div id="content-img-wrap" style="display:none">
-            <img id="content-img" alt="content" crossorigin="anonymous">
-          </div>
-          <div class="text-area">
+        <!-- Ảnh nền — dùng <img> thay vì background-image để Safari render đúng -->
+        <img id="base-img"
+          src="https://res.cloudinary.com/dfe28hybo/image/upload/v1775188309/techrum_bg.png"
+          crossorigin="anonymous" alt="base"
+          onload="syncComposerHeight()">
+
+        <!-- Overlay -->
+        <div id="overlay">
+          <div id="logo-placeholder"></div>
+          <img id="content-img" alt="content" crossorigin="anonymous">
+          <div id="text-wrap">
             <div id="disp-text"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -285,25 +318,76 @@
   const thumb       = document.getElementById('preview-thumb');
   const contentText = document.getElementById('content-text');
   const dispText    = document.getElementById('disp-text');
-  const contentWrap = document.getElementById('content-img-wrap');
   const contentImg  = document.getElementById('content-img');
   const btnDL       = document.getElementById('btn-download');
   const btnCopy     = document.getElementById('btn-copy');
   const composer    = document.getElementById('composer');
+  const baseImg     = document.getElementById('base-img');
 
   let hasImage = false;
+  let currentObjectUrl = null;
 
-  // Font size tỉ lệ theo chiều rộng composer (2.6% của width, min 12, max 34)
+  function resetUI() {
+    // Xóa nội dung nhập
+    contentText.value = '';
+    dispText.innerHTML = '';
+
+    // Xóa ảnh nội dung
+    if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
+    currentObjectUrl = null;
+
+    // Reset file input để chọn lại cùng 1 file vẫn trigger được 'change'
+    imgInput.value = '';
+
+    thumb.src = '';
+    thumb.style.display = 'none';
+
+    contentImg.src = '';
+    contentImg.style.display = 'none';
+
+    hasImage = false;
+    updateButtons();
+  }
+
+  // Sync chiều cao composer = chiều cao ảnh nền để overlay khớp
+  function syncComposerHeight() {
+    // Không khóa cứng chiều cao để khi chữ dài hơn thì ảnh xuất ra vẫn giãn theo nội dung
+    composer.style.height = 'auto';
+    composer.style.minHeight = baseImg.offsetHeight + 'px';
+    updateFontSize();
+  }
+
+  // Font size tỉ lệ theo chiều rộng composer
   function updateFontSize() {
     const w = composer.offsetWidth;
     const size = Math.min(34, Math.max(12, w * 0.034));
     dispText.style.fontSize = size + 'px';
   }
-  updateFontSize();
-  new ResizeObserver(updateFontSize).observe(composer);
 
-  // Parse *text* → <span class="hl">text</span>
-  // Escape HTML trước để tránh XSS
+  // Sync lại khi resize
+  window.addEventListener('resize', syncComposerHeight);
+  if (baseImg.complete) syncComposerHeight();
+
+  // Preview đôi khi render trước khi font Google load xong (đặc biệt iOS),
+  // khiến ngắt dòng/chiều cao khác export. Chờ font rồi sync lại layout.
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
+      updateFontSize();
+    });
+  }
+
+  // Safari iOS có thể khôi phục trang từ cache (bfcache) khiến nội dung nhập vẫn còn.
+  // Reset để mở lại trang luôn sạch.
+  resetUI();
+  setTimeout(resetUI, 50);
+  window.addEventListener('pageshow', (e) => {
+    if (e && e.persisted) {
+      resetUI();
+      setTimeout(resetUI, 50);
+    }
+  });
+
+  // Parse *text* → <span class="hl">
   function parseHighlight(raw) {
     const escaped = raw
       .replace(/&/g, '&amp;')
@@ -312,6 +396,7 @@
     return escaped.replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
   }
 
+  // Drag & drop
   dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
   dropzone.addEventListener('drop', e => {
@@ -325,12 +410,15 @@
 
   function loadImage(file) {
     const url = URL.createObjectURL(file);
+    currentObjectUrl = url;
     thumb.src = url;
     thumb.style.display = 'block';
     contentImg.src = url;
-    contentWrap.style.display = 'block';
+    contentImg.style.display = 'block';
     hasImage = true;
     updateButtons();
+    // Sau khi ảnh nội dung load xong thì sync lại height
+    contentImg.onload = syncComposerHeight;
   }
 
   contentText.addEventListener('input', () => {
@@ -344,14 +432,48 @@
   }
 
   async function render() {
-    return html2canvas(composer, {
+    // Đảm bảo ảnh nền load xong
+    await new Promise(r => { if (baseImg.complete) r(); else baseImg.onload = r; });
+    syncComposerHeight();
+
+    // Xuất theo kích thước gốc của nền để bố cục (ngắt dòng) giống PC.
+    const exportW = baseImg.naturalWidth || composer.offsetWidth;
+    const exportH = baseImg.naturalHeight || baseImg.offsetHeight;
+
+    // iOS đôi khi cần đợi font tải xong để tránh khác line-break.
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+    // Clone để không làm "giật" preview và không bị wrapper overflow cắt.
+    const clone = composer.cloneNode(true);
+    clone.style.position = 'absolute';
+    clone.style.left = '-100000px';
+    clone.style.top = '0';
+    clone.style.width = exportW + 'px';
+    clone.style.height = 'auto';
+    clone.style.minHeight = exportH + 'px';
+    clone.style.overflow = 'visible';
+
+    // Đồng bộ font-size theo width clone (giống updateFontSize nhưng áp dụng cho clone).
+    const cloneDispText = clone.querySelector('#disp-text');
+    if (cloneDispText) {
+      const size = Math.min(34, Math.max(12, exportW * 0.034));
+      cloneDispText.style.fontSize = size + 'px';
+    }
+
+    document.body.appendChild(clone);
+
+    await new Promise(r => requestAnimationFrame(r));
+    await new Promise(r => requestAnimationFrame(r));
+
+    const canvas = await html2canvas(clone, {
       useCORS: true,
       allowTaint: false,
       scale: 2,
       backgroundColor: '#ffffff',
-      width: composer.offsetWidth,
-      height: composer.offsetHeight,
     });
+
+    clone.remove();
+    return canvas;
   }
 
   btnDL.addEventListener('click', async () => {
