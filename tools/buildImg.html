@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Techrum Image Builder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f7aff;
+    --accent2: #7c3aed;
+    --text: #e8eaf6;
+    --text2: #8b92b8;
+    --radius: 14px;
+  }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    gap: 24px;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #4f7aff, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .layout {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+    width: 100%;
+    max-width: 1100px;
+    align-items: flex-start;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 320px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 767px) {
+    body { padding: 20px 16px; gap: 20px; }
+    h1 { font-size: 18px; }
+    .layout { flex-direction: column; gap: 20px; }
+    .panel { width: 100%; }
+  }
+
+  .panel h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text2);
+  }
+
+  label { font-size: 13px; color: var(--text2); margin-bottom: 6px; display: block; }
+  .field { display: flex; flex-direction: column; }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 7px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border-left: 3px solid #ef4444;
+  }
+  .hint code {
+    background: rgba(255,255,255,0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #fca5a5;
+  }
+
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(79,122,255,.05); }
+  .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .dropzone-icon { font-size: 28px; margin-bottom: 8px; }
+  .dropzone p { font-size: 13px; color: var(--text2); }
+  .dropzone p span { color: var(--accent); font-weight: 600; }
+  #preview-thumb { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; }
+
+  textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color .2s;
+    line-height: 1.5;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  textarea::placeholder { color: var(--text2); }
+
+  .btn-group { display: flex; gap: 10px; margin-top: 4px; }
+
+  button {
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity .2s, transform .1s;
+  }
+  button:active { transform: scale(.97); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .preview-wrap { width: 100%; flex: 1; display: flex; flex-direction: column; gap: 14px; }
+  .preview-label { font-size: 13px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+  .canvas-outer {
+    width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #fff;
+  }
+
+  #composer {
+    width: 100%;
+    background: #fff url('https://res.cloudinary.com/dfe28hybo/image/upload/v1775188309/techrum_bg.png') top center / 100% auto no-repeat;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .composer-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 15px;
+  }
+
+  /* Logo cao 45px trên ảnh 1016px wide → 45/1016 = 4.4% */
+  .logo-area { padding-top: 4.4%; flex-shrink: 0; }
+
+  #content-img-wrap { flex-shrink: 0; width: 100%; margin-top: 0; }
+  #content-img { width: 100%; display: block; object-fit: cover; }
+
+  .text-area {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 5%;
+    margin-top: 15px;
+  }
+
+  #disp-text {
+    font-family: 'Be Vietnam Pro', Arial, sans-serif;
+    font-weight: 700;
+    color: #007bff;
+    text-align: center;
+    line-height: 1.8;
+    width: 100%;
+    word-break: break-word;
+    /* font-size được set động bằng JS theo chiều rộng composer */
+  }
+
+  /* Chữ highlight đỏ */
+  #disp-text .hl { color: #ef4444; }
+
+  .toast {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #22c55e;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .3s, transform .3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<h1>Techrum Image Builder</h1>
+
+<div class="layout">
+  <div class="panel">
+    <h2>Cài đặt</h2>
+
+    <div class="field">
+      <label>Ảnh nội dung</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="img-input" accept="image/*">
+        <div class="dropzone-icon">🖼️</div>
+        <p><span>Chọn ảnh</span> hoặc kéo thả vào đây</p>
+        <img id="preview-thumb" alt="preview">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Nội dung</label>
+      <textarea id="content-text" placeholder="(Windows) *Đang miễn phí* tựa game bắn Zombie trị giá 50.000 VNĐ"></textarea>
+      <div class="hint">
+        Bọc chữ trong <code>*...*</code> để highlight <span style="color:#ef4444;font-weight:600">đỏ</span><br>
+        VD: <code>(Windows) *Đang miễn phí* tựa game</code>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" id="btn-download" disabled>⬇ Tải về</button>
+      <button class="btn-secondary" id="btn-copy" disabled>📋 Copy</button>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <div class="preview-label">Xem trước</div>
+    <div class="canvas-outer">
+      <div id="composer">
+        <div class="composer-inner">
+          <div class="logo-area"></div>
+          <div id="content-img-wrap" style="display:none">
+            <img id="content-img" alt="content" crossorigin="anonymous">
+          </div>
+          <div class="text-area">
+            <div id="disp-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const imgInput    = document.getElementById('img-input');
+  const dropzone    = document.getElementById('dropzone');
+  const thumb       = document.getElementById('preview-thumb');
+  const contentText = document.getElementById('content-text');
+  const dispText    = document.getElementById('disp-text');
+  const contentWrap = document.getElementById('content-img-wrap');
+  const contentImg  = document.getElementById('content-img');
+  const btnDL       = document.getElementById('btn-download');
+  const btnCopy     = document.getElementById('btn-copy');
+  const composer    = document.getElementById('composer');
+
+  let hasImage = false;
+
+  // Font size tỉ lệ theo chiều rộng composer (2.6% của width, min 12, max 34)
+  function updateFontSize() {
+    const w = composer.offsetWidth;
+    const size = Math.min(34, Math.max(12, w * 0.034));
+    dispText.style.fontSize = size + 'px';
+  }
+  updateFontSize();
+  new ResizeObserver(updateFontSize).observe(composer);
+
+  // Parse *text* → <span class="hl">text</span>
+  // Escape HTML trước để tránh XSS
+  function parseHighlight(raw) {
+    const escaped = raw
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return escaped.replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+  }
+
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('drag');
+    if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+  });
+  imgInput.addEventListener('change', () => {
+    if (imgInput.files[0]) loadImage(imgInput.files[0]);
+  });
+
+  function loadImage(file) {
+    const url = URL.createObjectURL(file);
+    thumb.src = url;
+    thumb.style.display = 'block';
+    contentImg.src = url;
+    contentWrap.style.display = 'block';
+    hasImage = true;
+    updateButtons();
+  }
+
+  contentText.addEventListener('input', () => {
+    dispText.innerHTML = parseHighlight(contentText.value);
+    updateButtons();
+  });
+
+  function updateButtons() {
+    btnDL.disabled = !hasImage;
+    btnCopy.disabled = !hasImage;
+  }
+
+  async function render() {
+    return html2canvas(composer, {
+      useCORS: true,
+      allowTaint: false,
+      scale: 2,
+      backgroundColor: '#ffffff',
+      width: composer.offsetWidth,
+      height: composer.offsetHeight,
+    });
+  }
+
+  btnDL.addEventListener('click', async () => {
+    btnDL.disabled = true;
+    btnDL.textContent = 'Đang xử lý...';
+    try {
+      const canvas = await render();
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `techrum_${Date.now()}.png`;
+      a.click();
+      showToast('✅ Đã tải về!');
+    } catch(e) { showToast('❌ Lỗi: ' + e.message); }
+    btnDL.disabled = false;
+    btnDL.textContent = '⬇ Tải về';
+  });
+
+  btnCopy.addEventListener('click', async () => {
+    btnCopy.disabled = true;
+    btnCopy.textContent = 'Đang xử lý...';
+    try {
+      const canvas = await render();
+      canvas.toBlob(async blob => {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        showToast('✅ Đã copy vào clipboard!');
+        btnCopy.disabled = false;
+        btnCopy.textContent = '📋 Copy';
+      }, 'image/png');
+    } catch(e) {
+      showToast('❌ ' + e.message);
+      btnCopy.disabled = false;
+      btnCopy.textContent = '📋 Copy';
+    }
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
