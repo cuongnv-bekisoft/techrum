@@ -4,42 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Techrum Image Builder</title>
+<link
+  href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="../main.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3350;
-    --accent: #4f7aff;
-    --accent2: #7c3aed;
-    --text: #e8eaf6;
-    --text2: #8b92b8;
-    --radius: 14px;
-  }
-
-  body {
-    font-family: 'Be Vietnam Pro', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
+  .buildimg-main {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding: 24px 20px 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px;
     gap: 32px;
   }
 
-  h1 {
-    font-size: 22px;
+  .buildimg-main .buildimg-title {
+    font-family:
+      "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+    font-size: clamp(20px, 4vw, 26px);
     font-weight: 700;
     letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #4f7aff, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text);
+    text-align: center;
+    margin: 0;
   }
 
   /* ---- Layout ---- */
@@ -53,26 +45,26 @@
   }
 
   @media (max-width: 767px) {
-    body { padding: 20px 16px; gap: 20px; }
-    h1 { font-size: 18px; }
+    .buildimg-main { padding: 16px 16px 40px; gap: 20px; }
+    .buildimg-main .buildimg-title { font-size: 18px; }
     .layout { flex-direction: column; gap: 20px; }
     .preview-wrap { width: 100% !important; }
     .panel { width: 100% !important; }
-    /* iOS hay bị cắt phần tử khi chiều cao thay đổi theo nội dung */
     .canvas-outer { overflow: visible; }
   }
 
   /* ---- Panel trái ---- */
   .panel {
-    background: var(--surface);
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 14px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
     width: 320px;
     flex-shrink: 0;
+    box-shadow: var(--shadow);
   }
 
   .panel h2 {
@@ -80,28 +72,31 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: var(--text2);
+    color: var(--muted);
   }
 
-  label { font-size: 13px; color: var(--text2); margin-bottom: 6px; display: block; }
-  .field { display: flex; flex-direction: column; }
+  .buildimg-main label { font-size: 13px; color: var(--muted); margin-bottom: 6px; display: block; }
+  .buildimg-main .field { display: flex; flex-direction: column; }
 
   .hint {
     font-size: 12px;
-    color: var(--text2);
+    color: var(--muted);
     margin-top: 7px;
     line-height: 1.5;
     padding: 8px 10px;
-    background: var(--surface2);
+    background: var(--hover);
     border-radius: 8px;
-    border-left: 3px solid #ef4444;
+    border-left: 3px solid var(--danger);
   }
   .hint code {
-    background: rgba(255,255,255,0.08);
+    background: rgba(0, 0, 0, 0.06);
     padding: 1px 5px;
     border-radius: 4px;
     font-size: 11px;
-    color: #fca5a5;
+    color: var(--danger);
+  }
+  body.dark .hint code {
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .dropzone {
@@ -114,15 +109,21 @@
     position: relative;
     overflow: hidden;
   }
-  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: rgba(79,122,255,.05); }
+  .dropzone:hover, .dropzone.drag {
+    border-color: var(--accent);
+    background: rgba(61, 220, 132, 0.08);
+  }
+  body.dark .dropzone:hover, body.dark .dropzone.drag {
+    background: rgba(61, 220, 132, 0.12);
+  }
   .dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .dropzone-icon { font-size: 26px; margin-bottom: 8px; }
-  .dropzone p { font-size: 13px; color: var(--text2); }
+  .dropzone p { font-size: 13px; color: var(--muted); }
   .dropzone p span { color: var(--accent); font-weight: 600; }
   #preview-thumb { width: 100%; max-height: 100px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; }
 
-  textarea {
-    background: var(--surface2);
+  .buildimg-main textarea {
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: 10px;
     color: var(--text);
@@ -134,12 +135,17 @@
     transition: border-color .2s;
     line-height: 1.5;
   }
-  textarea:focus { outline: none; border-color: var(--accent); }
-  textarea::placeholder { color: var(--text2); }
+  .buildimg-main textarea:focus { outline: none; border-color: var(--accent); }
+  .buildimg-main textarea::placeholder { color: var(--muted); }
+
+  .buildimg-main .highlight-phrases-input {
+    min-height: 56px;
+    font-size: 13px;
+  }
 
   .btn-group { display: flex; gap: 10px; margin-top: 4px; }
 
-  button {
+  .buildimg-main button {
     flex: 1;
     padding: 14px;
     border-radius: 10px;
@@ -148,21 +154,34 @@
     font-weight: 600;
     cursor: pointer;
     border: none;
-    transition: opacity .2s, transform .1s;
+    transition: opacity .2s, transform .1s, background .2s;
     -webkit-appearance: none;
   }
-  button:active { transform: scale(.97); }
-  button:disabled { opacity: .4; cursor: not-allowed; }
-  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .buildimg-main button:active { transform: scale(.97); }
+  .buildimg-main button:disabled { opacity: .4; cursor: not-allowed; }
+  .buildimg-main .btn-primary {
+    background: var(--button);
+    color: var(--button-text);
+  }
+  .buildimg-main .btn-primary:hover:not(:disabled) {
+    background: var(--button-hover);
+  }
+  .buildimg-main .btn-secondary {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .buildimg-main .btn-secondary:hover:not(:disabled) {
+    background: var(--hover);
+  }
 
   /* ---- Preview ---- */
   .preview-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
-  .preview-label { font-size: 13px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .preview-label { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
   .canvas-outer {
     width: 100%;
-    border-radius: var(--radius);
+    border-radius: 14px;
     overflow: hidden;
     border: 1px solid var(--border);
     background: #fff;
@@ -174,10 +193,9 @@
     display: block;
     position: relative;
     background: #fff;
-    font-size: 0; /* remove inline-block gap */
+    font-size: 0;
   }
 
-  /* Ảnh nền: full width, tự cao theo tỉ lệ */
   #base-img {
     width: 100%;
     display: block;
@@ -185,58 +203,50 @@
     top: 0; left: 0;
   }
 
-  /* Overlay nằm trên ảnh nền, cùng chiều rộng */
-  #overlay {
+  #image-stack {
     position: relative;
     width: 100%;
     display: flex;
     flex-direction: column;
   }
 
-  /* Logo placeholder — cao đúng bằng phần logo trên ảnh nền
-     Logo 45px / tổng 712px = 6.32% chiều cao ảnh nền
-     Vì overlay cùng width với ảnh nền (1016px), padding-top tính theo width:
-     45px / 1016px = 4.43% */
   #logo-placeholder {
     width: 100%;
     padding-top: 4.43%;
     flex-shrink: 0;
   }
 
-  /* Ảnh nội dung full width */
   #content-img {
     width: 100%;
     display: none;
     flex-shrink: 0;
-    /* Không ép/cắt nội dung ảnh khi chữ dài; để layout tự giãn theo nội dung */
+    margin-top: 5px;
     object-fit: contain;
   }
 
-  /* Text cách ảnh nội dung 15px, cách mép dưới 15px */
   #text-wrap {
     width: 100%;
     padding: 15px 5% 15px;
   }
 
   #disp-text {
-    font-family: 'Be Vietnam Pro', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     font-weight: 700;
     color: #007bff;
     text-align: center;
-    line-height: 1.8;
+    line-height: calc(1.8em + 5px);
     width: 100%;
     word-break: break-word;
-    /* font-size set bằng JS */
   }
 
-  #disp-text .hl { color: #ef4444; }
+  #disp-text .hl { color: #ff1000; }
 
   .toast {
     position: fixed;
     bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #22c55e;
-    color: #fff;
+    background: var(--accent);
+    color: var(--accent2);
     padding: 10px 22px;
     border-radius: 99px;
     font-size: 13px;
@@ -244,14 +254,47 @@
     opacity: 0;
     transition: opacity .3s, transform .3s;
     pointer-events: none;
-    z-index: 999;
+    z-index: 1200;
+    box-shadow: var(--shadow);
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<h1>Techrum Image Builder</h1>
+<nav class="navbar">
+  <div class="nav-left">
+    <button type="button" id="menuBtn" class="menu-btn">☰</button>
+    <a href="/">Home</a>
+    <a href="/news/news.html">News</a>
+    <a href="/news/saved.html">Saved</a>
+    <a href="/news/ios.html">iOS</a>
+    <a href="/news/android.html">Android</a>
+    <a href="/tools/buildImg.html" class="active-link">Image</a>
+  </div>
+
+  <div class="nav-center">
+    <a href="/" class="logo mobile-logo">TECHRUM<span>.</span></a>
+  </div>
+
+  <div class="nav-right">
+    <button type="button" id="themeToggle" class="theme-toggle">🌙</button>
+  </div>
+</nav>
+
+<div id="sidebar" class="sidebar">
+  <a href="/">🏠 Home</a>
+  <a href="/news/news.html">📰 News</a>
+  <a href="/news/saved.html">💾 Saved</a>
+  <a href="/news/ios.html">🍎 iOS</a>
+  <a href="/news/android.html">🤖 Android</a>
+  <a href="/tools/buildImg.html">🖼️ Image</a>
+</div>
+<div id="overlay" class="overlay"></div>
+
+<div class="buildimg-main">
+
+<h1 class="buildimg-title">Techrum Image Builder</h1>
 
 <div class="layout">
 
@@ -272,15 +315,17 @@
     <div class="field">
       <label>Nội dung</label>
       <textarea id="content-text" placeholder="(Windows) *Đang miễn phí* tựa game bắn Zombie trị giá 50.000 VNĐ"></textarea>
+      <label for="highlight-phrases">Highlight theo cụm (tùy chọn)</label>
+      <textarea id="highlight-phrases" class="highlight-phrases-input" placeholder="Mỗi dòng một cụm cần tô đỏ trong nội dung&#10;Ví dụ: Đang miễn phí"></textarea>
       <div class="hint">
-        Bọc chữ trong <code>*...*</code> để highlight <span style="color:#ef4444;font-weight:600">đỏ</span><br>
-        VD: <code>(Windows) *Đang miễn phí* tựa game</code>
+        Có thể gõ cụm ở ô trên — tìm đúng trong nội dung và tô đỏ. Vẫn dùng <code>*...*</code> như cũ.<br>
+        VD: <code>(Windows) *Đang miễn phí* tựa game</code> hoặc nhập <code>Đang miễn phí</code> ở ô highlight.
       </div>
     </div>
 
     <div class="btn-group">
-      <button class="btn-primary" id="btn-download" disabled>⬇ Tải về</button>
-      <button class="btn-secondary" id="btn-copy" disabled>📋 Copy</button>
+      <button type="button" class="btn-primary" id="btn-download" disabled>⬇ Tải về</button>
+      <button type="button" class="btn-secondary" id="btn-copy" disabled>📋 Copy</button>
     </div>
   </div>
 
@@ -289,14 +334,12 @@
     <div class="preview-label">Xem trước</div>
     <div class="canvas-outer">
       <div id="composer">
-        <!-- Ảnh nền — dùng <img> thay vì background-image để Safari render đúng -->
         <img id="base-img"
           src="https://res.cloudinary.com/dfe28hybo/image/upload/v1775188309/techrum_bg.png"
           crossorigin="anonymous" alt="base"
           onload="syncComposerHeight()">
 
-        <!-- Overlay -->
-        <div id="overlay">
+        <div id="image-stack">
           <div id="logo-placeholder"></div>
           <img id="content-img" alt="content" crossorigin="anonymous">
           <div id="text-wrap">
@@ -309,6 +352,8 @@
 
 </div>
 
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -317,6 +362,7 @@
   const dropzone    = document.getElementById('dropzone');
   const thumb       = document.getElementById('preview-thumb');
   const contentText = document.getElementById('content-text');
+  const highlightPhrases = document.getElementById('highlight-phrases');
   const dispText    = document.getElementById('disp-text');
   const contentImg  = document.getElementById('content-img');
   const btnDL       = document.getElementById('btn-download');
@@ -328,15 +374,13 @@
   let currentObjectUrl = null;
 
   function resetUI() {
-    // Xóa nội dung nhập
     contentText.value = '';
+    highlightPhrases.value = '';
     dispText.innerHTML = '';
 
-    // Xóa ảnh nội dung
     if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl);
     currentObjectUrl = null;
 
-    // Reset file input để chọn lại cùng 1 file vẫn trigger được 'change'
     imgInput.value = '';
 
     thumb.src = '';
@@ -349,35 +393,27 @@
     updateButtons();
   }
 
-  // Sync chiều cao composer = chiều cao ảnh nền để overlay khớp
   function syncComposerHeight() {
-    // Không khóa cứng chiều cao để khi chữ dài hơn thì ảnh xuất ra vẫn giãn theo nội dung
     composer.style.height = 'auto';
     composer.style.minHeight = baseImg.offsetHeight + 'px';
     updateFontSize();
   }
 
-  // Font size tỉ lệ theo chiều rộng composer
   function updateFontSize() {
     const w = composer.offsetWidth;
-    const size = Math.min(34, Math.max(12, w * 0.034));
+    const size = Math.min(34, Math.max(12, w * 0.034)) + 2;
     dispText.style.fontSize = size + 'px';
   }
 
-  // Sync lại khi resize
   window.addEventListener('resize', syncComposerHeight);
   if (baseImg.complete) syncComposerHeight();
 
-  // Preview đôi khi render trước khi font Google load xong (đặc biệt iOS),
-  // khiến ngắt dòng/chiều cao khác export. Chờ font rồi sync lại layout.
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => {
       updateFontSize();
     });
   }
 
-  // Safari iOS có thể khôi phục trang từ cache (bfcache) khiến nội dung nhập vẫn còn.
-  // Reset để mở lại trang luôn sạch.
   resetUI();
   setTimeout(resetUI, 50);
   window.addEventListener('pageshow', (e) => {
@@ -387,16 +423,49 @@
     }
   });
 
-  // Parse *text* → <span class="hl">
-  function parseHighlight(raw) {
+  function escapeRegex(s) {
+    return s.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+  }
+
+  /** Áp các cụm vào phần text ngoài <span class="hl">…</span> (tránh bọc đè lên *…*). */
+  function applyPhrases(html, phrases) {
+    const uniq = [...new Set(phrases.map((p) => p.trim()).filter(Boolean))];
+    uniq.sort((a, b) => b.length - a.length);
+    if (!uniq.length) return html;
+    const pattern = uniq.map(escapeRegex).join('|');
+    if (!pattern) return html;
+    const re = new RegExp(`(${pattern})`, 'g');
+    const parts = html.split(/(<[^>]+>)/g);
+    let hlDepth = 0;
+    return parts
+      .map((part) => {
+        if (!part) return part;
+        if (part.startsWith('<')) {
+          if (part.toLowerCase().startsWith('<span class="hl">')) hlDepth++;
+          else if (part === '</span>' && hlDepth > 0) hlDepth--;
+          return part;
+        }
+        if (hlDepth > 0) return part;
+        return part.replace(re, '<span class="hl">$1</span>');
+      })
+      .join('');
+  }
+
+  function parseHighlight(raw, phraseLines) {
     const escaped = raw
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
-    return escaped.replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+    let html = escaped.replace(/\*([^*]+)\*/g, '<span class="hl">$1</span>');
+    const phrases = phraseLines.split(/\n/).map((s) => s.trim()).filter(Boolean);
+    return applyPhrases(html, phrases);
   }
 
-  // Drag & drop
+  function updateDisp() {
+    dispText.innerHTML = parseHighlight(contentText.value, highlightPhrases.value);
+    updateButtons();
+  }
+
   dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
   dropzone.addEventListener('drop', e => {
@@ -417,14 +486,11 @@
     contentImg.style.display = 'block';
     hasImage = true;
     updateButtons();
-    // Sau khi ảnh nội dung load xong thì sync lại height
     contentImg.onload = syncComposerHeight;
   }
 
-  contentText.addEventListener('input', () => {
-    dispText.innerHTML = parseHighlight(contentText.value);
-    updateButtons();
-  });
+  contentText.addEventListener('input', updateDisp);
+  highlightPhrases.addEventListener('input', updateDisp);
 
   function updateButtons() {
     btnDL.disabled = !hasImage;
@@ -432,18 +498,14 @@
   }
 
   async function render() {
-    // Đảm bảo ảnh nền load xong
     await new Promise(r => { if (baseImg.complete) r(); else baseImg.onload = r; });
     syncComposerHeight();
 
-    // Xuất theo kích thước gốc của nền để bố cục (ngắt dòng) giống PC.
     const exportW = baseImg.naturalWidth || composer.offsetWidth;
     const exportH = baseImg.naturalHeight || baseImg.offsetHeight;
 
-    // iOS đôi khi cần đợi font tải xong để tránh khác line-break.
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
-    // Clone để không làm "giật" preview và không bị wrapper overflow cắt.
     const clone = composer.cloneNode(true);
     clone.style.position = 'absolute';
     clone.style.left = '-100000px';
@@ -453,10 +515,9 @@
     clone.style.minHeight = exportH + 'px';
     clone.style.overflow = 'visible';
 
-    // Đồng bộ font-size theo width clone (giống updateFontSize nhưng áp dụng cho clone).
     const cloneDispText = clone.querySelector('#disp-text');
     if (cloneDispText) {
-      const size = Math.min(34, Math.max(12, exportW * 0.034));
+      const size = Math.min(34, Math.max(12, exportW * 0.034)) + 2;
       cloneDispText.style.fontSize = size + 'px';
     }
 
@@ -515,6 +576,36 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
+
+  const toggleBtn = document.getElementById('themeToggle');
+  function setTheme(mode) {
+    if (mode === 'dark') {
+      document.body.classList.add('dark');
+      toggleBtn.textContent = '☀️';
+    } else {
+      document.body.classList.remove('dark');
+      toggleBtn.textContent = '🌙';
+    }
+    localStorage.setItem('theme', mode);
+  }
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  setTheme(savedTheme);
+  toggleBtn.addEventListener('click', () => {
+    const isDark = document.body.classList.contains('dark');
+    setTheme(isDark ? 'light' : 'dark');
+  });
+
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlayEl = document.getElementById('overlay');
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlayEl.classList.toggle('active');
+  });
+  overlayEl.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlayEl.classList.remove('active');
+  });
 </script>
 </body>
 </html>
