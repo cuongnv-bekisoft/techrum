@@ -18,8 +18,10 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
 
   try {
     const engine = document.getElementById("engineSelect").value;
+    const model = document.getElementById("modelSelect").value;
     let isBot = bot === "1" ? 1 : 0;
-    const res = await fetch(`${API_BASE}/?engine=${engine}&bot=${isBot}`, {
+    const modelParam = engine === "workersai" ? `&model=${encodeURIComponent(model)}` : "";
+    const res = await fetch(`${API_BASE}/?engine=${engine}&bot=${isBot}${modelParam}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,6 +49,11 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
   } finally {
     loadingEl.classList.remove("show");
   }
+});
+
+document.getElementById("engineSelect").addEventListener("change", function () {
+  const modelSelect = document.getElementById("modelSelect");
+  modelSelect.style.display = this.value === "workersai" ? "block" : "none";
 });
 
 // =============================
