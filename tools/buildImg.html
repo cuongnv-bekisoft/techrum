@@ -237,6 +237,7 @@
     line-height: calc(1.8em + 5px);
     width: 100%;
     word-break: break-word;
+    white-space: pre-line;
   }
 
   #disp-text .hl { color: #ff1000; }
@@ -452,7 +453,10 @@
   }
 
   function parseHighlight(raw, phraseLines) {
-    const escaped = raw
+    const normalizedRaw = raw
+      .replace(/\\n/g, '\n')
+      .replace(/\/n/g, '\n');
+    const escaped = normalizedRaw
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
