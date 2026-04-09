@@ -55,6 +55,19 @@
 
       <button class="btn btn-add" id="addAppBtn">➕ Thêm App</button>
 
+      <div class="row" style="margin-top: 10px">
+        <select id="engineSelect" class="input">
+          <option value="openrouter">OpenRouter</option>
+          <option value="gemini">Gemini</option>
+          <option value="openai">OpenAI</option>
+          <option value="workersai">Workers AI</option>
+        </select>
+        <select id="modelSelect" class="input" style="display: none">
+          <option value="@cf/meta/llama-3.3-70b-instruct-fp8-fast">Qwen 3 70B</option>
+          <option value="@cf/google/gemma-3-12b-it">Gemma 3 12B</option>
+        </select>
+      </div>
+
       <button class="btn btn-primary" id="convertBtn">
         <span>⚡</span> Convert
       </button>
@@ -147,6 +160,13 @@ ADD APP
       const previewArea = document.getElementById("previewArea");
       const loadingText = document.getElementById("loadingText");
       const outputSection = document.getElementById("outputSection");
+      const engineSelect = document.getElementById("engineSelect");
+      const modelSelect = document.getElementById("modelSelect");
+
+      engineSelect.addEventListener("change", () => {
+        modelSelect.style.display =
+          engineSelect.value === "workersai" ? "block" : "none";
+      });
 
       convertBtn.addEventListener("click", async () => {
         const apps = [];
@@ -184,13 +204,23 @@ ADD APP
         document.getElementById("bbViewBtn").textContent = "Preview";
 
         try {
-          const res = await fetch(API_BASE + "/generate", {
+          const engine = engineSelect.value;
+          const model = modelSelect.value;
+          const modelParam =
+            engine === "workersai"
+              ? `&model=${encodeURIComponent(model)}`
+              : "";
+
+          const res = await fetch(
+            `${API_BASE}/generate?engine=${encodeURIComponent(engine)}${modelParam}`,
+            {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ apps }),
-          });
+            },
+          );
 
           if (!res.ok) {
             throw new Error("API lỗi: " + res.status);
