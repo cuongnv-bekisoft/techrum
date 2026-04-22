@@ -137,6 +137,44 @@
         );
       }
 
+      function normalizeExternalUrl(url) {
+        const cleaned = (url || "").trim();
+        if (!cleaned) return "";
+        if (/^https?:\/\//i.test(cleaned)) return cleaned;
+        if (/^\/\//.test(cleaned)) return "https:" + cleaned;
+        if (/^[a-z]+:/i.test(cleaned)) return cleaned;
+        return "https://" + cleaned;
+      }
+
+      function openExternalLink(url) {
+        const safeUrl = normalizeExternalUrl(url);
+        if (!safeUrl) return false;
+
+        const popup = window.open(safeUrl, "_blank", "noopener,noreferrer");
+        if (popup) {
+          return true;
+        }
+
+        const a = document.createElement("a");
+        a.href = safeUrl;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        // Edge/prod có thể chặn mở tab mới mà không báo lỗi.
+        // Fallback cuối cùng: mở cùng tab để user vẫn vào được bài.
+        setTimeout(() => {
+          if (document.visibilityState === "visible") {
+            window.location.assign(safeUrl);
+          }
+        }, 120);
+
+        return true;
+      }
+
       // ================= MODAL =================
 
       function openAdd() {
@@ -315,7 +353,9 @@
               alert("Không tìm thấy link bài viết gốc");
               return;
             }
-            window.open(articleLink, "_blank");
+            if (!openExternalLink(articleLink)) {
+              alert("Không mở được bài gốc");
+            }
           };
 
           convertBtn.onclick = (e) => {
@@ -345,7 +385,7 @@
 
             const payload = {
               title: n.title_vi || "",
-              link: n.link,
+              link: normalizeExternalUrl(getArticleLink(n)),
               image: n.image,
               source_id: currentSource.id,
             };
