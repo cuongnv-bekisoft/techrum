@@ -54,18 +54,18 @@
         <a href="#" id="themeToggleSide">🌓 Dark mode</a>
       </div>
 
-    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+      <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
       <div class="news-content">
-      <h2 id="pageTitle">Chọn nguồn tin</h2>
+        <h2 id="pageTitle">Chọn nguồn tin</h2>
 
-      <div class="news-grid" id="news"></div>
+        <div class="news-grid" id="news"></div>
 
-      <div class="pagination" id="pagination"></div>
+        <div class="pagination" id="pagination"></div>
 
-      <div style="text-align: center">
-        <button class="loadmore" onclick="loadMore()">Load More</button>
-      </div>
+        <div style="text-align: center">
+          <button class="loadmore" onclick="loadMore()">Load More</button>
+        </div>
       </div>
     </div>
 
@@ -382,10 +382,12 @@
         overlay.classList.toggle("show");
       }
 
-      document.getElementById("themeToggleSide")?.addEventListener("click", (e) => {
-        e.preventDefault();
-        themeToggle.click();
-      });
+      document
+        .getElementById("themeToggleSide")
+        ?.addEventListener("click", (e) => {
+          e.preventDefault();
+          themeToggle.click();
+        });
     </script>
   </body>
 </html>

@@ -374,9 +374,7 @@
               url += "&bot=1";
             }
 
-            if (!openExternalLink(url)) {
-              alert("Không mở được trang chuyển đổi");
-            }
+            window.open(url, "_blank");
           };
 
           saveBtn.onclick = async (e) => {
