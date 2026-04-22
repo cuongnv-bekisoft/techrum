@@ -105,6 +105,18 @@
       let limit = 10;
       let editingId = null;
 
+      function getArticleLink(article) {
+        return (
+          article?.link ||
+          article?.url ||
+          article?.original_link ||
+          article?.originalLink ||
+          article?.source_url ||
+          article?.sourceUrl ||
+          ""
+        );
+      }
+
       // ================= LOAD SOURCES =================
 
       async function loadSources() {
@@ -199,13 +211,23 @@
 
           openBtn.onclick = (e) => {
             e.stopPropagation();
-            window.open(n.link, "_blank");
+            const articleLink = getArticleLink(n);
+            if (!articleLink) {
+              alert("Không tìm thấy link bài viết gốc");
+              return;
+            }
+            window.open(articleLink, "_blank");
           };
 
           convertBtn.onclick = (e) => {
             e.stopPropagation();
 
-            const encoded = encodeURIComponent(n.link);
+            const articleLink = getArticleLink(n);
+            if (!articleLink) {
+              alert("Không tìm thấy link để chuyển đổi");
+              return;
+            }
+            const encoded = encodeURIComponent(articleLink);
 
             let url = `/?url=${encoded}`;
 
