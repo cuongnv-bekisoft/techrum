@@ -309,6 +309,52 @@
       background: #e74c3c;
       box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
     }
+
+    /* Login Modal Styles */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+    }
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: 0.2s;
+    }
+    .close-modal:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -388,6 +434,8 @@
   <!-- Preview area -->
   <div id="previewArea" class="preview" style="display: none"></div>
 
+  <button id="directPublishBtn" style="margin-top: 15px; margin-bottom: 5px; background: var(--hover); color: var(--text); border: 1px solid var(--border);">Đăng bài trực tiếp (Hiện/Ẩn)</button>
+
   <!-- Publication Form -->
   <div id="publishForm" class="publish-form" style="display: none;">
     <h2
@@ -454,6 +502,33 @@
     <h2>Lịch sử</h2>
     <button id="clearHistoryBtn">Xóa toàn bộ</button>
     <div id="historyList"></div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeLoginModal">&times;</span>
+      <h2 style="margin-top: 0; font-size: 20px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span>🔒</span> Xác thực tài khoản
+      </h2>
+      <p style="font-size: 13px; opacity: 0.8; margin-bottom: 20px; line-height: 1.4;">
+        Token đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại để tiếp tục đăng bài.
+      </p>
+      
+      <form id="loginForm">
+        <div style="margin-bottom: 16px;">
+          <label class="field-label" for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" name="username" autocomplete="username" placeholder="nhap-email@example.com" style="margin: 5px 0 0 0;" required />
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <label class="field-label" for="loginPassword">Mật khẩu</label>
+          <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="••••••••" style="margin: 5px 0 0 0;" required />
+        </div>
+        
+        <button type="submit" id="submitLoginBtn" class="btn btn-primary" style="margin-top: 0;">Đăng nhập</button>
+      </form>
+    </div>
   </div>
 
   <script src="script.js"></script>

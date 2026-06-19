@@ -81,9 +81,9 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
 // 📝 PUBLISH FORM HANDLERS & STATE
 // =============================
 const systemTags = [
-  'Gaming', 'Esports', 'Hardware', 'Intel', 'AMD', 'Nvidia',
-  'Nintendo', 'PlayStation', 'iOS', 'iPhone', 'Apple', 'Android',
-  'Google', 'Windows', 'Microsoft', 'AI', 'Review', 'Calm'
+  'iOS', 'iPhone', 'Apple', 'Android', 'Windows', 'Windows 11', 'Microsoft',
+  'ứng dụng', 'ứng dụng miễn phí', 'miễn phí', 'game', 'game miễn phí',
+  'phần mềm', 'phần mềm miễn phí', 'Steam', 'Epic Games', 'Mobile'
 ];
 let selectedTags = [];
 
@@ -177,6 +177,114 @@ document.getElementById("isScheduled")?.addEventListener("change", function() {
   }
 });
 
+let jwtToken = localStorage.getItem("post_token") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNzkwMjMyZS0wMmRhLTQ4YzEtOWI0ZC1iMjcwYmY5YmQ2MjEiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiYWN0aXZlIiwiaWF0IjoxNzgwMTEzOTY5LCJleHAiOjE3ODA3MTg3Njl9.1Q2GXLut_m5jBBueU6mHO9mxvawDQNrat-rXDbmWwTA";
+let pendingPostData = null;
+
+const loginModal = document.getElementById("loginModal");
+const closeLoginModal = document.getElementById("closeLoginModal");
+const submitLoginBtn = document.getElementById("submitLoginBtn");
+
+function showLoginModal(postData = null) {
+  pendingPostData = postData;
+  loginModal.classList.add("show");
+}
+
+function hideLoginModal() {
+  loginModal.classList.remove("show");
+  pendingPostData = null;
+}
+
+closeLoginModal?.addEventListener("click", hideLoginModal);
+window.addEventListener("click", (e) => {
+  if (e.target === loginModal) {
+    hideLoginModal();
+  }
+});
+
+const loginForm = document.getElementById("loginForm");
+
+loginForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  if (!email || !password) {
+    alert("Vui lòng nhập đầy đủ email và mật khẩu!");
+    return;
+  }
+
+  submitLoginBtn.disabled = true;
+  submitLoginBtn.textContent = "Đang xác thực...";
+
+  try {
+    const res = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    const token = data.token || (data.data && data.data.token);
+
+    if (res.ok && token) {
+      jwtToken = token;
+      localStorage.setItem("post_token", token);
+      alert("Đăng nhập thành công!");
+      hideLoginModal();
+      
+      if (pendingPostData) {
+        publishPost(pendingPostData);
+      }
+    } else {
+      alert(data.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản!");
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Có lỗi xảy ra khi kết nối tới máy chủ đăng nhập!");
+  } finally {
+    submitLoginBtn.disabled = false;
+    submitLoginBtn.textContent = "Đăng nhập";
+  }
+});
+
+async function publishPost(postData) {
+  const publishBtn = document.getElementById("publishBtn");
+  publishBtn.disabled = true;
+  publishBtn.textContent = "Đang xử lý...";
+
+  try {
+    const response = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${jwtToken}`
+      },
+      body: JSON.stringify(postData)
+    });
+
+    if (response.status === 401) {
+      // Token expired or invalid, trigger login popup
+      showLoginModal(postData);
+      return;
+    }
+
+    const resJson = await response.json();
+    if (response.ok && resJson.success) {
+      alert(`Chúc mừng! Bài viết đã được ${postData.scheduled_at ? 'hẹn giờ đăng thành công!' : 'đăng thành công!'}`);
+    } else {
+      alert(resJson.message || "Có lỗi xảy ra khi đăng bài viết!");
+    }
+  } catch (err) {
+    console.error("Publish error:", err);
+    alert("Có lỗi xảy ra khi đăng bài viết!");
+  } finally {
+    publishBtn.disabled = false;
+    publishBtn.textContent = "Đăng bài viết";
+  }
+}
+
 document.getElementById("publishBtn")?.addEventListener("click", async () => {
   const title = document.getElementById("postTitle").value.trim();
   const content = document.getElementById("postContent").value.trim();
@@ -201,33 +309,7 @@ document.getElementById("publishBtn")?.addEventListener("click", async () => {
     scheduled_at: isScheduled && scheduleDate ? new Date(scheduleDate).toISOString() : null
   };
 
-  const publishBtn = document.getElementById("publishBtn");
-  publishBtn.disabled = true;
-  publishBtn.textContent = "Đang xử lý...";
-
-  try {
-    const response = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/posts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNzkwMjMyZS0wMmRhLTQ4YzEtOWI0ZC1iMjcwYmY5YmQ2MjEiLCJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiYWN0aXZlIiwiaWF0IjoxNzgwMTEzOTY5LCJleHAiOjE3ODA3MTg3Njl9.1Q2GXLut_m5jBBueU6mHO9mxvawDQNrat-rXDbmWwTA"
-      },
-      body: JSON.stringify(postData)
-    });
-
-    const resJson = await response.json();
-    if (response.ok && resJson.success) {
-      alert(`Chúc mừng! Bài viết đã được ${postData.scheduled_at ? 'hẹn giờ đăng thành công!' : 'đăng thành công!'}`);
-    } else {
-      alert(resJson.message || "Có lỗi xảy ra khi đăng bài viết!");
-    }
-  } catch (err) {
-    console.error("Publish error:", err);
-    alert("Có lỗi xảy ra khi đăng bài viết!");
-  } finally {
-    publishBtn.disabled = false;
-    publishBtn.textContent = "Đăng bài viết";
-  }
+  await publishPost(postData);
 });
 
 document.getElementById("engineSelect").addEventListener("change", function () {
@@ -458,3 +540,35 @@ if (engineParam) {
 // =============================
 loadHistory();
 initSystemTags();
+
+// =============================
+// 📝 ĐĂNG BÀI TRỰC TIẾP
+// =============================
+document.getElementById("directPublishBtn")?.addEventListener("click", () => {
+  const publishForm = document.getElementById("publishForm");
+  if (publishForm) {
+    const isHidden = publishForm.style.display === "none" || publishForm.style.display === "";
+    if (isHidden) {
+      // Clear fields to show a fresh empty form
+      document.getElementById("postTitle").value = "";
+      document.getElementById("postContent").value = "";
+      document.getElementById("postCategory").value = "technology";
+      selectedTags = [];
+      renderTags();
+      
+      const isScheduled = document.getElementById("isScheduled");
+      if (isScheduled) {
+        isScheduled.checked = false;
+      }
+      const scheduleTimeWrapper = document.getElementById("scheduleTimeWrapper");
+      if (scheduleTimeWrapper) {
+        scheduleTimeWrapper.style.display = "none";
+      }
+      
+      publishForm.style.display = "block";
+      publishForm.scrollIntoView({ behavior: "smooth" });
+    } else {
+      publishForm.style.display = "none";
+    }
+  }
+});
