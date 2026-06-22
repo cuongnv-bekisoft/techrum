@@ -44,7 +44,7 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
     output.value = json.data.replace(/\\n/g, '\n');
 
     // Populate and show the publish form
-    let titleVal = "";
+    let titleVal = json.title_short || "";
     let contentVal = output.value;
     let categoryVal = "technology";
     let tagsVal = [];
@@ -52,7 +52,7 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
     try {
       const parsed = JSON.parse(json.data);
       if (parsed && typeof parsed === "object") {
-        titleVal = parsed.title || "";
+        titleVal = titleVal || parsed.title || "";
         contentVal = parsed.content || "";
         categoryVal = parsed.category_id || "technology";
         tagsVal = parsed.tags || [];
