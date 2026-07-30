@@ -115,6 +115,21 @@
       background: rgba(61, 220, 132, 0.1);
     }
 
+    .deal-actions .store-btn.store-apple {
+      border-color: rgba(96, 165, 250, 0.45);
+      background: rgba(96, 165, 250, 0.1);
+    }
+
+    .deal-actions .store-btn.store-google {
+      border-color: rgba(61, 220, 132, 0.45);
+      background: rgba(61, 220, 132, 0.1);
+    }
+
+    .deal-actions .store-btn.store-redeem {
+      border-color: rgba(168, 85, 247, 0.45);
+      background: rgba(168, 85, 247, 0.1);
+    }
+
     .deal-actions .cart-btn {
       min-width: 40px;
       padding: 8px 10px;
@@ -196,6 +211,259 @@
       border: 1px dashed var(--border);
       border-radius: 14px;
     }
+
+    /* ===== TABS SYSTEM FOR DEALS & VERIFIED ===== */
+    .deals-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 2px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ===== VERIFIED CARDS ===== */
+    .verified-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .verified-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .verified-card-header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .verified-app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+    }
+
+    .verified-app-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .verified-app-title {
+      margin: 0 0 6px 0;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .verified-app-badges {
+      display: flex;
+      gap: 6px;
+    }
+
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+    }
+
+    .platform-badge.ios {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text);
+    }
+
+    body.dark .platform-badge.ios {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .platform-badge.android {
+      background: rgba(61, 220, 132, 0.15);
+      border-color: rgba(61, 220, 132, 0.3);
+      color: var(--tag-text);
+    }
+
+    .deal-type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 600;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      border: 1px solid rgba(61, 220, 132, 0.2);
+    }
+
+    .verified-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      flex-grow: 1;
+    }
+
+    .verified-meta-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 4px;
+    }
+
+    .verified-meta-item strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .original-price {
+      color: var(--danger);
+      font-weight: 600;
+      text-decoration: line-through;
+    }
+
+    .verified-description-wrap {
+      margin-top: 4px;
+    }
+
+    .verified-description {
+      margin: 4px 0 2px 0;
+      line-height: 1.45;
+      color: var(--text);
+      font-size: 12.5px;
+      word-break: break-word;
+    }
+
+    .verified-description.truncated {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .expand-desc-btn {
+      background: none;
+      border: none;
+      color: var(--button);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      margin-top: 2px;
+    }
+
+    .expand-desc-btn:hover {
+      text-decoration: underline;
+    }
+
+    .verified-time {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    .verified-card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    .store-link-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .store-link-btn.apple {
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      background: rgba(96, 165, 250, 0.1);
+      color: #3b82f6;
+    }
+
+    .store-link-btn.apple:hover {
+      background: rgba(96, 165, 250, 0.2);
+    }
+
+    .store-link-btn.google {
+      border: 1px solid rgba(61, 220, 132, 0.45);
+      background: rgba(61, 220, 132, 0.1);
+      color: var(--tag-text);
+    }
+
+    .store-link-btn.google:hover {
+      background: rgba(61, 220, 132, 0.2);
+    }
+
+    .verified-card-actions .delete-btn {
+      border-radius: 10px;
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.08);
+      color: var(--danger);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .verified-card-actions .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
   </style>
 </head>
 
@@ -258,6 +526,11 @@
     <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
     <div class="news-content">
+      <div class="deals-tabs">
+        <button class="tab-btn active" id="tabDeals" onclick="switchTab('deals')">🏷️ Deal hôm nay</button>
+        <button class="tab-btn" id="tabVerified" onclick="switchTab('verified')">✅ Ứng dụng Verified</button>
+      </div>
+
       <h2 id="pageTitle">Chọn nguồn deal</h2>
 
       <div id="dealsLoading" class="loading">
@@ -265,11 +538,17 @@
         Đang tải deal...
       </div>
 
+      <div id="verifiedLoading" class="loading" style="display: none;">
+        <div class="spinner"></div>
+        Đang tải ứng dụng verified...
+      </div>
+
       <div class="deal-grid" id="dealsGrid"></div>
+      <div class="deal-grid" id="verifiedGrid" style="display: none;"></div>
 
-      <div class="pagination" id="pagination"></div>
+      <div class="pagination" id="pagination" style="display: none;"></div>
 
-      <div class="loadmore-wrap">
+      <div class="loadmore-wrap" style="display: none;">
         <button id="loadmoreBtn" class="loadmore" type="button" onclick="loadMore()">
           Load More
         </button>
@@ -282,8 +561,10 @@
       <h3 id="modalTitle">Thêm nguồn deal</h3>
 
       <input id="srcName" placeholder="Tên hiển thị" />
-      <input id="srcLogo" placeholder="Logo URL (tuỳ chọn)" />
       <input id="srcUrl" placeholder="RSS URL (vd: mydealz …/rss/...)" />
+      <label>
+        <input type="checkbox" id="srcSkipVerify" /> Bỏ qua xác minh Free (Skip Verify)
+      </label>
 
       <div class="modal-actions">
         <button type="button" onclick="saveSource()">Lưu</button>
@@ -302,8 +583,18 @@
     </div>
   </div>
 
+  <div class="deals-cart-bar" id="modBar" aria-live="polite">
+    <span id="modBarText"></span>
+    <div class="deals-cart-actions">
+      <button type="button" class="ghost" onclick="clearSelectedApps()">Bỏ chọn</button>
+      <button type="button" class="primary" onclick="saveSelectedApps()">
+        Lưu Verified ✔
+      </button>
+    </div>
+  </div>
+
   <script>
-    const DEALS_API = "https://deals.cuongnv.workers.dev/deals";
+    const DEALS_BASE_API = "https://deals.mdchannelvn.workers.dev";
     const STORAGE_SOURCES = "techrum_deal_sources";
     const STORAGE_CART = "techrum_deals_cart";
     const IOS_PREFILL_KEY = "techrum_ios_prefill";
@@ -409,19 +700,78 @@
       });
     }
 
-    function updateCartBar() {
+    let selectedApps = [];
+
+    function updateBarsPosition() {
       const cart = readCart();
-      const bar = document.getElementById("cartBar");
-      const text = document.getElementById("cartBarText");
-      if (!cart.length) {
-        bar.classList.remove("show");
-        return;
+      const cartVisible = cart.length > 0;
+      const modVisible = selectedApps.length > 0;
+
+      const cartBar = document.getElementById("cartBar");
+      const cartText = document.getElementById("cartBarText");
+      const modBar = document.getElementById("modBar");
+      const modText = document.getElementById("modBarText");
+
+      if (cartBar && cartText) {
+        if (cartVisible) {
+          cartBar.classList.add("show");
+          cartText.innerHTML = `<strong>${cart.length}</strong> deal trong giỏ — sẵn sàng chuyển sang iOS converter`;
+          cartBar.style.bottom = modVisible ? "76px" : "12px";
+        } else {
+          cartBar.classList.remove("show");
+        }
       }
-      bar.classList.add("show");
-      text.innerHTML =
-        "<strong>" +
-        cart.length +
-        "</strong> deal trong giỏ — sẵn sàng chuyển sang iOS converter";
+
+      if (modBar && modText) {
+        if (modVisible) {
+          modBar.classList.add("show");
+          modText.innerHTML = `Đã chọn <strong>${selectedApps.length}</strong> ứng dụng để duyệt`;
+          modBar.style.bottom = "12px";
+        } else {
+          modBar.classList.remove("show");
+        }
+      }
+    }
+
+    function updateCartBar() {
+      updateBarsPosition();
+    }
+
+    function clearSelectedApps() {
+      selectedApps = [];
+      document.querySelectorAll('.mod-select-checkbox').forEach(cb => cb.checked = false);
+      updateBarsPosition();
+    }
+
+    async function saveSelectedApps() {
+      if (!selectedApps.length) return;
+      
+      const count = selectedApps.length;
+      if (!confirm(`Lưu ${count} ứng dụng đã chọn vào danh sách Verified?`)) return;
+
+      try {
+        const res = await fetch(`${DEALS_BASE_API}/api/verified-apps`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(selectedApps.map(a => {
+            const { _key, ...app } = a;
+            return app;
+          }))
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert(`Đã lưu thành công ${data.count} ứng dụng!`);
+          clearSelectedApps();
+        } else {
+          alert("Lỗi khi lưu ứng dụng: " + (data.error || "Không rõ nguyên nhân"));
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Không thể kết nối đến server để lưu ứng dụng.");
+      }
     }
 
     function clearCart() {
@@ -476,11 +826,6 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(() => {
-        if (document.visibilityState === "visible") {
-          window.location.assign(safeUrl);
-        }
-      }, 120);
       return true;
     }
 
@@ -494,6 +839,17 @@
           maximumFractionDigits: 2,
         }).format(Number(n)) + " (giá gốc)"
       );
+    }
+
+    function formatSource(src) {
+      if (!src) return "—";
+      const mapping = {
+        reddit: "Reddit",
+        mydealz: "MyDealz",
+        dealabs: "Dealabs",
+        newmobilelife: "NewMobileLife"
+      };
+      return mapping[src.toLowerCase()] || src.charAt(0).toUpperCase() + src.slice(1);
     }
 
     function formatTime(pubDate) {
@@ -514,10 +870,20 @@
       );
     }
 
+    function getLogoFromUrl(url) {
+      try {
+        const u = new URL(url);
+        return `${u.protocol}//${u.hostname}/favicon.ico`;
+      } catch (e) {
+        return "";
+      }
+    }
+
     function openAdd() {
       editingId = null;
       modalTitle.innerText = "Thêm nguồn deal";
-      srcName.value = srcLogo.value = srcUrl.value = "";
+      srcName.value = srcUrl.value = "";
+      document.getElementById("srcSkipVerify").checked = false;
       modal.style.display = "flex";
     }
 
@@ -525,8 +891,8 @@
       editingId = s.id;
       modalTitle.innerText = "Sửa nguồn deal";
       srcName.value = s.name;
-      srcLogo.value = s.logo || "";
       srcUrl.value = s.url;
+      document.getElementById("srcSkipVerify").checked = s.skip_verify === 1;
       modal.style.display = "flex";
     }
 
@@ -534,94 +900,160 @@
       modal.style.display = "none";
     }
 
-    function saveSource() {
+    async function saveSource() {
       const name = srcName.value.trim();
-      const logo = srcLogo.value.trim();
       const url = srcUrl.value.trim();
+      const skipVerify = document.getElementById("srcSkipVerify").checked ? 1 : 0;
+
       if (!name || !url) {
         alert("Cần tên và RSS URL.");
         return;
       }
-      sourcesData = readSources();
-      if (editingId) {
-        sourcesData = sourcesData.map((s) =>
-          s.id === editingId ? { ...s, name, logo, url } : s,
-        );
-      } else {
-        sourcesData.push({ id: newId(), name, logo, url });
+
+      try {
+        if (editingId) {
+          const originalSource = sourcesData.find(s => s.id === editingId);
+          if (originalSource && originalSource.url !== url) {
+            // Delete old source first because URL changed
+            await fetch(`${DEALS_BASE_API}/api/sources/delete?id=${editingId}`);
+          }
+        }
+
+        const res = await fetch(`${DEALS_BASE_API}/api/sources`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, url, skip_verify: skipVerify })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          closeModal();
+          loadSources();
+        } else {
+          alert("Lỗi khi lưu nguồn: " + (data.error || "Không rõ nguyên nhân"));
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Không thể kết nối đến server để lưu nguồn.");
       }
-      writeSources(sourcesData);
-      closeModal();
-      renderSources();
     }
 
-    function deleteSource(id) {
-      if (!confirm("Xoá nguồn này?")) return;
-      sourcesData = readSources().filter((s) => s.id !== id);
-      writeSources(sourcesData);
-      if (currentSource?.id === id) {
-        currentSource = null;
-        dealsGrid.innerHTML = "";
-        pageTitle.innerText = "Chọn nguồn deal";
+    async function deleteSource(id, name) {
+      if (!confirm(`Xoá nguồn "${name}"?`)) return;
+      try {
+        const res = await fetch(`${DEALS_BASE_API}/api/sources/delete?id=${id}`);
+        const data = await res.json();
+        if (data.deleted) {
+          if (currentSource?.id === id) {
+            currentSource = null;
+            dealsGrid.innerHTML = "";
+            pageTitle.innerText = "Chọn nguồn deal";
+          }
+          loadSources();
+        } else {
+          alert("Lỗi khi xoá nguồn.");
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Không thể kết nối đến server để xoá nguồn.");
       }
-      renderSources();
     }
 
-    function renderSources() {
-      sourcesData = readSources();
+    async function loadSources() {
       const box = document.getElementById("sources");
+      const loading = document.getElementById("sourcesLoading");
+      if (!box) return;
+
+      loading?.classList.add("show");
       box.innerHTML = "";
-      sourcesData.forEach((s) => {
-        const div = document.createElement("div");
-        div.className = "source";
-        if (currentSource?.id === s.id) div.classList.add("active");
 
-        const left = document.createElement("div");
-        left.className = "source-left";
-        const img = document.createElement("img");
-        img.src = s.logo || "";
-        img.alt = "";
-        img.loading = "lazy";
-        const span = document.createElement("span");
-        span.textContent = s.name;
-        left.appendChild(img);
-        left.appendChild(span);
+      try {
+        const res = await fetch(`${DEALS_BASE_API}/api/sources`);
+        sourcesData = await res.json();
+        
+        loading?.classList.remove("show");
 
-        const actions = document.createElement("div");
-        actions.className = "source-actions";
+        if (!Array.isArray(sourcesData) || !sourcesData.length) {
+          box.innerHTML = '<p class="empty-deals" style="margin: 10px; font-size:12px;">Chưa có nguồn deal nào.</p>';
+          currentSource = null;
+          dealsGrid.innerHTML = '<p class="empty-deals">Hãy thêm nguồn deal để bắt đầu.</p>';
+          pageTitle.innerText = "Chọn nguồn deal";
+          return;
+        }
 
-        const editBtn = document.createElement("button");
-        editBtn.className = "icon-btn edit";
-        editBtn.type = "button";
-        editBtn.title = "Sửa";
-        editBtn.setAttribute("aria-label", "Sửa");
-        editBtn.textContent = "✏️";
-        editBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          openEdit(s);
+        sourcesData.forEach((s) => {
+          const div = document.createElement("div");
+          div.className = "source";
+          if (currentSource?.id === s.id) div.classList.add("active");
+
+          const left = document.createElement("div");
+          left.className = "source-left";
+          
+          const img = document.createElement("img");
+          img.src = getLogoFromUrl(s.url);
+          img.alt = "";
+          img.loading = "lazy";
+          
+          const span = document.createElement("span");
+          span.textContent = s.name;
+          left.appendChild(img);
+          left.appendChild(span);
+
+          const actions = document.createElement("div");
+          actions.className = "source-actions";
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "icon-btn edit";
+          editBtn.type = "button";
+          editBtn.title = "Sửa";
+          editBtn.setAttribute("aria-label", "Sửa");
+          editBtn.textContent = "✏️";
+          editBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openEdit(s);
+          });
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "icon-btn delete";
+          delBtn.type = "button";
+          delBtn.title = "Xoá";
+          delBtn.setAttribute("aria-label", "Xoá");
+          delBtn.textContent = "🗑️";
+          delBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            deleteSource(s.id, s.name);
+          });
+
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+          div.appendChild(left);
+          div.appendChild(actions);
+
+          div.addEventListener("click", () => selectSource(s));
+          box.appendChild(div);
         });
 
-        const delBtn = document.createElement("button");
-        delBtn.className = "icon-btn delete";
-        delBtn.type = "button";
-        delBtn.title = "Xoá";
-        delBtn.setAttribute("aria-label", "Xoá");
-        delBtn.textContent = "🗑️";
-        delBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          deleteSource(s.id);
-        });
-
-        actions.appendChild(editBtn);
-        actions.appendChild(delBtn);
-        div.appendChild(left);
-        div.appendChild(actions);
-
-        div.addEventListener("click", () => selectSource(s));
-        box.appendChild(div);
-      });
-      if (!currentSource && sourcesData.length) {
-        selectSource(sourcesData[0]);
+        // Keep active source highlighted if it still exists; otherwise do not auto-select
+        if (sourcesData.length) {
+          const stillExists = currentSource && sourcesData.some(s => s.id === currentSource.id);
+          if (stillExists) {
+            const activeIdx = sourcesData.findIndex(s => s.id === currentSource.id);
+            if (activeIdx >= 0) {
+              const el = box.children[activeIdx];
+              if (el) el.classList.add("active");
+            }
+          } else {
+            currentSource = null;
+            dealsGrid.innerHTML = '<p class="empty-deals">Vui lòng chọn nguồn deal ở danh sách bên trái để bắt đầu.</p>';
+            pageTitle.innerText = "Chọn nguồn deal";
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        box.innerHTML = '<p class="empty-deals" style="margin: 10px; font-size:12px;">Không tải được nguồn deal.</p>';
+        loading?.classList.remove("show");
       }
     }
 
@@ -653,7 +1085,7 @@
       loading?.classList.add("show");
       let data;
       try {
-        const u = `${DEALS_API}?url=${encodeURIComponent(currentSource.url)}&page=${currentPage}&limit=${limit}`;
+        const u = `${DEALS_BASE_API}/deals?url=${encodeURIComponent(currentSource.url)}&page=${currentPage}&limit=${limit}`;
         const res = await fetch(u);
         data = await res.json();
       } catch (e) {
@@ -685,17 +1117,23 @@
         const title = escapeHtml(deal.appName || "(Không tên)");
         const priceLine = formatPrice(deal.originalPrice, free);
         const timeLine = formatTime(deal.pubDate);
+        const isSelected = selectedApps.some(a => a._key === key);
 
         card.innerHTML = `
-    <h3 class="deal-title">${title}</h3>
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
+      <h3 class="deal-title" style="margin: 0;">${title}</h3>
+      <input type="checkbox" class="mod-select-checkbox" data-key="${key}" style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0;" ${isSelected ? 'checked' : ''} />
+    </div>
     <div class="deal-meta">
       <span><strong>Giá:</strong> ${escapeHtml(priceLine)}</span>
       <span class="deal-badge ${free ? "free" : ""}">${free ? "Free" : "Có phí"}</span>
-      <span><strong>Thời gian:</strong> ${escapeHtml(timeLine)}</span>
+      ${deal.source ? `<span><strong>Nguồn:</strong> ${escapeHtml(formatSource(deal.source))}</span>` : ''}
     </div>
     <div class="deal-actions">
       <button type="button" class="deal-link-btn" data-act="deal">Deal gốc</button>
-      <button type="button" class="store-btn" data-act="store">App Store</button>
+      ${deal.appStoreUrl ? `<button type="button" class="store-btn store-apple" data-act="store">App Store</button>` : ''}
+      ${deal.playStoreUrl ? `<button type="button" class="store-btn store-google" data-act="store-play">Google Play</button>` : ''}
+      ${deal.redeemUrl ? `<button type="button" class="store-btn store-redeem" data-act="redeem">Redeem</button>` : ''}
       <button type="button" class="cart-btn ${cartHas(key) ? "in-cart" : ""}"
         data-act="cart" aria-label="${cartHas(key) ? "Bỏ khỏi giỏ" : "Thêm vào giỏ"}">${cartHas(key) ? "✓" : "+"}</button>
     </div>`;
@@ -708,18 +1146,60 @@
           }
           openExternalLink(deal.dealLink);
         };
-        card.querySelector('[data-act="store"]').onclick = (e) => {
-          e.stopPropagation();
-          if (!deal.appStoreUrl) {
-            alert("Không có App Store URL.");
-            return;
-          }
-          openExternalLink(deal.appStoreUrl);
-        };
+        const storeBtn = card.querySelector('[data-act="store"]');
+        if (storeBtn) {
+          storeBtn.onclick = (e) => {
+            e.stopPropagation();
+            openExternalLink(deal.appStoreUrl);
+          };
+        }
+        const playBtn = card.querySelector('[data-act="store-play"]');
+        if (playBtn) {
+          playBtn.onclick = (e) => {
+            e.stopPropagation();
+            openExternalLink(deal.playStoreUrl);
+          };
+        }
+        const redeemBtn = card.querySelector('[data-act="redeem"]');
+        if (redeemBtn) {
+          redeemBtn.onclick = (e) => {
+            e.stopPropagation();
+            openExternalLink(deal.redeemUrl);
+          };
+        }
         card.querySelector('[data-act="cart"]').onclick = (e) => {
           e.stopPropagation();
           toggleCart(deal);
         };
+
+        const selectCb = card.querySelector('.mod-select-checkbox');
+        if (selectCb) {
+          selectCb.addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            if (checked) {
+              if (!selectedApps.some(a => a._key === key)) {
+                selectedApps.push({
+                  platform:       deal.appStoreUrl ? "ios" : "android",
+                  appId:          deal.appStoreUrl ? (deal.appStoreUrl.match(/\/id(\d+)/i) || [])[1] : (deal.playStoreUrl.match(/[?&]id=([^&]+)/i) || [])[1],
+                  appName:        deal.appName || "",
+                  iconUrl:        deal.iconUrl || "",
+                  fileSizeBytes:  deal.fileSizeBytes || null,
+                  minOsVersion:   deal.minOsVersion || null,
+                  description:    deal.description || "",
+                  originalPrice:  deal.originalPrice ? String(deal.originalPrice) : null,
+                  currentPrice:   0,
+                  dealType:       deal.dealType || "1",
+                  appStoreUrl:    deal.appStoreUrl || deal.playStoreUrl || null,
+                  source:         deal.source || "",
+                  _key:           key
+                });
+              }
+            } else {
+              selectedApps = selectedApps.filter(a => a._key !== key);
+            }
+            updateBarsPosition();
+          });
+        }
 
         card.dataset.dealKey = key;
         dealsGrid.appendChild(card);
@@ -735,6 +1215,21 @@
       }
 
       renderPagination();
+
+      const paginationEl = document.getElementById("pagination");
+      const loadmoreBtn = document.getElementById("loadmoreBtn");
+      if (totalPages > 1) {
+        if (paginationEl) paginationEl.style.display = "flex";
+        if (loadmoreBtn && loadmoreBtn.parentElement) {
+          loadmoreBtn.parentElement.style.display = "flex";
+        }
+      } else {
+        if (paginationEl) paginationEl.style.display = "none";
+        if (loadmoreBtn && loadmoreBtn.parentElement) {
+          loadmoreBtn.parentElement.style.display = "none";
+        }
+      }
+
       updateCartBar();
     }
 
@@ -825,13 +1320,171 @@
       document.getElementById("overlay").classList.toggle("show");
     }
 
-    async function init() {
-      document.getElementById("sourcesLoading")?.classList.add("show");
-      if (!localStorage.getItem(STORAGE_SOURCES)) {
-        writeSources(DEFAULT_SOURCES);
+    // ===== TAB & VERIFIED APPS MANAGEMENT =====
+    let activeTab = 'deals';
+
+    async function switchTab(tab) {
+      if (activeTab === tab) return;
+      activeTab = tab;
+
+      const tabDeals = document.getElementById("tabDeals");
+      const tabVerified = document.getElementById("tabVerified");
+      const dealsGrid = document.getElementById("dealsGrid");
+      const verifiedGrid = document.getElementById("verifiedGrid");
+      const pagination = document.getElementById("pagination");
+      const loadmoreBtn = document.getElementById("loadmoreBtn");
+      const newsSidebar = document.getElementById("newsSidebar");
+      const menuBtn = document.getElementById("menuBtn");
+
+      if (tab === 'deals') {
+        tabDeals.classList.add("active");
+        tabVerified.classList.remove("active");
+
+        dealsGrid.style.display = "grid";
+        if (currentSource && totalPages > 1) {
+          pagination.style.display = "flex";
+          if (loadmoreBtn && loadmoreBtn.parentElement) {
+            loadmoreBtn.parentElement.style.display = "flex";
+          }
+        } else {
+          pagination.style.display = "none";
+          if (loadmoreBtn && loadmoreBtn.parentElement) {
+            loadmoreBtn.parentElement.style.display = "none";
+          }
+        }
+        verifiedGrid.style.display = "none";
+
+        if (newsSidebar) newsSidebar.style.display = "";
+        checkMobile();
+
+        pageTitle.innerText = currentSource ? currentSource.name : "Chọn nguồn deal";
+        if (currentSource) {
+          loadDeals(false);
+        } else {
+          dealsGrid.innerHTML = '<p class="empty-deals">Vui lòng chọn nguồn deal ở danh sách bên trái để bắt đầu.</p>';
+        }
+      } else {
+        tabDeals.classList.remove("active");
+        tabVerified.classList.add("active");
+
+        dealsGrid.style.display = "none";
+        pagination.style.display = "none";
+        if (loadmoreBtn && loadmoreBtn.parentElement) {
+          loadmoreBtn.parentElement.style.display = "none";
+        }
+        verifiedGrid.style.display = "grid";
+
+        if (newsSidebar) newsSidebar.style.display = "none";
+        if (menuBtn) menuBtn.style.display = "none";
+
+        pageTitle.innerText = "Ứng dụng đã Verified";
+        loadVerifiedApps();
       }
-      renderSources();
-      document.getElementById("sourcesLoading")?.classList.remove("show");
+    }
+
+    async function loadVerifiedApps() {
+      const grid = document.getElementById("verifiedGrid");
+      const loading = document.getElementById("verifiedLoading");
+      if (!grid) return;
+
+      loading?.classList.add("show");
+      grid.innerHTML = "";
+
+      try {
+        const res = await fetch(`${DEALS_BASE_API}/api/verified-apps`);
+        const list = await res.json();
+
+        loading?.classList.remove("show");
+
+        if (!Array.isArray(list) || !list.length) {
+          grid.innerHTML = '<p class="empty-deals">Chưa có ứng dụng verified nào.</p>';
+          return;
+        }
+
+        list.forEach((app) => {
+          const card = document.createElement("article");
+          card.className = "verified-card";
+
+          const priceLine = formatPrice(app.original_price, false).replace(" (giá gốc)", "");
+          const timeLine = formatTime(app.verified_at);
+
+          card.innerHTML = `
+            <div class="verified-card-header">
+              <img class="verified-app-icon" src="${escapeHtml(app.icon_url || 'https://via.placeholder.com/60')}" alt="${escapeHtml(app.app_name)}" onerror="this.onerror=null; this.src='https://via.placeholder.com/60';">
+              <div class="verified-app-info">
+                <h3 class="verified-app-title" title="${escapeHtml(app.app_name || '')}">${escapeHtml(app.app_name || '(Không tên)')}</h3>
+                <div class="verified-app-badges">
+                  <span class="platform-badge ${app.platform}">${app.platform === 'ios' ? '🍎 iOS' : '🤖 Android'}</span>
+                  <span class="deal-type-badge">Type ${app.deal_type || 'Free'}</span>
+                </div>
+              </div>
+            </div>
+            <div class="verified-card-body">
+              <div class="verified-meta-item"><strong>Giá gốc:</strong> <span class="original-price">${escapeHtml(priceLine)}</span></div>
+              ${app.file_size_bytes ? `<div class="verified-meta-item"><strong>Dung lượng:</strong> <span>${(app.file_size_bytes / 1024 / 1024).toFixed(1)} MB</span></div>` : ''}
+              ${app.min_os_version ? `<div class="verified-meta-item"><strong>Yêu cầu OS:</strong> <span>${escapeHtml(app.min_os_version)}</span></div>` : ''}
+              ${app.source ? `<div class="verified-meta-item"><strong>Nguồn:</strong> <span>${escapeHtml(formatSource(app.source))}</span></div>` : ''}
+              ${app.description ? `
+                <div class="verified-description-wrap">
+                  <strong>Mô tả:</strong>
+                  <p class="verified-description truncated">${escapeHtml(app.description)}</p>
+                  <button type="button" class="expand-desc-btn" onclick="toggleDescription(this)">Xem thêm</button>
+                </div>` : ''}
+              <div class="verified-time">Verified lúc: ${escapeHtml(timeLine)}</div>
+            </div>
+            <div class="verified-card-actions">
+              <a href="${escapeHtml(app.app_store_url)}" target="_blank" rel="noopener noreferrer" class="store-link-btn ${app.platform === 'ios' ? 'apple' : 'google'}">
+                ${app.platform === 'ios' ? 'App Store' : 'Play Store'}
+              </a>
+              <button type="button" class="delete-btn">🗑️ Xoá</button>
+            </div>
+          `;
+
+          card.querySelector('.delete-btn').onclick = (e) => {
+            e.stopPropagation();
+            deleteVerifiedApp(app.id, app.app_name);
+          };
+
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        console.error(e);
+        grid.innerHTML = '<p class="empty-deals">Không tải được danh sách verified. Vui lòng kiểm tra lại kết nối mạng.</p>';
+        loading?.classList.remove("show");
+      }
+    }
+
+    function toggleDescription(btn) {
+      const p = btn.previousElementSibling;
+      if (p.classList.contains("truncated")) {
+        p.classList.remove("truncated");
+        btn.textContent = "Thu gọn";
+      } else {
+        p.classList.add("truncated");
+        btn.textContent = "Xem thêm";
+      }
+    }
+
+    async function deleteVerifiedApp(id, name) {
+      if (!confirm(`Bạn có chắc chắn muốn xoá ứng dụng "${name}" khỏi danh sách verified?`)) {
+        return;
+      }
+      try {
+        const res = await fetch(`${DEALS_BASE_API}/api/verified-apps/delete?id=${id}`);
+        const data = await res.json();
+        if (data && data.deleted) {
+          loadVerifiedApps();
+        } else {
+          alert("Có lỗi xảy ra khi xoá ứng dụng.");
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Không thể kết nối đến server để xoá ứng dụng.");
+      }
+    }
+
+    async function init() {
+      loadSources();
       updateCartBar();
     }
 
@@ -844,6 +1497,10 @@
     });
 
     function checkMobile() {
+      if (activeTab !== 'deals') {
+        if (menuBtn) menuBtn.style.display = "none";
+        return;
+      }
       if (window.innerWidth <= 768) {
         menuBtn.style.display = "inline-block";
       } else {
