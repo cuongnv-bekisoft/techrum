@@ -1,0 +1,5 @@
+# CLI folder
+cli/node_modules/
+
+# Docs folder exclusion
+docs/
