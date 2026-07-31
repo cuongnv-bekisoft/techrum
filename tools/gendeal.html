@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viết bài Deal — Gendeal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../main.css" />
+  <style>
+    .gendeal-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px 20px 60px;
+    }
+
+    .gendeal-title {
+      font-family: "Space Mono", ui-monospace, monospace;
+      font-size: clamp(20px, 4vw, 26px);
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 20px;
+    }
+
+    .gendeal-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 2px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: -2px;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .layout {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      .layout { flex-direction: column; }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .panel h2 {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 13px; color: var(--muted); }
+
+    .field input[type="text"],
+    .field input[type="url"],
+    .field select,
+    .field textarea {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 10px 12px;
+      transition: border-color .2s;
+    }
+
+    .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .length-toggle {
+      display: flex;
+      gap: 8px;
+    }
+
+    .length-toggle button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .length-toggle button.active {
+      border-color: var(--accent);
+      background: rgba(61, 220, 132, 0.12);
+      color: var(--tag-text);
+    }
+
+    .dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: border-color .2s, background .2s;
+    }
+
+    .dropzone:hover, .dropzone.drag {
+      border-color: var(--accent);
+      background: rgba(61, 220, 132, 0.08);
+    }
+
+    .dropzone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .dropzone p { font-size: 13px; color: var(--muted); margin: 0; }
+    .dropzone p span { color: var(--accent); font-weight: 600; }
+
+    #coverPreview {
+      width: 100%;
+      max-height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: none;
+      margin-top: 10px;
+    }
+
+    .cover-status {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+      display: none;
+    }
+
+    .btn-primary {
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      background: var(--button);
+      color: var(--button-text);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--button-hover); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+    .btn-secondary {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-secondary:hover { background: var(--hover); }
+
+    .result-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .result-box textarea {
+      width: 100%;
+      min-height: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 14px;
+      resize: vertical;
+    }
+
+    .result-actions { display: flex; gap: 8px; }
+
+    .empty-hint {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 40px 16px;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+    }
+
+    /* ===== HISTORY ===== */
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .history-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-card-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .history-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 8px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--tag-bg);
+      color: var(--tag-text);
+    }
+
+    .history-preview {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-height: 60px;
+      overflow: hidden;
+      white-space: pre-wrap;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+
+    .history-actions button {
+      flex: 1;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .history-actions .delete-btn {
+      border-color: rgba(239, 68, 68, 0.45);
+      background: rgba(239, 68, 68, 0.08);
+      color: var(--danger);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--accent);
+      color: var(--accent2);
+      padding: 10px 22px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+      z-index: 1200;
+      box-shadow: var(--shadow);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .loading-inline { font-size: 13px; color: var(--muted); text-align: center; padding: 20px; }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <button id="menuBtn" class="menu-btn">☰</button>
+      <a href="/">
+        <div class="logo">TECHRUM</div>
+      </a>
+      <a href="/">Home</a>
+      <a href="/news/news.html">News</a>
+      <a href="/news/saved.html">Saved</a>
+      <a href="/news/deals.html">Deals</a>
+      <a href="/news/ios.html">iOS</a>
+      <a href="/news/android.html">Android</a>
+      <a href="/tools/buildImg.html">Image</a>
+      <a href="/tools/gendeal.html" class="active-link">Viết Deal</a>
+      <a href="/tools/facebook.html">Lịch FB</a>
+    </div>
+    <div class="nav-center">
+      <a href="/" class="logo mobile-logo">TECHRUM<span>.</span></a>
+    </div>
+    <div class="nav-right">
+      <button id="themeToggle" class="theme-toggle is-pc">🌙</button>
+    </div>
+  </nav>
+
+  <div id="sidebar" class="sidebar">
+    <a href="/">🏠 Home</a>
+    <a href="/news/news.html">📰 News</a>
+    <a href="/news/saved.html">💾 Saved</a>
+    <a href="/news/deals.html">🏷️ Deals</a>
+    <a href="/news/ios.html">🍎 iOS</a>
+    <a href="/news/android.html">📱 Android</a>
+    <a href="/tools/buildImg.html">🖼️ Image</a>
+    <a href="/tools/gendeal.html">✍️ Viết Deal</a>
+    <a href="/tools/facebook.html">📅 Lịch FB</a>
+  </div>
+  <div id="overlay" class="overlay"></div>
+
+  <div class="gendeal-main">
+    <h1 class="gendeal-title">Viết bài giới thiệu app/game miễn phí</h1>
+
+    <div class="gendeal-tabs">
+      <button class="tab-btn active" id="tabWrite" type="button" onclick="switchTab('write')">✍️ Viết bài</button>
+      <button class="tab-btn" id="tabHistory" type="button" onclick="switchTab('history')">📚 Lịch sử</button>
+    </div>
+
+    <div id="writeView">
+      <div class="layout">
+        <div class="panel" style="max-width: 380px;">
+          <h2>Thông tin app/game</h2>
+
+          <div class="field">
+            <label>Tên ứng dụng/game *</label>
+            <input type="text" id="appName" placeholder="Device Kit: CPU x Monitor" />
+          </div>
+
+          <div class="field">
+            <label>Nội dung / mô tả *</label>
+            <textarea id="content" placeholder="Mô tả tính năng, giá gốc, loại free (Lifetime/IAP hay app free thẳng)..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>Link App Store / Google Play *</label>
+            <input type="url" id="link" placeholder="https://apps.apple.com/..." />
+          </div>
+
+          <div class="field">
+            <label>Link redeem (tuỳ chọn — nếu có code riêng)</label>
+            <input type="url" id="redeemUrl" placeholder="https://apps.apple.com/redeem?..." />
+          </div>
+
+          <div class="field">
+            <label>Độ dài bài viết</label>
+            <div class="length-toggle">
+              <button type="button" class="active" id="btnLong" onclick="setLength('long')">📄 Dài (~600 từ, BBCode)</button>
+              <button type="button" id="btnShort" onclick="setLength('short')">✂️ Ngắn (~300 từ, text)</button>
+            </div>
+          </div>
+
+          <div class="field" id="coverField">
+            <label>Ảnh bìa (chỉ dùng cho bài dài)</label>
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="coverInput" accept="image/*">
+              <div>🖼️</div>
+              <p><span>Chọn ảnh</span> hoặc kéo thả vào đây</p>
+            </div>
+            <img id="coverPreview" alt="cover preview">
+            <div class="cover-status" id="coverStatus"></div>
+          </div>
+
+          <div class="field">
+            <label>Engine AI</label>
+            <select id="engine">
+              <option value="openrouter">OpenRouter (mặc định)</option>
+              <option value="gemini">Gemini</option>
+              <option value="openai">OpenAI</option>
+              <option value="workersai">Cloudflare Workers AI</option>
+            </select>
+          </div>
+
+          <div class="field" id="modelField" style="display:none;">
+            <label>Model (Workers AI)</label>
+            <input type="text" id="model" placeholder="@cf/meta/llama-3.3-70b-instruct-fp8-fast" />
+          </div>
+
+          <button type="button" class="btn-primary" id="btnGenerate" onclick="generateArticle()">✨ Sinh bài viết</button>
+        </div>
+
+        <div class="panel result-box">
+          <h2>Kết quả</h2>
+          <div id="resultEmpty" class="empty-hint">Điền thông tin bên trái rồi bấm "Sinh bài viết".</div>
+          <textarea id="resultText" style="display:none;" readonly></textarea>
+          <div class="result-actions" id="resultActions" style="display:none;">
+            <button type="button" class="btn-secondary" onclick="copyResult()">📋 Copy</button>
+            <button type="button" class="btn-secondary" onclick="clearResult()">🗑️ Xoá kết quả</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="historyView" style="display:none;">
+      <div id="historyLoading" class="loading-inline">Đang tải lịch sử...</div>
+      <div class="history-grid" id="historyGrid"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const GENDEAL_API = "https://gendeal.mdchannelvn.workers.dev";
+
+    let length = "long";
+    let coverImageUrl = "";
+    let activeTab = "write";
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2500);
+    }
+
+    function setLength(val) {
+      length = val;
+      document.getElementById("btnLong").classList.toggle("active", val === "long");
+      document.getElementById("btnShort").classList.toggle("active", val === "short");
+      document.getElementById("coverField").style.display = val === "long" ? "flex" : "none";
+    }
+
+    document.getElementById("engine").addEventListener("change", (e) => {
+      document.getElementById("modelField").style.display = e.target.value === "workersai" ? "flex" : "none";
+    });
+
+    // ===== Cover image drag & drop upload =====
+    const dropzone = document.getElementById("dropzone");
+    const coverInput = document.getElementById("coverInput");
+    const coverPreview = document.getElementById("coverPreview");
+    const coverStatus = document.getElementById("coverStatus");
+
+    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("drag"); });
+    dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag"));
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("drag");
+      if (e.dataTransfer.files[0]) uploadCover(e.dataTransfer.files[0]);
+    });
+    coverInput.addEventListener("change", () => {
+      if (coverInput.files[0]) uploadCover(coverInput.files[0]);
+    });
+
+    async function uploadCover(file) {
+      coverPreview.src = URL.createObjectURL(file);
+      coverPreview.style.display = "block";
+      coverStatus.style.display = "block";
+      coverStatus.textContent = "⏳ Đang xử lý ảnh (resize + webp + upload)...";
+      coverImageUrl = "";
+
+      try {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch(`${GENDEAL_API}/api/upload-cover`, { method: "POST", body: form });
+        const data = await res.json();
+        if (data.url) {
+          coverImageUrl = data.url;
+          coverStatus.textContent = "✅ Đã tải ảnh lên: " + data.url;
+        } else {
+          coverStatus.textContent = "❌ Lỗi upload: " + (data.error || "không rõ nguyên nhân");
+        }
+      } catch (e) {
+        coverStatus.textContent = "❌ Không thể kết nối server để upload ảnh.";
+      }
+    }
+
+    // ===== Generate =====
+    async function generateArticle() {
+      const appName = document.getElementById("appName").value.trim();
+      const content = document.getElementById("content").value.trim();
+      const link = document.getElementById("link").value.trim();
+      const redeemUrl = document.getElementById("redeemUrl").value.trim();
+      const engine = document.getElementById("engine").value;
+      const model = document.getElementById("model").value.trim();
+
+      if (!appName || !content || !link) {
+        showToast("⚠️ Cần điền Tên, Nội dung và Link.");
+        return;
+      }
+
+      const btn = document.getElementById("btnGenerate");
+      btn.disabled = true;
+      btn.textContent = "⏳ Đang sinh bài viết...";
+
+      try {
+        let apiUrl = `${GENDEAL_API}/?engine=${encodeURIComponent(engine)}`;
+        if (engine === "workersai" && model) apiUrl += `&model=${encodeURIComponent(model)}`;
+
+        const res = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            appName, content, link, redeemUrl,
+            length,
+            coverImage: length === "long" ? coverImageUrl : "",
+          }),
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText);
+        }
+
+        const data = await res.json();
+        showResult(data.data);
+        showToast(`✅ Đã sinh bài (engine: ${data.engine || "?"})`);
+      } catch (e) {
+        showToast("❌ Lỗi: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "✨ Sinh bài viết";
+      }
+    }
+
+    function showResult(text) {
+      document.getElementById("resultEmpty").style.display = "none";
+      const ta = document.getElementById("resultText");
+      ta.value = text;
+      ta.style.display = "block";
+      document.getElementById("resultActions").style.display = "flex";
+    }
+
+    function clearResult() {
+      document.getElementById("resultText").style.display = "none";
+      document.getElementById("resultActions").style.display = "none";
+      document.getElementById("resultEmpty").style.display = "block";
+    }
+
+    async function copyResult() {
+      const ta = document.getElementById("resultText");
+      try {
+        await navigator.clipboard.writeText(ta.value);
+        showToast("✅ Đã copy vào clipboard!");
+      } catch (e) {
+        ta.select();
+        document.execCommand("copy");
+        showToast("✅ Đã copy!");
+      }
+    }
+
+    // ===== Tabs =====
+    function switchTab(tab) {
+      if (activeTab === tab) return;
+      activeTab = tab;
+      document.getElementById("tabWrite").classList.toggle("active", tab === "write");
+      document.getElementById("tabHistory").classList.toggle("active", tab === "history");
+      document.getElementById("writeView").style.display = tab === "write" ? "block" : "none";
+      document.getElementById("historyView").style.display = tab === "history" ? "block" : "none";
+      if (tab === "history") loadHistory();
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatTime(t) {
+      if (!t) return "—";
+      const d = new Date(t.replace(" ", "T"));
+      if (Number.isNaN(d.getTime())) return t;
+      return d.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    async function loadHistory() {
+      const loading = document.getElementById("historyLoading");
+      const grid = document.getElementById("historyGrid");
+      loading.style.display = "block";
+      grid.innerHTML = "";
+
+      try {
+        const res = await fetch(`${GENDEAL_API}/api/history`);
+        const list = await res.json();
+        loading.style.display = "none";
+
+        if (!Array.isArray(list) || !list.length) {
+          grid.innerHTML = '<p class="empty-hint">Chưa có bài viết nào.</p>';
+          return;
+        }
+
+        list.forEach((item) => {
+          const card = document.createElement("article");
+          card.className = "history-card";
+          card.innerHTML = `
+            <h3 class="history-card-title">${escapeHtml(item.app_name || "(Không tên)")}</h3>
+            <div class="history-meta">
+              <span class="badge">${item.length === "short" ? "Ngắn" : "Dài"}</span>
+              <span class="badge">${escapeHtml(item.engine || "?")}</span>
+              <span>${formatTime(item.created_at)}</span>
+            </div>
+            <div class="history-preview">${escapeHtml((item.result || "").slice(0, 220))}...</div>
+            <div class="history-actions">
+              <button type="button" data-act="copy">📋 Copy</button>
+              <button type="button" data-act="view">👁️ Xem đầy đủ</button>
+              <button type="button" class="delete-btn" data-act="delete">🗑️ Xoá</button>
+            </div>
+          `;
+          card.querySelector('[data-act="copy"]').onclick = async () => {
+            await navigator.clipboard.writeText(item.result || "");
+            showToast("✅ Đã copy!");
+          };
+          card.querySelector('[data-act="view"]').onclick = () => {
+            switchTab("write");
+            showResult(item.result || "");
+          };
+          card.querySelector('[data-act="delete"]').onclick = async () => {
+            if (!confirm(`Xoá bài "${item.app_name}"?`)) return;
+            const res = await fetch(`${GENDEAL_API}/api/delete?id=${item.id}`);
+            const data = await res.json();
+            if (data.deleted) loadHistory();
+          };
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        loading.style.display = "none";
+        grid.innerHTML = '<p class="empty-hint">Không tải được lịch sử.</p>';
+      }
+    }
+
+    // ===== Theme + sidebar (shared pattern) =====
+    const toggleBtn = document.getElementById("themeToggle");
+    function setTheme(mode) {
+      if (mode === "dark") { document.body.classList.add("dark"); toggleBtn.textContent = "☀️"; }
+      else { document.body.classList.remove("dark"); toggleBtn.textContent = "🌙"; }
+      localStorage.setItem("theme", mode);
+    }
+    setTheme(localStorage.getItem("theme") || "light");
+    toggleBtn.addEventListener("click", () => {
+      setTheme(document.body.classList.contains("dark") ? "light" : "dark");
+    });
+
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    const overlayEl = document.getElementById("overlay");
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+      overlayEl.classList.toggle("active");
+    });
+    overlayEl.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlayEl.classList.remove("active");
+    });
+  </script>
+</body>
+
+</html>
