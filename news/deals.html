@@ -1127,6 +1127,7 @@
     <div class="deal-meta">
       <span><strong>Giá:</strong> ${escapeHtml(priceLine)}</span>
       <span class="deal-badge ${free ? "free" : ""}">${free ? "Free" : "Có phí"}</span>
+      ${deal.alreadyVerified ? `<span class="deal-badge" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: #a855f7;" title="Đã verify trước đó, dùng lại kết quả có sẵn">✅ Đã Verified</span>` : ''}
       ${deal.source ? `<span><strong>Nguồn:</strong> ${escapeHtml(formatSource(deal.source))}</span>` : ''}
     </div>
     <div class="deal-actions">
@@ -1190,6 +1191,7 @@
                   currentPrice:   0,
                   dealType:       deal.dealType || "1",
                   appStoreUrl:    deal.appStoreUrl || deal.playStoreUrl || null,
+                  redeemUrl:      deal.redeemUrl || null,
                   source:         deal.source || "",
                   _key:           key
                 });
@@ -1436,6 +1438,10 @@
               <a href="${escapeHtml(app.app_store_url)}" target="_blank" rel="noopener noreferrer" class="store-link-btn ${app.platform === 'ios' ? 'apple' : 'google'}">
                 ${app.platform === 'ios' ? 'App Store' : 'Play Store'}
               </a>
+              ${app.redeem_url ? `
+              <a href="${escapeHtml(app.redeem_url)}" target="_blank" rel="noopener noreferrer" class="store-link-btn" style="border-color: rgba(168, 85, 247, 0.45); background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+                🎟️ Redeem
+              </a>` : ''}
               <button type="button" class="delete-btn">🗑️ Xoá</button>
             </div>
           `;
