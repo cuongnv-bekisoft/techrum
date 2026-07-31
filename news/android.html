@@ -23,6 +23,7 @@
         <a href="/news/ios.html">iOS</a>
         <a href="/news/android.html" class="active-link">Android</a>
         <a href="/tools/buildImg.html">Image</a>
+        <a href="/tools/gendeal.html">Viết Deal</a>
         <a href="/tools/facebook.html">Lịch FB</a>
       </div>
       <div class="nav-center">
@@ -42,6 +43,7 @@
       <a href="/news/ios.html">🍎 iOS</a>
       <a href="/news/android.html">🤖 Android</a>
       <a href="/tools/buildImg.html">🖼️ Image</a>
+      <a href="/tools/gendeal.html">✍️ Viết Deal</a>
       <a href="/tools/facebook.html">📅 Lịch FB</a>
     </div>
     <div id="overlay" class="overlay"></div>
@@ -90,7 +92,7 @@
       const container = document.getElementById("appsContainer");
       let appCount = 0;
 
-      function createApp() {
+      function createApp(prefill = null) {
         appCount++;
         const div = document.createElement("div");
         div.className = "app-card";
@@ -121,11 +123,43 @@
           </div>
         `;
         div.querySelector(".remove-btn").onclick = () => div.remove();
+
+        if (prefill) {
+          const urlInput = div.querySelector(".url");
+          const priceInput = div.querySelector(".price");
+          const codeInput = div.querySelector(".code");
+          const lifetimeInput = div.querySelector(".lifetime");
+          if (prefill.url) urlInput.value = prefill.url;
+          if (prefill.price != null && prefill.price !== "") {
+            priceInput.value = String(prefill.price);
+          }
+          if (prefill.code) codeInput.value = prefill.code;
+          if (prefill.lifetime) lifetimeInput.checked = true;
+        }
+
         container.appendChild(div);
       }
 
-      document.getElementById("addAppBtn").onclick = createApp;
-      createApp();
+      document.getElementById("addAppBtn").onclick = () => createApp();
+
+      (function initAppsFromDeals() {
+        try {
+          const raw = sessionStorage.getItem("techrum_android_prefill");
+          if (raw) {
+            sessionStorage.removeItem("techrum_android_prefill");
+            const apps = JSON.parse(raw);
+            if (Array.isArray(apps) && apps.length > 0) {
+              container.innerHTML = "";
+              appCount = 0;
+              apps.forEach((a) => createApp(a));
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+        createApp();
+      })();
 
       /* ── CONVERT ── */
       const convertBtn = document.getElementById("convertBtn");

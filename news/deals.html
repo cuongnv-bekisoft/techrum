@@ -203,6 +203,30 @@
       color: var(--muted);
     }
 
+    .deals-cart-actions .primary:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .verified-target-select {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .verified-select-checkbox {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
     .empty-deals {
       padding: 28px 16px;
       text-align: center;
@@ -481,6 +505,7 @@
       <a href="/news/ios.html">iOS</a>
       <a href="/news/android.html">Android</a>
       <a href="/tools/buildImg.html">Image</a>
+      <a href="/tools/gendeal.html">Viết Deal</a>
       <a href="/tools/facebook.html">Lịch FB</a>
     </div>
 
@@ -519,6 +544,7 @@
       <a href="/news/ios.html">🍎 iOS</a>
       <a href="/news/android.html">📱 Android</a>
       <a href="/tools/buildImg.html">🖼️ Image</a>
+      <a href="/tools/gendeal.html">✍️ Viết Deal</a>
       <a href="/tools/facebook.html">📅 Lịch FB</a>
       <a href="#" id="themeToggleMobile">🌙 Dark mode</a>
     </div>
@@ -589,6 +615,23 @@
       <button type="button" class="ghost" onclick="clearSelectedApps()">Bỏ chọn</button>
       <button type="button" class="primary" onclick="saveSelectedApps()">
         Lưu Verified ✔
+      </button>
+    </div>
+  </div>
+
+  <div class="deals-cart-bar" id="verifiedBar" aria-live="polite">
+    <span id="verifiedBarText"></span>
+    <div class="deals-cart-actions">
+      <select id="verifiedTargetPlatform" class="verified-target-select">
+        <option value="ios">📱 iOS</option>
+        <option value="android">🤖 Android</option>
+      </select>
+      <button type="button" class="ghost" onclick="clearVerifiedSelection()">Bỏ chọn</button>
+      <button type="button" class="primary" onclick="goToConverterFromVerified()">
+        Tạo bài tổng hợp →
+      </button>
+      <button type="button" class="primary" id="btnWriteSingleDeal" onclick="goToGendealFromVerified()">
+        ✍️ Viết deal riêng
       </button>
     </div>
   </div>
@@ -701,6 +744,8 @@
     }
 
     let selectedApps = [];
+    let verifiedAppsData = [];
+    let selectedVerifiedIds = new Set();
 
     function updateBarsPosition() {
       const cart = readCart();
@@ -1355,6 +1400,7 @@
           }
         }
         verifiedGrid.style.display = "none";
+        clearVerifiedSelection();
 
         if (newsSidebar) newsSidebar.style.display = "";
         checkMobile();
@@ -1391,6 +1437,8 @@
 
       loading?.classList.add("show");
       grid.innerHTML = "";
+      verifiedAppsData = [];
+      clearVerifiedSelection();
 
       try {
         const res = await fetch(`${DEALS_BASE_API}/api/verified-apps`);
@@ -1420,6 +1468,7 @@
                   <span class="deal-type-badge">Type ${app.deal_type || 'Free'}</span>
                 </div>
               </div>
+              <input type="checkbox" class="verified-select-checkbox" data-id="${app.id}" aria-label="Chọn ${escapeHtml(app.app_name || '')}" />
             </div>
             <div class="verified-card-body">
               <div class="verified-meta-item"><strong>Giá gốc:</strong> <span class="original-price">${escapeHtml(priceLine)}</span></div>
@@ -1451,6 +1500,14 @@
             deleteVerifiedApp(app.id, app.app_name);
           };
 
+          const selectCb = card.querySelector('.verified-select-checkbox');
+          if (selectCb) {
+            selectCb.addEventListener('change', (e) => {
+              toggleVerifiedSelect(app.id, e.target.checked);
+            });
+          }
+
+          verifiedAppsData.push(app);
           grid.appendChild(card);
         });
       } catch (e) {
@@ -1458,6 +1515,102 @@
         grid.innerHTML = '<p class="empty-deals">Không tải được danh sách verified. Vui lòng kiểm tra lại kết nối mạng.</p>';
         loading?.classList.remove("show");
       }
+    }
+
+    // ===== Chọn app verified -> tạo bài tổng hợp (iOS/Android converter) hoặc viết deal riêng (gendeal) =====
+    function updateVerifiedBar() {
+      const bar = document.getElementById("verifiedBar");
+      const text = document.getElementById("verifiedBarText");
+      const btnSingle = document.getElementById("btnWriteSingleDeal");
+      if (!bar || !text) return;
+
+      const n = selectedVerifiedIds.size;
+      if (n > 0) {
+        bar.classList.add("show");
+        text.innerHTML = `Đã chọn <strong>${n}</strong> app`;
+      } else {
+        bar.classList.remove("show");
+      }
+      if (btnSingle) {
+        btnSingle.disabled = n !== 1;
+        btnSingle.title = n === 1 ? "" : "Chỉ chọn đúng 1 app để dùng nút này";
+      }
+    }
+
+    function toggleVerifiedSelect(id, checked) {
+      if (checked) selectedVerifiedIds.add(id);
+      else selectedVerifiedIds.delete(id);
+      updateVerifiedBar();
+    }
+
+    function clearVerifiedSelection() {
+      selectedVerifiedIds.clear();
+      document.querySelectorAll(".verified-select-checkbox").forEach((cb) => (cb.checked = false));
+      updateVerifiedBar();
+    }
+
+    function cleanPriceValue(price) {
+      if (price == null) return "";
+      return String(price).replace(/^\$/, "").trim();
+    }
+
+    function extractCodeFromRedeemUrl(url) {
+      if (!url) return "";
+      const m = url.match(/[?&]code=([^&]+)/i);
+      return m ? decodeURIComponent(m[1]) : "";
+    }
+
+    function goToConverterFromVerified() {
+      const target = document.getElementById("verifiedTargetPlatform").value; // "ios" | "android"
+      const selected = verifiedAppsData.filter((a) => selectedVerifiedIds.has(a.id));
+      const matched = selected.filter((a) => a.platform === target && a.app_store_url);
+      const skipped = selected.length - matched.length;
+
+      if (!matched.length) {
+        alert(`Không có app nào khớp nền tảng ${target === "ios" ? "iOS" : "Android"} trong lựa chọn (hoặc thiếu link).`);
+        return;
+      }
+      if (skipped > 0) {
+        const ok = confirm(`${skipped} app không khớp nền tảng ${target === "ios" ? "iOS" : "Android"} hoặc thiếu link sẽ bị bỏ qua. Tiếp tục với ${matched.length} app còn lại?`);
+        if (!ok) return;
+      }
+
+      const prefill = matched.map((a) => ({
+        url: a.app_store_url,
+        price: cleanPriceValue(a.original_price),
+        code: extractCodeFromRedeemUrl(a.redeem_url),
+        lifetime: a.deal_type === "2" || a.deal_type === "3",
+      }));
+
+      const key = target === "ios" ? "techrum_ios_prefill" : "techrum_android_prefill";
+      sessionStorage.setItem(key, JSON.stringify(prefill));
+      window.location.href = target === "ios" ? "/news/ios.html" : "/news/android.html";
+    }
+
+    function goToGendealFromVerified() {
+      if (selectedVerifiedIds.size !== 1) {
+        alert("Chỉ chọn đúng 1 app để dùng nút này.");
+        return;
+      }
+      const id = [...selectedVerifiedIds][0];
+      const app = verifiedAppsData.find((a) => a.id === id);
+      if (!app) return;
+
+      const priceNote = app.original_price ? `Giá gốc: $${cleanPriceValue(app.original_price)}. ` : "";
+      const typeNote = app.deal_type === "2" || app.deal_type === "3"
+        ? "Đang miễn phí bản Lifetime/IAP. "
+        : "Đang miễn phí tải app. ";
+      const content = (priceNote + typeNote + (app.description || "")).trim();
+
+      const prefill = {
+        appName: app.app_name || "",
+        content,
+        link: app.app_store_url || "",
+        redeemUrl: app.redeem_url || "",
+        length: "long",
+      };
+      sessionStorage.setItem("techrum_gendeal_prefill", JSON.stringify(prefill));
+      window.location.href = "/tools/gendeal.html";
     }
 
     function toggleDescription(btn) {

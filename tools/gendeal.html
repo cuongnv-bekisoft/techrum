@@ -477,6 +477,24 @@
       document.getElementById("coverField").style.display = val === "long" ? "flex" : "none";
     }
 
+    // ===== Nhận prefill từ trang Verified Apps (deals.html) — nút "Viết deal riêng" =====
+    (function initFromPrefill() {
+      try {
+        const raw = sessionStorage.getItem("techrum_gendeal_prefill");
+        if (!raw) return;
+        sessionStorage.removeItem("techrum_gendeal_prefill");
+        const p = JSON.parse(raw);
+        if (!p) return;
+        if (p.appName) document.getElementById("appName").value = p.appName;
+        if (p.content) document.getElementById("content").value = p.content;
+        if (p.link) document.getElementById("link").value = p.link;
+        if (p.redeemUrl) document.getElementById("redeemUrl").value = p.redeemUrl;
+        setLength(p.length === "short" ? "short" : "long");
+      } catch (err) {
+        console.warn(err);
+      }
+    })();
+
     document.getElementById("engine").addEventListener("change", (e) => {
       document.getElementById("modelField").style.display = e.target.value === "workersai" ? "flex" : "none";
     });
