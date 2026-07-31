@@ -1,5 +1,6 @@
 # CLI folder
 cli/node_modules/
+techdeal_cli/node_modules/
 
 # Docs folder exclusion
 docs/
