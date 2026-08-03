@@ -1,4 +1,4 @@
-const API_BASE = "https://techdeal.cuongnv.workers.dev";
+const API_BASE = "https://convert_news.mdchannelvn.workers.dev";
 
 // =============================
 // 🚀 CONVERT

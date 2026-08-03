@@ -325,6 +325,142 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     .loading-inline { font-size: 13px; color: var(--muted); text-align: center; padding: 20px; }
+
+    /* ===== PUBLISH FORM (mirror index.html) ===== */
+    .publish-form {
+      margin-top: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 8px;
+      background: rgba(52, 152, 219, 0.1);
+      color: #3498db;
+      border: 1px solid rgba(52, 152, 219, 0.2);
+      user-select: none;
+      transition: all 0.2s ease;
+      max-width: 140px;
+      overflow: hidden;
+    }
+
+    body.dark .tag-chip {
+      background: rgba(231, 76, 60, 0.1);
+      color: #e74c3c;
+      border-color: rgba(231, 76, 60, 0.2);
+    }
+
+    .tag-text-span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .tag-chip .remove-tag {
+      font-weight: bold;
+      cursor: pointer;
+      opacity: 0.7;
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
+
+    .tag-chip .remove-tag:hover {
+      opacity: 1;
+      color: var(--danger);
+    }
+
+    .system-tag-btn {
+      background: var(--hover);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .system-tag-btn:hover:not(.active) {
+      border-color: #3498db;
+      color: #3498db;
+    }
+
+    body.dark .system-tag-btn:hover:not(.active) {
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    .system-tag-btn.active {
+      background: #3498db;
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
+
+    body.dark .system-tag-btn.active {
+      background: #e74c3c;
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+    }
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: 0.2s;
+    }
+    .close-modal:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -399,6 +535,13 @@
             <input type="url" id="redeemUrl" placeholder="https://apps.apple.com/redeem?..." />
           </div>
 
+          <div class="field" id="giveawayFields" style="display:none;">
+            <label>Giá gốc (USD) — dùng để tạo Giveaway *</label>
+            <input type="number" id="originalPrice" step="0.01" min="0" placeholder="49.99" />
+            <label style="margin-top: 6px;">Số lượng key</label>
+            <input type="number" id="keyQuantity" min="1" value="600" />
+          </div>
+
           <div class="field">
             <label>Độ dài bài viết</label>
             <div class="length-toggle">
@@ -446,11 +589,102 @@
           </div>
         </div>
       </div>
+
+      <button id="directPublishBtn" type="button" style="margin-top: 15px; margin-bottom: 5px; background: var(--hover); color: var(--text); border: 1px solid var(--border);">Đăng bài trực tiếp (Hiện/Ẩn)</button>
+
+      <!-- Publication Form (mirror index.html) -->
+      <div id="publishForm" class="publish-form" style="display: none;">
+        <h2
+          style="margin-top: 0; font-size: 20px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>📝</span> Đăng bài viết mới
+        </h2>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Tiêu đề bài viết <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="postTitle" placeholder="Nhập tiêu đề ấn tượng cho bài viết..." />
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Nội dung chi tiết <span style="color:var(--danger)">*</span></label>
+          <textarea id="postContent" placeholder="Nhập nội dung bài viết bằng mã BBCode..."
+            style="height: 200px;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Chuyên mục <span style="color:var(--danger)">*</span></label>
+          <select id="postCategory">
+            <option value="technology">Công nghệ</option>
+            <option value="android">Android</option>
+            <option value="ios">iOS</option>
+            <option value="windows">Windows</option>
+            <option value="pc">PC máy tính</option>
+            <option value="gaming">Thế giới Game</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Gán thẻ bài viết (Tags)</label>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="tagInput" placeholder="Nhập thẻ mới (ngăn cách bằng dấu phẩy)..." style="margin: 0;" />
+            <button id="addTagBtn" type="button" class="btn btn-secondary" style="width: auto; margin: 0; white-space: nowrap;">Thêm
+              thẻ</button>
+          </div>
+          <div id="activeTagsList" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;"></div>
+          <div style="margin-top: 8px;">
+            <p class="field-label" style="font-size: 10px; margin-bottom: 6px;">Chọn thẻ có sẵn trong hệ thống:</p>
+            <div id="systemTagsList" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="isScheduled" style="width: auto; margin: 0; cursor: pointer;" />
+            <label for="isScheduled" style="font-size: 13px; font-weight: 600; cursor: pointer; user-select: none;">Hẹn giờ
+              đăng bài viết</label>
+          </div>
+          <div id="scheduleTimeWrapper" style="display: none; margin-top: 10px;">
+            <input type="datetime-local" id="scheduleDate" style="max-width: 250px; margin: 0;" />
+            <p class="field-label" style="font-size: 10px; margin-top: 4px; text-transform: none;">Hệ thống sẽ tự động xuất
+              bản bài viết vào khung giờ bạn đã chọn bên trên.</p>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 14px;">
+          <button id="publishBtn" type="button" class="btn btn-primary">Đăng bài viết</button>
+        </div>
+      </div>
     </div>
 
     <div id="historyView" style="display:none;">
       <div id="historyLoading" class="loading-inline">Đang tải lịch sử...</div>
       <div class="history-grid" id="historyGrid"></div>
+    </div>
+  </div>
+
+  <!-- Login Modal (mirror index.html) -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeLoginModal">&times;</span>
+      <h2 style="margin-top: 0; font-size: 20px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <span>🔒</span> Xác thực tài khoản
+      </h2>
+      <p style="font-size: 13px; opacity: 0.8; margin-bottom: 20px; line-height: 1.4;">
+        Token đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại để tiếp tục đăng bài.
+      </p>
+
+      <form id="loginForm">
+        <div style="margin-bottom: 16px;">
+          <label class="field-label" for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" name="username" autocomplete="username" placeholder="nhap-email@example.com" style="margin: 5px 0 0 0;" required />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label class="field-label" for="loginPassword">Mật khẩu</label>
+          <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="••••••••" style="margin: 5px 0 0 0;" required />
+        </div>
+
+        <button type="submit" id="submitLoginBtn" class="btn btn-primary" style="margin-top: 0;">Đăng nhập</button>
+      </form>
     </div>
   </div>
 
@@ -475,7 +709,15 @@
       document.getElementById("btnLong").classList.toggle("active", val === "long");
       document.getElementById("btnShort").classList.toggle("active", val === "short");
       document.getElementById("coverField").style.display = val === "long" ? "flex" : "none";
+      updateGiveawayFieldsVisibility();
     }
+
+    // Ô "Giá gốc / Số lượng key" chỉ cần thiết khi bài dài + có link redeem (sẽ tạo Giveaway)
+    function updateGiveawayFieldsVisibility() {
+      const hasRedeem = document.getElementById("redeemUrl").value.trim().length > 0;
+      document.getElementById("giveawayFields").style.display = (length === "long" && hasRedeem) ? "flex" : "none";
+    }
+    document.getElementById("redeemUrl").addEventListener("input", updateGiveawayFieldsVisibility);
 
     // ===== Nhận prefill từ trang Verified Apps (deals.html) — nút "Viết deal riêng" =====
     (function initFromPrefill() {
@@ -545,6 +787,8 @@
       const content = document.getElementById("content").value.trim();
       const link = document.getElementById("link").value.trim();
       const redeemUrl = document.getElementById("redeemUrl").value.trim();
+      const originalPrice = document.getElementById("originalPrice").value.trim();
+      const keyQuantity = document.getElementById("keyQuantity").value.trim();
       const engine = document.getElementById("engine").value;
       const model = document.getElementById("model").value.trim();
 
@@ -558,6 +802,19 @@
       btn.textContent = "⏳ Đang sinh bài viết...";
 
       try {
+        let claimUrl = "";
+
+        // Chỉ tạo link go/giveaway cho bài dài (theo yêu cầu)
+        if (length === "long") {
+          btn.textContent = redeemUrl ? "⏳ Đang tạo link giveaway..." : "⏳ Đang tạo link go...";
+          claimUrl = await createClaimLink({ appName, link, redeemUrl, originalPrice, keyQuantity });
+          if (claimUrl === null) {
+            // Token hết hạn — modal đăng nhập đã hiện, generateArticle() sẽ tự chạy lại sau khi đăng nhập xong
+            return;
+          }
+          btn.textContent = "⏳ Đang sinh bài viết...";
+        }
+
         let apiUrl = `${GENDEAL_API}/?engine=${encodeURIComponent(engine)}`;
         if (engine === "workersai" && model) apiUrl += `&model=${encodeURIComponent(model)}`;
 
@@ -568,6 +825,7 @@
             appName, content, link, redeemUrl,
             length,
             coverImage: length === "long" ? coverImageUrl : "",
+            claimUrl,
           }),
         });
 
@@ -579,12 +837,93 @@
         const data = await res.json();
         showResult(data.data);
         showToast(`✅ Đã sinh bài (engine: ${data.engine || "?"})`);
+
+        // Điền sẵn form đăng bài từ kết quả vừa sinh
+        document.getElementById("postTitle").value = appName;
+        document.getElementById("postContent").value = data.data;
+        document.getElementById("postCategory").value = guessCategory(link);
+        selectedTags = [];
+        renderTags();
+        document.getElementById("publishForm").style.display = "block";
       } catch (e) {
         showToast("❌ Lỗi: " + e.message);
       } finally {
         btn.disabled = false;
         btn.textContent = "✨ Sinh bài viết";
       }
+    }
+
+    // ===== Tạo link go (shortlink) hoặc link giveaway trước khi sinh bài (chỉ bài dài) =====
+    const TECHDEAL_API = "https://techdeal-worker.mdchannelvn.workers.dev";
+
+    // Ngày hết hạn = hiện tại (giờ Việt Nam, UTC+7) + daysAhead ngày, định dạng "YYYY-MM-DD HH:MM:SS"
+    function vietnamExpiryDate(daysAhead) {
+      const shiftedMs = Date.now() + (7 * 60 + daysAhead * 24 * 60) * 60 * 1000;
+      const d = new Date(shiftedMs);
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`;
+    }
+
+    // Trả về URL cuối cùng để chèn vào bài (claimUrl), hoặc null nếu đang chờ đăng nhập lại
+    async function createClaimLink({ appName, link, redeemUrl, originalPrice, keyQuantity }) {
+      if (redeemUrl) {
+        // ---- Có link redeem riêng → tạo Giveaway ----
+        if (!originalPrice) {
+          throw new Error("Cần nhập Giá gốc để tạo link giveaway.");
+        }
+
+        const res = await fetch(`${TECHDEAL_API}/api/admin/giveaways`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${jwtToken}` },
+          body: JSON.stringify({
+            app_name: appName,
+            activation_link: redeemUrl,
+            key_quantity: parseInt(keyQuantity, 10) || 600,
+            original_price: parseFloat(originalPrice),
+            expiry_date: vietnamExpiryDate(2),
+            is_block: 0, // không chặn truy cập từ bên ngoài
+            image_url: coverImageUrl || undefined,
+          }),
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          if (res.status === 403) alert("Tài khoản hiện tại không có quyền Admin để tạo giveaway. Vui lòng đăng nhập lại bằng tài khoản Admin.");
+          showLoginModal(() => generateArticle());
+          return null;
+        }
+
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error || "Tạo link giveaway thất bại");
+
+        return `https://techdeal.io.vn/giveaway?id=${data.data.id}`;
+      } else {
+        // ---- Link thường (App Store / Google Play / URL ngoài bất kỳ) → tạo link go ----
+        const res = await fetch(`${TECHDEAL_API}/api/admin/shortlinks`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${jwtToken}` },
+          body: JSON.stringify({ name: appName, target_url: link }),
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          if (res.status === 403) alert("Tài khoản hiện tại không có quyền Admin để tạo link go. Vui lòng đăng nhập lại bằng tài khoản Admin.");
+          showLoginModal(() => generateArticle());
+          return null;
+        }
+
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error || "Tạo link go thất bại");
+
+        return `https://techdeal.io.vn/go/${data.data.hash}`;
+      }
+    }
+
+    // Đoán chuyên mục dựa theo link app/game để đỡ phải chọn tay
+    function guessCategory(link) {
+      const l = (link || "").toLowerCase();
+      if (l.includes("apps.apple.com")) return "ios";
+      if (l.includes("play.google.com")) return "android";
+      if (l.includes("store.steampowered.com") || l.includes("epicgames.com") || l.includes("gog.com")) return "gaming";
+      return "technology";
     }
 
     function showResult(text) {
@@ -693,6 +1032,268 @@
         grid.innerHTML = '<p class="empty-hint">Không tải được lịch sử.</p>';
       }
     }
+
+    // =============================
+    // 📝 PUBLISH FORM HANDLERS & STATE (mirror index.html / script.js)
+    // =============================
+    const systemTags = [
+      'iOS', 'iPhone', 'Apple', 'Android', 'Windows', 'Windows 11', 'Microsoft',
+      'ứng dụng', 'ứng dụng miễn phí', 'miễn phí', 'game', 'game miễn phí',
+      'phần mềm', 'phần mềm miễn phí', 'Steam', 'Epic Games', 'Mobile'
+    ];
+    let selectedTags = [];
+
+    function renderTags() {
+      const activeTagsList = document.getElementById("activeTagsList");
+      if (!activeTagsList) return;
+      activeTagsList.innerHTML = "";
+      selectedTags.forEach((tag, idx) => {
+        const chip = document.createElement("span");
+        chip.className = "tag-chip";
+        chip.title = tag;
+        chip.innerHTML = `<span class="tag-text-span">${tag}</span><span class="remove-tag" data-index="${idx}" style="cursor:pointer; margin-left: 5px;">&times;</span>`;
+        activeTagsList.appendChild(chip);
+      });
+
+      const systemBtns = document.querySelectorAll(".system-tag-btn");
+      systemBtns.forEach(btn => {
+        const tag = btn.getAttribute("data-tag");
+        if (selectedTags.some(t => t.toLowerCase() === tag.toLowerCase())) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+    }
+
+    function addTag(tag) {
+      if (!tag.trim()) return;
+      const tags = tag.split(',').map(t => t.trim()).filter(t => t.length > 0);
+      tags.forEach(t => {
+        const exists = selectedTags.some(existing => existing.toLowerCase() === t.toLowerCase());
+        if (!exists) {
+          selectedTags.push(t);
+        }
+      });
+      renderTags();
+    }
+
+    function initSystemTags() {
+      const container = document.getElementById("systemTagsList");
+      if (!container) return;
+      container.innerHTML = "";
+      systemTags.forEach(tag => {
+        const btn = document.createElement("button");
+        btn.className = "system-tag-btn";
+        btn.type = "button";
+        btn.setAttribute("data-tag", tag);
+        btn.textContent = tag;
+        btn.addEventListener("click", () => {
+          const idx = selectedTags.findIndex(t => t.toLowerCase() === tag.toLowerCase());
+          if (idx >= 0) {
+            selectedTags.splice(idx, 1);
+          } else {
+            selectedTags.push(tag);
+          }
+          renderTags();
+        });
+        container.appendChild(btn);
+      });
+    }
+    initSystemTags();
+
+    document.getElementById("addTagBtn")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("tagInput");
+      addTag(input.value);
+      input.value = "";
+    });
+
+    document.getElementById("tagInput")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addTag(e.target.value);
+        e.target.value = "";
+      }
+    });
+
+    document.getElementById("activeTagsList")?.addEventListener("click", (e) => {
+      if (e.target.classList.contains("remove-tag")) {
+        const idx = parseInt(e.target.getAttribute("data-index"));
+        selectedTags.splice(idx, 1);
+        renderTags();
+      }
+    });
+
+    document.getElementById("isScheduled")?.addEventListener("change", function () {
+      const wrapper = document.getElementById("scheduleTimeWrapper");
+      if (wrapper) {
+        wrapper.style.display = this.checked ? "block" : "none";
+      }
+    });
+
+    let jwtToken = localStorage.getItem("post_token") || "";
+    let pendingRetry = null; // hàm gọi lại sau khi đăng nhập thành công — dùng chung cho đăng bài + tạo link go/giveaway
+
+    const loginModal = document.getElementById("loginModal");
+    const closeLoginModal = document.getElementById("closeLoginModal");
+    const submitLoginBtn = document.getElementById("submitLoginBtn");
+
+    function showLoginModal(retryFn = null) {
+      pendingRetry = retryFn;
+      loginModal.classList.add("show");
+    }
+
+    function hideLoginModal() {
+      loginModal.classList.remove("show");
+      pendingRetry = null;
+    }
+
+    closeLoginModal?.addEventListener("click", hideLoginModal);
+    window.addEventListener("click", (e) => {
+      if (e.target === loginModal) {
+        hideLoginModal();
+      }
+    });
+
+    const loginForm = document.getElementById("loginForm");
+
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (!email || !password) {
+        alert("Vui lòng nhập đầy đủ email và mật khẩu!");
+        return;
+      }
+
+      submitLoginBtn.disabled = true;
+      submitLoginBtn.textContent = "Đang xác thực...";
+
+      try {
+        const res = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        const token = data.token || (data.data && data.data.token);
+
+        if (res.ok && token) {
+          jwtToken = token;
+          localStorage.setItem("post_token", token);
+          alert("Đăng nhập thành công!");
+          hideLoginModal();
+
+          if (pendingRetry) {
+            const fn = pendingRetry;
+            pendingRetry = null;
+            fn();
+          }
+        } else {
+          alert(data.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản!");
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Có lỗi xảy ra khi kết nối tới máy chủ đăng nhập!");
+      } finally {
+        submitLoginBtn.disabled = false;
+        submitLoginBtn.textContent = "Đăng nhập";
+      }
+    });
+
+    async function publishPost(postData) {
+      const publishBtn = document.getElementById("publishBtn");
+      publishBtn.disabled = true;
+      publishBtn.textContent = "Đang xử lý...";
+
+      try {
+        const response = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/posts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify(postData)
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          if (response.status === 403) alert("Tài khoản hiện tại không thể đăng bài (bị khoá hoặc không đủ quyền). Vui lòng đăng nhập lại bằng tài khoản khác.");
+          showLoginModal(() => publishPost(postData));
+          return;
+        }
+
+        const resJson = await response.json();
+        if (response.ok && resJson.success) {
+          alert(`Chúc mừng! Bài viết đã được ${postData.scheduled_at ? 'hẹn giờ đăng thành công!' : 'đăng thành công!'}`);
+        } else {
+          alert(resJson.message || "Có lỗi xảy ra khi đăng bài viết!");
+        }
+      } catch (err) {
+        console.error("Publish error:", err);
+        alert("Có lỗi xảy ra khi đăng bài viết!");
+      } finally {
+        publishBtn.disabled = false;
+        publishBtn.textContent = "Đăng bài viết";
+      }
+    }
+
+    document.getElementById("publishBtn")?.addEventListener("click", async () => {
+      const title = document.getElementById("postTitle").value.trim();
+      const content = document.getElementById("postContent").value.trim();
+      const categoryId = document.getElementById("postCategory").value;
+      const isScheduled = document.getElementById("isScheduled").checked;
+      const scheduleDate = document.getElementById("scheduleDate").value;
+
+      if (!title) {
+        alert("Vui lòng điền tiêu đề bài viết!");
+        return;
+      }
+      if (!content) {
+        alert("Vui lòng nhập nội dung bài viết!");
+        return;
+      }
+
+      const postData = {
+        title,
+        content,
+        category_id: categoryId,
+        tags: selectedTags,
+        scheduled_at: isScheduled && scheduleDate ? new Date(scheduleDate).toISOString() : null
+      };
+
+      await publishPost(postData);
+    });
+
+    document.getElementById("directPublishBtn")?.addEventListener("click", () => {
+      const publishForm = document.getElementById("publishForm");
+      if (publishForm) {
+        const isHidden = publishForm.style.display === "none" || publishForm.style.display === "";
+        if (isHidden) {
+          document.getElementById("postTitle").value = "";
+          document.getElementById("postContent").value = "";
+          document.getElementById("postCategory").value = "technology";
+          selectedTags = [];
+          renderTags();
+
+          const isScheduled = document.getElementById("isScheduled");
+          if (isScheduled) {
+            isScheduled.checked = false;
+          }
+          const scheduleTimeWrapper = document.getElementById("scheduleTimeWrapper");
+          if (scheduleTimeWrapper) {
+            scheduleTimeWrapper.style.display = "none";
+          }
+
+          publishForm.style.display = "block";
+          publishForm.scrollIntoView({ behavior: "smooth" });
+        } else {
+          publishForm.style.display = "none";
+        }
+      }
+    });
 
     // ===== Theme + sidebar (shared pattern) =====
     const toggleBtn = document.getElementById("themeToggle");
