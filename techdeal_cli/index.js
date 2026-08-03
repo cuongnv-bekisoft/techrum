@@ -9,9 +9,19 @@ import ora from 'ora';
 
 // Config file path
 const CONFIG_FILE = path.join(os.homedir(), '.techrum-cli.json');
-const API_NEWS = 'https://getnews.cuongnv.workers.dev';
-const API_CONVERT_BASE = 'https://techdeal.cuongnv.workers.dev';
+const API_NEWS = 'https://getnews.mdchannelvn.workers.dev';
+const API_CONVERT_BASE = 'https://convert_news.mdchannelvn.workers.dev';
 const API_POST_BASE = 'https://techdeal-worker.mdchannelvn.workers.dev/api';
+
+const CATEGORIES = [
+  { title: 'Công nghệ (technology)', value: 'technology' },
+  { title: 'Android', value: 'android' },
+  { title: 'iOS', value: 'ios' },
+  { title: 'Windows', value: 'windows' },
+  { title: 'PC máy tính (pc)', value: 'pc' },
+  { title: 'Thế giới Game (gaming)', value: 'gaming' },
+  { title: 'Deals', value: 'deals' },
+];
 
 // Default config
 let config = {
@@ -299,8 +309,6 @@ async function runConvertFlow(url, isBot = 0) {
     message: 'Chọn AI Engine để convert:',
     choices: [
       { title: '✨ Gemini (Khuyên dùng)', value: 'gemini' },
-      { title: '🌐 OpenRouter', value: 'openrouter' },
-      { title: '🧠 OpenAI', value: 'openai' },
       { title: '⚡ Workers AI', value: 'workersai' }
     ],
     initial: 0 // Ưu tiên Gemini đầu tiên
@@ -440,10 +448,11 @@ async function runPublishFlow(postData) {
       initial: postData.title
     },
     {
-      type: 'text',
+      type: 'select',
       name: 'category_id',
-      message: 'Xác nhận/Sửa category_id:',
-      initial: postData.category_id
+      message: 'Chọn danh mục bài viết:',
+      choices: CATEGORIES,
+      initial: Math.max(0, CATEGORIES.findIndex(c => c.value === postData.category_id))
     },
     {
       type: 'text',
