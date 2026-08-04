@@ -919,7 +919,7 @@
           document.getElementById("threadAppName").value = appName;
           document.getElementById("threadPlatform").value = guessPlatformType(link);
           document.getElementById("threadImageUrl").value = prefillIconUrl || coverImageUrl;
-          document.getElementById("threadSummary").value = content;
+          document.getElementById("threadSummary").value = getFirstTwoSentences(data.data);
           document.getElementById("threadContent").value = data.data;
           document.getElementById("threadDealLink").value = redeemUrl || link;
           document.getElementById("threadDealEndsAt").value = "";
@@ -1026,6 +1026,13 @@
       if (l.includes("play.google.com")) return "android";
       if (l.includes("store.steampowered.com") || l.includes("epicgames.com") || l.includes("gog.com")) return "game";
       return "windows";
+    }
+
+    function getFirstTwoSentences(text) {
+      if (!text) return "";
+      const matches = text.trim().match(/[^.!?]+[.!?]+(?:\s+|$)/g);
+      if (!matches) return text.slice(0, 150).trim();
+      return matches.slice(0, 2).join("").trim();
     }
 
     function showResult(text) {
