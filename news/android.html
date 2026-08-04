@@ -9,6 +9,52 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../main.css" />
+    <style>
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      .modal.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-content {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 30px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 400px;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+      }
+      .modal.show .modal-content {
+        transform: translateY(0);
+      }
+      .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: 0.2s;
+      }
+      .close-modal:hover {
+        opacity: 1;
+      }
+    </style>
   </head>
 
   <body>
@@ -85,8 +131,103 @@
       </div>
     </div>
 
+    <!-- Login Modal (mirror news/ios.html) — cần token admin để tạo Go-link/Giveaway -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" id="closeLoginModal">&times;</span>
+        <h2 style="margin-top: 0; font-size: 20px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>🔒</span> Xác thực tài khoản
+        </h2>
+        <p style="font-size: 13px; opacity: 0.8; margin-bottom: 20px; line-height: 1.4;">
+          Token đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại để tạo Go-link/Giveaway.
+        </p>
+
+        <form id="loginForm">
+          <div style="margin-bottom: 16px;">
+            <label class="field-label" for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" name="username" autocomplete="username" placeholder="nhap-email@example.com" style="margin: 5px 0 0 0;" required />
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label class="field-label" for="loginPassword">Mật khẩu</label>
+            <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="••••••••" style="margin: 5px 0 0 0;" required />
+          </div>
+
+          <button type="submit" id="submitLoginBtn" class="btn btn-primary" style="margin-top: 0;">Đăng nhập</button>
+        </form>
+      </div>
+    </div>
+
     <script>
       const API_URL = "https://generateandroid.mdchannelvn.workers.dev/generate";
+
+      /* ── LOGIN (mirror news/ios.html) — token admin để generateandroid tạo Go-link/Giveaway ── */
+      let jwtToken = localStorage.getItem("post_token") || "";
+      let pendingRetry = null;
+
+      const loginModal = document.getElementById("loginModal");
+      const closeLoginModal = document.getElementById("closeLoginModal");
+      const submitLoginBtn = document.getElementById("submitLoginBtn");
+
+      function showLoginModal(retryFn = null) {
+        pendingRetry = retryFn;
+        loginModal.classList.add("show");
+      }
+
+      function hideLoginModal() {
+        loginModal.classList.remove("show");
+        pendingRetry = null;
+      }
+
+      closeLoginModal?.addEventListener("click", hideLoginModal);
+      window.addEventListener("click", (e) => {
+        if (e.target === loginModal) hideLoginModal();
+      });
+
+      document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value.trim();
+
+        if (!email || !password) {
+          alert("Vui lòng nhập đầy đủ email và mật khẩu!");
+          return;
+        }
+
+        submitLoginBtn.disabled = true;
+        submitLoginBtn.textContent = "Đang xác thực...";
+
+        try {
+          const res = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json();
+          const token = data.token || (data.data && data.data.token);
+
+          if (res.ok && token) {
+            jwtToken = token;
+            localStorage.setItem("post_token", token);
+            hideLoginModal();
+
+            if (pendingRetry) {
+              const fn = pendingRetry;
+              pendingRetry = null;
+              fn();
+            }
+          } else {
+            alert(data.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản!");
+          }
+        } catch (err) {
+          console.error("Login error:", err);
+          alert("Có lỗi xảy ra khi kết nối tới máy chủ đăng nhập!");
+        } finally {
+          submitLoginBtn.disabled = false;
+          submitLoginBtn.textContent = "Đăng nhập";
+        }
+      });
 
       /* ── ADD APP ── */
       const container = document.getElementById("appsContainer");
@@ -114,6 +255,10 @@
             <div class="field-label">Promo Code (nếu có)</div>
                 <input type="text" class="code" placeholder="VD: VIP2026">
             </div>
+            <div>
+            <div class="field-label">Redeem Link (nếu có — dùng để tạo Giveaway)</div>
+                <input type="url" class="redeemUrl" placeholder="https://play.google.com/redeem?code=...">
+            </div>
             <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
             <input type="checkbox" class="lifetime" id="lifetime-${appCount}">
             <label for="lifetime-${appCount}" style="font-size:13px; color:var(--muted); cursor:pointer;">
@@ -128,12 +273,14 @@
           const urlInput = div.querySelector(".url");
           const priceInput = div.querySelector(".price");
           const codeInput = div.querySelector(".code");
+          const redeemUrlInput = div.querySelector(".redeemUrl");
           const lifetimeInput = div.querySelector(".lifetime");
           if (prefill.url) urlInput.value = prefill.url;
           if (prefill.price != null && prefill.price !== "") {
             priceInput.value = String(prefill.price);
           }
           if (prefill.code) codeInput.value = prefill.code;
+          if (prefill.redeemUrl) redeemUrlInput.value = prefill.redeemUrl;
           if (prefill.lifetime) lifetimeInput.checked = true;
         }
 
@@ -168,7 +315,11 @@
       const previewArea = document.getElementById("previewArea");
       const loadingText = document.getElementById("loadingText");
 
-      convertBtn.addEventListener("click", async () => {
+      convertBtn.addEventListener("click", () => doConvert());
+
+      // Tách thành hàm riêng để có thể gọi lại sau khi đăng nhập lại (token hết hạn khi
+      // generateandroid gọi API tạo Go-link/Giveaway) — mirror pendingRetry ở news/ios.html.
+      async function doConvert() {
         const apps = [];
 
         document.querySelectorAll(".app-card").forEach((card) => {
@@ -182,6 +333,9 @@
 
           const code = card.querySelector(".code").value.trim();
           if (code) entry.code = code;
+
+          const redeemUrl = card.querySelector(".redeemUrl").value.trim();
+          if (redeemUrl) entry.redeemUrl = redeemUrl;
 
           const lifetimeChecked = card.querySelector(".lifetime").checked;
           entry.lifetime = lifetimeChecked;
@@ -210,8 +364,16 @@
           const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ apps }),
+            body: JSON.stringify({ apps, token: jwtToken }),
           });
+
+          if (res.status === 401) {
+            loadingText.classList.remove("show");
+            convertBtn.disabled = false;
+            outputSection.style.display = "none";
+            showLoginModal(() => doConvert());
+            return;
+          }
 
           if (!res.ok) throw new Error("API lỗi: " + res.status);
           const text = await res.text();
@@ -226,7 +388,7 @@
           loadingText.classList.remove("show");
           convertBtn.disabled = false;
         }
-      });
+      }
 
       /* ── COPY ── */
       document.getElementById("copyBtn").addEventListener("click", async () => {

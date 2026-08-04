@@ -630,8 +630,11 @@
       <button type="button" class="primary" onclick="goToConverterFromVerified()">
         Tạo bài tổng hợp →
       </button>
-      <button type="button" class="primary" id="btnWriteSingleDeal" onclick="goToGendealFromVerified()">
+      <button type="button" class="primary" id="btnWriteSingleDeal" onclick="goToGendealFromVerified('long')">
         ✍️ Viết deal riêng
+      </button>
+      <button type="button" class="primary" id="btnCreateThreadDeal" onclick="goToGendealFromVerified('short')">
+        🏷️ Tạo Deal
       </button>
     </div>
   </div>
@@ -839,6 +842,8 @@
           d.originalPrice != null && d.originalPrice !== ""
             ? String(d.originalPrice)
             : "",
+        code: extractCodeFromRedeemUrl(d.redeemUrl),
+        redeemUrl: d.redeemUrl || "",
       }));
       const missing = prefill.filter((p) => !p.url);
       if (missing.length) {
@@ -1522,6 +1527,7 @@
       const bar = document.getElementById("verifiedBar");
       const text = document.getElementById("verifiedBarText");
       const btnSingle = document.getElementById("btnWriteSingleDeal");
+      const btnThread = document.getElementById("btnCreateThreadDeal");
       if (!bar || !text) return;
 
       const n = selectedVerifiedIds.size;
@@ -1534,6 +1540,10 @@
       if (btnSingle) {
         btnSingle.disabled = n !== 1;
         btnSingle.title = n === 1 ? "" : "Chỉ chọn đúng 1 app để dùng nút này";
+      }
+      if (btnThread) {
+        btnThread.disabled = n !== 1;
+        btnThread.title = n === 1 ? "" : "Chỉ chọn đúng 1 app để dùng nút này";
       }
     }
 
@@ -1579,6 +1589,7 @@
         url: a.app_store_url,
         price: cleanPriceValue(a.original_price),
         code: extractCodeFromRedeemUrl(a.redeem_url),
+        redeemUrl: a.redeem_url || "",
         lifetime: a.deal_type === "2" || a.deal_type === "3",
       }));
 
@@ -1587,7 +1598,7 @@
       window.location.href = target === "ios" ? "/news/ios.html" : "/news/android.html";
     }
 
-    function goToGendealFromVerified() {
+    function goToGendealFromVerified(length = "long") {
       if (selectedVerifiedIds.size !== 1) {
         alert("Chỉ chọn đúng 1 app để dùng nút này.");
         return;
@@ -1607,7 +1618,8 @@
         content,
         link: app.app_store_url || "",
         redeemUrl: app.redeem_url || "",
-        length: "long",
+        iconUrl: app.icon_url || "",
+        length: length === "short" ? "short" : "long",
       };
       sessionStorage.setItem("techrum_gendeal_prefill", JSON.stringify(prefill));
       window.location.href = "/tools/gendeal.html";

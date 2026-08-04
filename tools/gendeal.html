@@ -653,6 +653,78 @@
           <button id="publishBtn" type="button" class="btn btn-primary">Đăng bài viết</button>
         </div>
       </div>
+
+      <!-- Publication Form — Thread (deal độc quyền app, dùng cho bài ngắn ~300 từ) -->
+      <div id="publishThreadForm" class="publish-form" style="display: none;">
+        <h2
+          style="margin-top: 0; font-size: 20px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>🏷️</span> Đăng Thread mới
+        </h2>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Tên ứng dụng <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="threadAppName" placeholder="Tên ứng dụng/game..." />
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Nền tảng <span style="color:var(--danger)">*</span></label>
+          <select id="threadPlatform">
+            <option value="android">Android</option>
+            <option value="ios">iOS</option>
+            <option value="windows">Windows</option>
+            <option value="game">Game</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Ảnh (Tuỳ chọn — mặc định lấy icon app từ Verified Apps, hoặc ảnh đã tải ở khung "Ảnh bìa")</label>
+          <input type="url" id="threadImageUrl" placeholder="https://..." />
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Tóm tắt <span style="color:var(--danger)">*</span></label>
+          <textarea id="threadSummary" placeholder="Mô tả ngắn hiển thị ở danh sách feed..." style="height: 70px;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Nội dung chi tiết <span style="color:var(--danger)">*</span></label>
+          <textarea id="threadContent" placeholder="Nội dung chi tiết..." style="height: 200px;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Link nhận deal <span style="color:var(--danger)">*</span></label>
+          <input type="url" id="threadDealLink" placeholder="https://..." />
+        </div>
+
+        <div style="margin-bottom: 16px; display: flex; gap: 12px;">
+          <div style="flex: 1;">
+            <label class="field-label">Hạn nhận deal (Tuỳ chọn)</label>
+            <input type="datetime-local" id="threadDealEndsAt" />
+          </div>
+          <div style="flex: 1;">
+            <label class="field-label">Số lượng giới hạn (Tuỳ chọn)</label>
+            <input type="number" id="threadMaxClaims" min="1" placeholder="Để trống = không giới hạn" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Trạng thái</label>
+          <select id="threadStatus">
+            <option value="published">Đã xuất bản</option>
+            <option value="pending">Chờ duyệt</option>
+            <option value="unpublished">Đã ẩn</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="threadVipOnly" style="width: auto; margin: 0; cursor: pointer;" />
+          <label for="threadVipOnly" style="font-size: 13px; font-weight: 600; cursor: pointer; user-select: none;">Chỉ dành cho thành viên VIP</label>
+        </div>
+
+        <div style="border-top: 1px solid var(--border); padding-top: 14px;">
+          <button id="publishThreadBtn" type="button" class="btn btn-primary">Đăng Thread</button>
+        </div>
+      </div>
     </div>
 
     <div id="historyView" style="display:none;">
@@ -695,6 +767,7 @@
 
     let length = "long";
     let coverImageUrl = "";
+    let prefillIconUrl = ""; // Icon app đã lấy sẵn từ Verified Apps — dùng làm ảnh Thread
     let activeTab = "write";
 
     function showToast(msg) {
@@ -708,8 +781,10 @@
       length = val;
       document.getElementById("btnLong").classList.toggle("active", val === "long");
       document.getElementById("btnShort").classList.toggle("active", val === "short");
-      document.getElementById("coverField").style.display = val === "long" ? "flex" : "none";
       updateGiveawayFieldsVisibility();
+      // Nội dung form đăng bài (post/thread) sinh ra trước đó không còn khớp với chế độ mới — ẩn cả 2 cho tới khi sinh lại
+      document.getElementById("publishForm").style.display = "none";
+      document.getElementById("publishThreadForm").style.display = "none";
     }
 
     // Ô "Giá gốc / Số lượng key" chỉ cần thiết khi bài dài + có link redeem (sẽ tạo Giveaway)
@@ -731,6 +806,7 @@
         if (p.content) document.getElementById("content").value = p.content;
         if (p.link) document.getElementById("link").value = p.link;
         if (p.redeemUrl) document.getElementById("redeemUrl").value = p.redeemUrl;
+        if (p.iconUrl) prefillIconUrl = p.iconUrl;
         setLength(p.length === "short" ? "short" : "long");
       } catch (err) {
         console.warn(err);
@@ -838,13 +914,30 @@
         showResult(data.data);
         showToast(`✅ Đã sinh bài (engine: ${data.engine || "?"})`);
 
-        // Điền sẵn form đăng bài từ kết quả vừa sinh
-        document.getElementById("postTitle").value = appName;
-        document.getElementById("postContent").value = data.data;
-        document.getElementById("postCategory").value = guessCategory(link);
-        selectedTags = [];
-        renderTags();
-        document.getElementById("publishForm").style.display = "block";
+        if (length === "short") {
+          // Điền sẵn form đăng Thread từ kết quả vừa sinh
+          document.getElementById("threadAppName").value = appName;
+          document.getElementById("threadPlatform").value = guessPlatformType(link);
+          document.getElementById("threadImageUrl").value = prefillIconUrl || coverImageUrl;
+          document.getElementById("threadSummary").value = content;
+          document.getElementById("threadContent").value = data.data;
+          document.getElementById("threadDealLink").value = redeemUrl || link;
+          document.getElementById("threadDealEndsAt").value = "";
+          document.getElementById("threadMaxClaims").value = "";
+          document.getElementById("threadStatus").value = "published";
+          document.getElementById("threadVipOnly").checked = false;
+          document.getElementById("publishForm").style.display = "none";
+          document.getElementById("publishThreadForm").style.display = "block";
+        } else {
+          // Điền sẵn form đăng bài từ kết quả vừa sinh
+          document.getElementById("postTitle").value = appName;
+          document.getElementById("postContent").value = data.data;
+          document.getElementById("postCategory").value = guessCategory(link);
+          selectedTags = [];
+          renderTags();
+          document.getElementById("publishThreadForm").style.display = "none";
+          document.getElementById("publishForm").style.display = "block";
+        }
       } catch (e) {
         showToast("❌ Lỗi: " + e.message);
       } finally {
@@ -924,6 +1017,15 @@
       if (l.includes("play.google.com")) return "android";
       if (l.includes("store.steampowered.com") || l.includes("epicgames.com") || l.includes("gog.com")) return "gaming";
       return "technology";
+    }
+
+    // Đoán nền tảng Thread (chỉ 4 giá trị hợp lệ: android/ios/windows/game) dựa theo link
+    function guessPlatformType(link) {
+      const l = (link || "").toLowerCase();
+      if (l.includes("apps.apple.com")) return "ios";
+      if (l.includes("play.google.com")) return "android";
+      if (l.includes("store.steampowered.com") || l.includes("epicgames.com") || l.includes("gog.com")) return "game";
+      return "windows";
     }
 
     function showResult(text) {
@@ -1267,7 +1369,100 @@
       await publishPost(postData);
     });
 
+    async function publishThread(threadData) {
+      const publishThreadBtn = document.getElementById("publishThreadBtn");
+      publishThreadBtn.disabled = true;
+      publishThreadBtn.textContent = "Đang xử lý...";
+
+      try {
+        const response = await fetch(`${TECHDEAL_API}/api/admin/threads`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${jwtToken}`
+          },
+          body: JSON.stringify(threadData)
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          if (response.status === 403) alert("Tài khoản hiện tại không thể đăng thread (bị khoá hoặc không đủ quyền). Vui lòng đăng nhập lại bằng tài khoản khác.");
+          showLoginModal(() => publishThread(threadData));
+          return;
+        }
+
+        const resJson = await response.json();
+        if (response.ok && resJson.success) {
+          alert("Chúc mừng! Thread đã được đăng thành công!");
+        } else {
+          alert(resJson.message || "Có lỗi xảy ra khi đăng thread!");
+        }
+      } catch (err) {
+        console.error("Publish thread error:", err);
+        alert("Có lỗi xảy ra khi đăng thread!");
+      } finally {
+        publishThreadBtn.disabled = false;
+        publishThreadBtn.textContent = "Đăng Thread";
+      }
+    }
+
+    document.getElementById("publishThreadBtn")?.addEventListener("click", async () => {
+      const app_name = document.getElementById("threadAppName").value.trim();
+      const platform_type = document.getElementById("threadPlatform").value;
+      const image_url = document.getElementById("threadImageUrl").value.trim();
+      const summary = document.getElementById("threadSummary").value.trim();
+      const content = document.getElementById("threadContent").value.trim();
+      const deal_link = document.getElementById("threadDealLink").value.trim();
+      const deal_ends_at = document.getElementById("threadDealEndsAt").value;
+      const max_claims = document.getElementById("threadMaxClaims").value;
+      const status = document.getElementById("threadStatus").value;
+      const is_vip_only = document.getElementById("threadVipOnly").checked;
+
+      if (!app_name) { alert("Vui lòng điền tên ứng dụng!"); return; }
+      if (!summary) { alert("Vui lòng nhập tóm tắt!"); return; }
+      if (!content) { alert("Vui lòng nhập nội dung chi tiết!"); return; }
+      if (!deal_link) { alert("Vui lòng điền link nhận deal!"); return; }
+
+      const threadData = {
+        app_name,
+        platform_type,
+        image_url: image_url || undefined,
+        summary,
+        content,
+        deal_link,
+        deal_ends_at: deal_ends_at ? new Date(deal_ends_at).toISOString() : null,
+        max_claims: max_claims === "" ? null : parseInt(max_claims, 10),
+        status,
+        is_vip_only: is_vip_only ? 1 : 0
+      };
+
+      await publishThread(threadData);
+    });
+
     document.getElementById("directPublishBtn")?.addEventListener("click", () => {
+      if (length === "short") {
+        const publishThreadForm = document.getElementById("publishThreadForm");
+        if (!publishThreadForm) return;
+        const isHidden = publishThreadForm.style.display === "none" || publishThreadForm.style.display === "";
+        if (isHidden) {
+          document.getElementById("threadAppName").value = "";
+          document.getElementById("threadPlatform").value = "android";
+          document.getElementById("threadImageUrl").value = prefillIconUrl || coverImageUrl;
+          document.getElementById("threadSummary").value = "";
+          document.getElementById("threadContent").value = "";
+          document.getElementById("threadDealLink").value = "";
+          document.getElementById("threadDealEndsAt").value = "";
+          document.getElementById("threadMaxClaims").value = "";
+          document.getElementById("threadStatus").value = "published";
+          document.getElementById("threadVipOnly").checked = false;
+
+          publishThreadForm.style.display = "block";
+          publishThreadForm.scrollIntoView({ behavior: "smooth" });
+        } else {
+          publishThreadForm.style.display = "none";
+        }
+        return;
+      }
+
       const publishForm = document.getElementById("publishForm");
       if (publishForm) {
         const isHidden = publishForm.style.display === "none" || publishForm.style.display === "";
