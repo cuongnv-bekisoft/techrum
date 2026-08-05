@@ -1126,7 +1126,53 @@
       const idx = sourcesData.findIndex((s) => s.id === source.id);
       document.querySelectorAll(".source")[idx]?.classList.add("active");
       if (window.innerWidth <= 768) closeSidebar();
+      if (isAutoVerifySource(source)) clearSelectedApps();
       loadDeals(false);
+    }
+
+    // Nguồn có "Bỏ qua xác minh" (vd oodata) -> deal hiển thị coi như đã chắc chắn free,
+    // không cần chọn tay từng app rồi bấm Lưu Verified như nguồn thường, load deal là tự lưu luôn.
+    function isAutoVerifySource(source) {
+      return !!source && (source.skip_verify === 1 || source.skip_verify === true);
+    }
+
+    function dealToVerifiedApp(deal, key) {
+      return {
+        platform:       deal.appStoreUrl ? "ios" : "android",
+        appId:          deal.appStoreUrl ? (deal.appStoreUrl.match(/\/id(\d+)/i) || [])[1] : (deal.playStoreUrl.match(/[?&]id=([^&]+)/i) || [])[1],
+        appName:        deal.appName || "",
+        iconUrl:        deal.iconUrl || "",
+        fileSizeBytes:  deal.fileSizeBytes || null,
+        minOsVersion:   deal.minOsVersion || null,
+        description:    deal.description || "",
+        originalPrice:  deal.originalPrice ? String(deal.originalPrice) : null,
+        currentPrice:   0,
+        dealType:       deal.dealType || "1",
+        appStoreUrl:    deal.appStoreUrl || deal.playStoreUrl || null,
+        redeemUrl:      deal.redeemUrl || null,
+        source:         deal.source || "",
+        _key:           key
+      };
+    }
+
+    async function autoSaveVerifiedApps(apps) {
+      if (!apps.length) return;
+      try {
+        const res = await fetch(`${DEALS_BASE_API}/api/verified-apps`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(apps.map((a) => {
+            const { _key, ...app } = a;
+            return app;
+          }))
+        });
+        const data = await res.json();
+        if (data.success) {
+          console.log(`Nguồn bỏ qua xác minh: đã tự động thêm ${data.count} ứng dụng vào Verified.`);
+        }
+      } catch (e) {
+        console.error("Auto-save verified apps failed:", e);
+      }
     }
 
     async function loadDeals(append) {
@@ -1158,6 +1204,15 @@
           '<p class="empty-deals">Không có deal trên trang này.</p>';
       }
 
+      const autoVerify = isAutoVerifySource(currentSource);
+      if (autoVerify) {
+        const autoApps = list
+          .filter((d) => d.appStoreUrl || d.playStoreUrl)
+          .map((d) => dealToVerifiedApp(d, dealKey(d)))
+          .filter((a) => a.appId);
+        autoSaveVerifiedApps(autoApps);
+      }
+
       list.forEach((deal) => {
         const key = dealKey(deal);
         const free = isDealFree(deal);
@@ -1172,11 +1227,12 @@
         card.innerHTML = `
     <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;">
       <h3 class="deal-title" style="margin: 0;">${title}</h3>
-      <input type="checkbox" class="mod-select-checkbox" data-key="${key}" style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0;" ${isSelected ? 'checked' : ''} />
+      ${autoVerify ? '' : `<input type="checkbox" class="mod-select-checkbox" data-key="${key}" style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0;" ${isSelected ? 'checked' : ''} />`}
     </div>
     <div class="deal-meta">
       <span><strong>Giá:</strong> ${escapeHtml(priceLine)}</span>
       <span class="deal-badge ${free ? "free" : ""}">${free ? "Free" : "Có phí"}</span>
+      ${autoVerify ? `<span class="deal-badge" style="background: rgba(61, 220, 132, 0.18); border-color: rgba(61, 220, 132, 0.35);" title="Nguồn bỏ qua xác minh — đã tự động thêm vào danh sách Verified">⚡ Auto-Verified</span>` : ''}
       ${deal.alreadyVerified ? `<span class="deal-badge" style="background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.35); color: #a855f7;" title="Đã verify trước đó, dùng lại kết quả có sẵn">✅ Đã Verified</span>` : ''}
       ${deal.source ? `<span><strong>Nguồn:</strong> ${escapeHtml(formatSource(deal.source))}</span>` : ''}
     </div>
@@ -1229,22 +1285,7 @@
             const checked = e.target.checked;
             if (checked) {
               if (!selectedApps.some(a => a._key === key)) {
-                selectedApps.push({
-                  platform:       deal.appStoreUrl ? "ios" : "android",
-                  appId:          deal.appStoreUrl ? (deal.appStoreUrl.match(/\/id(\d+)/i) || [])[1] : (deal.playStoreUrl.match(/[?&]id=([^&]+)/i) || [])[1],
-                  appName:        deal.appName || "",
-                  iconUrl:        deal.iconUrl || "",
-                  fileSizeBytes:  deal.fileSizeBytes || null,
-                  minOsVersion:   deal.minOsVersion || null,
-                  description:    deal.description || "",
-                  originalPrice:  deal.originalPrice ? String(deal.originalPrice) : null,
-                  currentPrice:   0,
-                  dealType:       deal.dealType || "1",
-                  appStoreUrl:    deal.appStoreUrl || deal.playStoreUrl || null,
-                  redeemUrl:      deal.redeemUrl || null,
-                  source:         deal.source || "",
-                  _key:           key
-                });
+                selectedApps.push(dealToVerifiedApp(deal, key));
               }
             } else {
               selectedApps = selectedApps.filter(a => a._key !== key);
