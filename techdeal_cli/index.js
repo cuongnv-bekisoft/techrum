@@ -355,12 +355,13 @@ async function runConvertFlow(url, isBot = 0) {
 
     spinner.succeed(pc.green(' Chuyển đổi thành công!'));
 
+    // --- Tiếng Việt ---
     let titleVal = json.title_short || "";
     let contentVal = json.data.replace(/\\n/g, '\n');
     let categoryVal = "technology";
     let tagsVal = [];
 
-    // Parse if AI returned JSON format
+    // Parse if AI returned JSON format (VI)
     try {
       const parsed = JSON.parse(json.data);
       if (parsed && typeof parsed === "object") {
@@ -373,30 +374,61 @@ async function runConvertFlow(url, isBot = 0) {
       // not JSON format, keep default plain text
     }
 
+    // --- Tiếng Anh (từ data_en / title_short_en) ---
+    let titleEnVal = json.title_short_en || "";
+    let contentEnVal = (json.data_en || "").replace(/\\n/g, '\n');
+
+    // Parse if AI returned JSON format (EN)
+    try {
+      const parsedEn = JSON.parse(json.data_en || "");
+      if (parsedEn && typeof parsedEn === "object") {
+        titleEnVal = titleEnVal || parsedEn.title || "";
+        contentEnVal = parsedEn.content || contentEnVal;
+      }
+    } catch (e) {
+      // not JSON, keep plain text
+    }
+
+    const hasEnContent = !!(titleEnVal || contentEnVal);
+
     console.log(pc.cyan('\n=== NỘI DUNG SAU CONVERT ==='));
-    console.log(`${pc.bold('Tiêu đề dự kiến:')} ${titleVal}`);
+    console.log(`${pc.bold('🇻🇳 Tiêu đề (VI):')} ${titleVal}`);
+    if (hasEnContent) {
+      console.log(`${pc.bold('🇺🇸 Tiêu đề (EN):')} ${pc.green(titleEnVal || '(chưa có)')}`);
+    }
     console.log(`${pc.bold('Danh mục:')} ${categoryVal}`);
     console.log(`${pc.bold('Tags:')} ${tagsVal.join(', ') || 'Không có'}`);
     console.log(pc.gray('----------------------------------------'));
-    console.log(contentVal.substring(0, 500) + (contentVal.length > 500 ? '\n... (và phần còn lại)' : ''));
+    console.log(contentVal.substring(0, 400) + (contentVal.length > 400 ? '\n... (và phần còn lại)' : ''));
+    if (hasEnContent && contentEnVal) {
+      console.log(pc.gray('--- EN preview ---'));
+      console.log(pc.green(contentEnVal.substring(0, 300) + (contentEnVal.length > 300 ? '\n...' : '')));
+    }
     console.log(pc.cyan('=============================\n'));
 
     // Hàm đệ quy/vòng lặp nội bộ để xử lý hành động sau khi convert mà không phải chạy lại API
     async function showActionsMenu() {
+      const showAllChoices = [
+        { title: '🚀 Đăng tải lên Techdeal ngay lập tức', value: 'publish' },
+        { title: `📝 Xem toàn bộ nội dung đã convert ${hasEnContent ? pc.green('[VI + EN]') : '[VI]'}`, value: 'show_all' },
+        { title: '⬅ Quay lại Menu chính', value: 'menu' }
+      ];
+
       const postAction = await prompts({
         type: 'select',
         name: 'action',
         message: 'Bạn muốn làm gì tiếp theo?',
-        choices: [
-          { title: '🚀 Đăng tải lên Techdeal ngay lập tức', value: 'publish' },
-          { title: '📝 Xem toàn bộ nội dung đã convert', value: 'show_all' },
-          { title: '⬅ Quay lại Menu chính', value: 'menu' }
-        ]
+        choices: showAllChoices
       });
 
       if (postAction.action === 'show_all') {
         console.clear();
+        console.log(pc.bold(pc.cyan('🇻🇳 NỘI DUNG TIẾNG VIỆT:')));
         console.log(pc.yellow(contentVal));
+        if (hasEnContent && contentEnVal) {
+          console.log('\n' + pc.bold(pc.green('🇺🇸 NỘI DUNG TIẾNG ANH:')));
+          console.log(pc.green(contentEnVal));
+        }
         console.log('\n');
         const actionAfterShow = await prompts({
           type: 'select',
@@ -409,21 +441,28 @@ async function runConvertFlow(url, isBot = 0) {
         });
 
         if (actionAfterShow.action === 'publish') {
-          await runPublishFlow({ title: titleVal, content: contentVal, category_id: categoryVal, tags: tagsVal });
+          await runPublishFlow({ title: titleVal, content: contentVal, category_id: categoryVal, tags: tagsVal, title_en: titleEnVal, content_en: contentEnVal });
         } else {
           // Quay lại menu hành động mà không cần convert lại
           console.clear();
           console.log(pc.cyan('\n=== NỘI DUNG SAU CONVERT (XEM LẠI) ==='));
-          console.log(`${pc.bold('Tiêu đề dự kiến:')} ${titleVal}`);
+          console.log(`${pc.bold('🇻🇳 Tiêu đề (VI):')} ${titleVal}`);
+          if (hasEnContent) {
+            console.log(`${pc.bold('🇺🇸 Tiêu đề (EN):')} ${pc.green(titleEnVal || '(chưa có)')}`);
+          }
           console.log(`${pc.bold('Danh mục:')} ${categoryVal}`);
           console.log(`${pc.bold('Tags:')} ${tagsVal.join(', ') || 'Không có'}`);
           console.log(pc.gray('----------------------------------------'));
-          console.log(contentVal.substring(0, 500) + (contentVal.length > 500 ? '\n... (và phần còn lại)' : ''));
+          console.log(contentVal.substring(0, 400) + (contentVal.length > 400 ? '\n... (và phần còn lại)' : ''));
+          if (hasEnContent && contentEnVal) {
+            console.log(pc.gray('--- EN preview ---'));
+            console.log(pc.green(contentEnVal.substring(0, 300) + (contentEnVal.length > 300 ? '\n...' : '')));
+          }
           console.log(pc.cyan('=============================\n'));
           await showActionsMenu();
         }
       } else if (postAction.action === 'publish') {
-        await runPublishFlow({ title: titleVal, content: contentVal, category_id: categoryVal, tags: tagsVal });
+        await runPublishFlow({ title: titleVal, content: contentVal, category_id: categoryVal, tags: tagsVal, title_en: titleEnVal, content_en: contentEnVal });
       } else {
         mainMenu();
       }
@@ -439,12 +478,21 @@ async function runConvertFlow(url, isBot = 0) {
 
 // Core Publish Flow
 async function runPublishFlow(postData) {
-  // Confirm and Edit details before publish
+  const hasEnContent = !!(postData.title_en || postData.content_en);
+
+  // Bước 1: Xác nhận thông tin cơ bản
+  console.log(pc.cyan('\n--- XÁC NHẬN THÔNG TIN BÀI ĐĂNG ---'));
+  if (hasEnContent) {
+    console.log(pc.green(`✅ Bài viết có nội dung song ngữ (VI + EN)`));
+  } else {
+    console.log(pc.yellow(`⚠️  Chỉ có nội dung tiếng Việt (không có bản EN)`));
+  }
+
   const editDetails = await prompts([
     {
       type: 'text',
       name: 'title',
-      message: 'Xác nhận/Sửa tiêu đề bài đăng (Dùng phím mũi tên Trái/Phải để sửa):',
+      message: '🇻🇳 Xác nhận/Sửa tiêu đề (VI):',
       initial: postData.title
     },
     {
@@ -458,22 +506,67 @@ async function runPublishFlow(postData) {
       type: 'text',
       name: 'tags',
       message: 'Nhập tags (phân cách bằng dấu phẩy):',
-      initial: postData.tags.join(', ')
-    },
-    {
-      type: 'confirm',
-      name: 'confirmPublish',
-      message: 'Bạn có chắc chắn muốn đăng bài viết này?',
-      initial: true
+      initial: (postData.tags || []).join(', ')
     }
   ]);
 
-  if (!editDetails.confirmPublish) {
+  if (!editDetails.title) {
     console.log(pc.yellow('Hủy đăng bài.'));
     await backToMenu();
     return;
   }
 
+  // Bước 2: Xác nhận / sửa nội dung tiếng Anh (nếu có)
+  let finalTitleEn = postData.title_en || '';
+  let finalContentEn = postData.content_en || '';
+
+  if (hasEnContent) {
+    console.log(pc.cyan('\n--- NỘI DUNG TIẾNG ANH ---'));
+    console.log(`${pc.bold('🇺🇸 Tiêu đề EN hiện tại:')} ${pc.green(finalTitleEn || '(chưa có)')}`);
+    if (finalContentEn) {
+      console.log(`${pc.bold('Preview EN:')} ${pc.green(finalContentEn.substring(0, 200))}${finalContentEn.length > 200 ? '...' : ''}`);
+    }
+
+    const enDetails = await prompts([
+      {
+        type: 'text',
+        name: 'title_en',
+        message: '🇺🇸 Xác nhận/Sửa tiêu đề (EN):',
+        initial: finalTitleEn
+      },
+      {
+        type: 'confirm',
+        name: 'includeEn',
+        message: 'Đăng kèm bản tiếng Anh không?',
+        initial: !!(finalTitleEn && finalContentEn)
+      }
+    ]);
+
+    if (enDetails.includeEn && enDetails.title_en) {
+      finalTitleEn = enDetails.title_en;
+    } else if (!enDetails.includeEn) {
+      finalTitleEn = '';
+      finalContentEn = '';
+    }
+  }
+
+  // Bước 3: Confirm cuối
+  const confirmRes = await prompts({
+    type: 'confirm',
+    name: 'confirmPublish',
+    message: finalTitleEn
+      ? `Đăng bài "${editDetails.title}" + EN "${finalTitleEn}"?`
+      : `Đăng bài "${editDetails.title}" (chỉ tiếng Việt)?`,
+    initial: true
+  });
+
+  if (!confirmRes.confirmPublish) {
+    console.log(pc.yellow('Hủy đăng bài.'));
+    await backToMenu();
+    return;
+  }
+
+  // Build payload — chỉ gửi EN nếu có cả title_en lẫn content_en
   const payload = {
     title: editDetails.title,
     content: postData.content,
@@ -481,6 +574,11 @@ async function runPublishFlow(postData) {
     tags: editDetails.tags.split(',').map(t => t.trim()).filter(t => t.length > 0),
     scheduled_at: null
   };
+
+  if (finalTitleEn && finalContentEn) {
+    payload.title_en = finalTitleEn;
+    payload.content_en = finalContentEn;
+  }
 
   const spinner = ora('Đang đăng bài viết lên Techdeal...').start();
   try {
@@ -495,7 +593,8 @@ async function runPublishFlow(postData) {
 
     const resJson = await res.json();
     if (res.ok && resJson.success) {
-      spinner.succeed(pc.green(' Đăng bài viết lên Techdeal thành công!'));
+      const langLabel = (finalTitleEn && finalContentEn) ? pc.green('[VI + EN]') : pc.yellow('[Chỉ VI]');
+      spinner.succeed(pc.green(` Đăng bài viết lên Techdeal thành công! ${langLabel}`));
     } else {
       spinner.fail(pc.red(' Đăng bài viết thất bại: ' + (resJson.message || 'Mã lỗi ' + res.status)));
     }
