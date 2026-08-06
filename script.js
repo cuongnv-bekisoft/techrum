@@ -46,7 +46,7 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
     // Populate and show the publish form
     let titleVal = json.title_short || "";
     let contentVal = output.value;
-    let categoryVal = "technology";
+    let categoryVal = json.forum_id || "technology";
     let tagsVal = [];
 
     try {
@@ -54,15 +54,20 @@ document.getElementById("convertBtn").addEventListener("click", async () => {
       if (parsed && typeof parsed === "object") {
         titleVal = titleVal || parsed.title || "";
         contentVal = parsed.content || "";
-        categoryVal = parsed.category_id || "technology";
+        categoryVal = json.forum_id || parsed.category_id || "technology";
         tagsVal = parsed.tags || [];
       }
     } catch (e) {
       // not a JSON, use plain text
     }
 
+    let titleEnVal = json.title_short_en || "";
+    let contentEnVal = json.data_en ? json.data_en.replace(/\\n/g, '\n') : "";
+
     document.getElementById("postTitle").value = titleVal;
     document.getElementById("postContent").value = contentVal;
+    document.getElementById("postTitleEn").value = titleEnVal;
+    document.getElementById("postContentEn").value = contentEnVal;
     document.getElementById("postCategory").value = categoryVal;
     selectedTags = tagsVal;
     renderTags();
@@ -288,6 +293,8 @@ async function publishPost(postData) {
 document.getElementById("publishBtn")?.addEventListener("click", async () => {
   const title = document.getElementById("postTitle").value.trim();
   const content = document.getElementById("postContent").value.trim();
+  const titleEn = document.getElementById("postTitleEn").value.trim();
+  const contentEn = document.getElementById("postContentEn").value.trim();
   const categoryId = document.getElementById("postCategory").value;
   const isScheduled = document.getElementById("isScheduled").checked;
   const scheduleDate = document.getElementById("scheduleDate").value;
@@ -304,6 +311,8 @@ document.getElementById("publishBtn")?.addEventListener("click", async () => {
   const postData = {
     title,
     content,
+    title_en: titleEn || undefined,
+    content_en: contentEn || undefined,
     category_id: categoryId,
     tags: selectedTags,
     scheduled_at: isScheduled && scheduleDate ? new Date(scheduleDate).toISOString() : null
