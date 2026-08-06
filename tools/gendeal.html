@@ -682,13 +682,23 @@
         </div>
 
         <div style="margin-bottom: 16px;">
-          <label class="field-label">Tóm tắt <span style="color:var(--danger)">*</span></label>
-          <textarea id="threadSummary" placeholder="Mô tả ngắn hiển thị ở danh sách feed..." style="height: 70px;"></textarea>
+          <label class="field-label">Tóm tắt (Tiếng Việt) <span style="color:var(--danger)">*</span></label>
+          <textarea id="threadSummary" placeholder="Mô tả ngắn hiển thị ở danh sách feed (tiếng Việt)..." style="height: 70px;"></textarea>
         </div>
 
         <div style="margin-bottom: 16px;">
-          <label class="field-label">Nội dung chi tiết <span style="color:var(--danger)">*</span></label>
-          <textarea id="threadContent" placeholder="Nội dung chi tiết..." style="height: 200px;"></textarea>
+          <label class="field-label">Tóm tắt (English)</label>
+          <textarea id="threadSummaryEn" placeholder="Short description for feed list (English)..." style="height: 70px;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Nội dung chi tiết (Tiếng Việt) <span style="color:var(--danger)">*</span></label>
+          <textarea id="threadContent" placeholder="Nội dung chi tiết (tiếng Việt)..." style="height: 200px;"></textarea>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Nội dung chi tiết (English)</label>
+          <textarea id="threadContentEn" placeholder="Detailed content (English)..." style="height: 200px;"></textarea>
         </div>
 
         <div style="margin-bottom: 16px;">
@@ -921,6 +931,12 @@
           document.getElementById("threadImageUrl").value = prefillIconUrl || coverImageUrl;
           document.getElementById("threadSummary").value = getFirstTwoSentences(data.data);
           document.getElementById("threadContent").value = data.data;
+
+          // Điền sẵn phần tiếng Anh (lấy từ mô tả tiếng Anh có sẵn ở input content)
+          const englishDesc = document.getElementById("content").value.trim();
+          document.getElementById("threadSummaryEn").value = getFirstTwoSentences(englishDesc);
+          document.getElementById("threadContentEn").value = englishDesc;
+
           document.getElementById("threadDealLink").value = redeemUrl || link;
           document.getElementById("threadDealEndsAt").value = "";
           document.getElementById("threadMaxClaims").value = "";
@@ -1417,7 +1433,9 @@
       const platform_type = document.getElementById("threadPlatform").value;
       const image_url = document.getElementById("threadImageUrl").value.trim();
       const summary = document.getElementById("threadSummary").value.trim();
+      const summary_en = document.getElementById("threadSummaryEn").value.trim();
       const content = document.getElementById("threadContent").value.trim();
+      const content_en = document.getElementById("threadContentEn").value.trim();
       const deal_link = document.getElementById("threadDealLink").value.trim();
       const deal_ends_at = document.getElementById("threadDealEndsAt").value;
       const max_claims = document.getElementById("threadMaxClaims").value;
@@ -1434,7 +1452,9 @@
         platform_type,
         image_url: image_url || undefined,
         summary,
+        summary_en: summary_en || undefined,
         content,
+        content_en: content_en || undefined,
         deal_link,
         deal_ends_at: deal_ends_at ? new Date(deal_ends_at).toISOString() : null,
         max_claims: max_claims === "" ? null : parseInt(max_claims, 10),
@@ -1455,7 +1475,9 @@
           document.getElementById("threadPlatform").value = "android";
           document.getElementById("threadImageUrl").value = prefillIconUrl || coverImageUrl;
           document.getElementById("threadSummary").value = "";
+          document.getElementById("threadSummaryEn").value = "";
           document.getElementById("threadContent").value = "";
+          document.getElementById("threadContentEn").value = "";
           document.getElementById("threadDealLink").value = "";
           document.getElementById("threadDealEndsAt").value = "";
           document.getElementById("threadMaxClaims").value = "";
