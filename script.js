@@ -380,10 +380,16 @@ bbBtn.addEventListener("click", () => {
 function renderBBCode(text) {
   return (
     text
-      // ảnh
+      // ảnh có center
       .replace(
         /\[CENTER\]\[IMG\](.*?)\[\/IMG\]\[\/CENTER\]/gi,
-        '<div style="text-align:center"><img src="$1"></div>',
+        '<div style="text-align:center"><img src="$1" style="max-width:100%;margin:5px;border-radius:6px;"></div>',
+      )
+
+      // ảnh thường
+      .replace(
+        /\[IMG\](.*?)\[\/IMG\]/gi,
+        '<img src="$1" style="max-width:100%;margin:5px;border-radius:6px;">',
       )
 
       // link

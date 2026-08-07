@@ -564,9 +564,7 @@
           <div class="field">
             <label>Engine AI</label>
             <select id="engine">
-              <option value="openrouter">OpenRouter (mặc định)</option>
-              <option value="gemini">Gemini</option>
-              <option value="openai">OpenAI</option>
+              <option value="gemini">Gemini (mặc định)</option>
               <option value="workersai">Cloudflare Workers AI</option>
             </select>
           </div>
@@ -582,10 +580,27 @@
         <div class="panel result-box">
           <h2>Kết quả</h2>
           <div id="resultEmpty" class="empty-hint">Điền thông tin bên trái rồi bấm "Sinh bài viết".</div>
-          <textarea id="resultText" style="display:none;" readonly></textarea>
-          <div class="result-actions" id="resultActions" style="display:none;">
-            <button type="button" class="btn-secondary" onclick="copyResult()">📋 Copy</button>
-            <button type="button" class="btn-secondary" onclick="clearResult()">🗑️ Xoá kết quả</button>
+          
+          <div id="resultWrapper" style="display:none; flex-direction: column; gap: 14px; width: 100%;">
+            <div class="field">
+              <label style="font-weight: 600;">Bản Tiếng Việt (Vietnamese)</label>
+              <textarea id="resultText" readonly style="min-height: 250px;"></textarea>
+              <div class="result-actions">
+                <button type="button" class="btn-secondary" onclick="copyResult('vi')">📋 Copy Tiếng Việt</button>
+              </div>
+            </div>
+            
+            <div class="field">
+              <label style="font-weight: 600;">Bản Tiếng Anh (English)</label>
+              <textarea id="resultTextEn" readonly style="min-height: 250px;"></textarea>
+              <div class="result-actions">
+                <button type="button" class="btn-secondary" onclick="copyResult('en')">📋 Copy Tiếng Anh</button>
+              </div>
+            </div>
+
+            <div class="result-actions" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
+              <button type="button" class="btn-secondary" onclick="clearResult()">🗑️ Xoá kết quả</button>
+            </div>
           </div>
         </div>
       </div>
@@ -599,15 +614,28 @@
           <span>📝</span> Đăng bài viết mới
         </h2>
 
-        <div style="margin-bottom: 16px;">
-          <label class="field-label">Tiêu đề bài viết <span style="color:var(--danger)">*</span></label>
-          <input type="text" id="postTitle" placeholder="Nhập tiêu đề ấn tượng cho bài viết..." />
+        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+            <label class="field-label">Tiêu đề bài viết (Tiếng Việt) <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="postTitle" placeholder="Nhập tiêu đề ấn tượng cho bài viết..." style="margin: 0;" />
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+            <label class="field-label">Tiêu đề bài viết (English) <span style="color:var(--danger)">*</span></label>
+            <input type="text" id="postTitleEn" placeholder="English title..." style="margin: 0;" />
+          </div>
         </div>
 
-        <div style="margin-bottom: 16px;">
-          <label class="field-label">Nội dung chi tiết <span style="color:var(--danger)">*</span></label>
-          <textarea id="postContent" placeholder="Nhập nội dung bài viết bằng mã BBCode..."
-            style="height: 200px;"></textarea>
+        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+            <label class="field-label">Nội dung chi tiết (Tiếng Việt) <span style="color:var(--danger)">*</span></label>
+            <textarea id="postContent" placeholder="Nhập nội dung bài viết bằng mã BBCode (Tiếng Việt)..."
+              style="height: 200px; margin: 0;"></textarea>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+            <label class="field-label">Nội dung chi tiết (English) <span style="color:var(--danger)">*</span></label>
+            <textarea id="postContentEn" placeholder="English content in BBCode..."
+              style="height: 200px; margin: 0;"></textarea>
+          </div>
         </div>
 
         <div style="margin-bottom: 16px;">
@@ -921,7 +949,7 @@
         }
 
         const data = await res.json();
-        showResult(data.data);
+        showResult(data.data, data.data_en);
         showToast(`✅ Đã sinh bài (engine: ${data.engine || "?"})`);
 
         if (length === "short") {
@@ -932,10 +960,9 @@
           document.getElementById("threadSummary").value = getFirstTwoSentences(data.data);
           document.getElementById("threadContent").value = data.data;
 
-          // Điền sẵn phần tiếng Anh (lấy từ mô tả tiếng Anh có sẵn ở input content)
-          const englishDesc = document.getElementById("content").value.trim();
-          document.getElementById("threadSummaryEn").value = getFirstTwoSentences(englishDesc);
-          document.getElementById("threadContentEn").value = englishDesc;
+          // Điền sẵn phần tiếng Anh (lấy từ bản dịch AI)
+          document.getElementById("threadSummaryEn").value = getFirstTwoSentences(data.data_en);
+          document.getElementById("threadContentEn").value = data.data_en;
 
           document.getElementById("threadDealLink").value = redeemUrl || link;
           document.getElementById("threadDealEndsAt").value = "";
@@ -947,7 +974,9 @@
         } else {
           // Điền sẵn form đăng bài từ kết quả vừa sinh
           document.getElementById("postTitle").value = appName;
+          document.getElementById("postTitleEn").value = appName;
           document.getElementById("postContent").value = data.data;
+          document.getElementById("postContentEn").value = data.data_en;
           document.getElementById("postCategory").value = guessCategory(link);
           selectedTags = [];
           renderTags();
@@ -1051,29 +1080,36 @@
       return matches.slice(0, 2).join("").trim();
     }
 
-    function showResult(text) {
+    function showResult(textVi, textEn) {
       document.getElementById("resultEmpty").style.display = "none";
-      const ta = document.getElementById("resultText");
-      ta.value = text;
-      ta.style.display = "block";
-      document.getElementById("resultActions").style.display = "flex";
+      
+      const taVi = document.getElementById("resultText");
+      taVi.value = textVi || "";
+      
+      const taEn = document.getElementById("resultTextEn");
+      taEn.value = textEn || "";
+      
+      document.getElementById("resultWrapper").style.display = "flex";
     }
 
     function clearResult() {
-      document.getElementById("resultText").style.display = "none";
-      document.getElementById("resultActions").style.display = "none";
+      document.getElementById("resultText").value = "";
+      document.getElementById("resultTextEn").value = "";
+      document.getElementById("resultWrapper").style.display = "none";
       document.getElementById("resultEmpty").style.display = "block";
     }
 
-    async function copyResult() {
-      const ta = document.getElementById("resultText");
+    async function copyResult(lang = "vi") {
+      const id = lang === "vi" ? "resultText" : "resultTextEn";
+      const ta = document.getElementById(id);
+      const label = lang === "vi" ? "Tiếng Việt" : "Tiếng Anh";
       try {
         await navigator.clipboard.writeText(ta.value);
-        showToast("✅ Đã copy vào clipboard!");
+        showToast(`✅ Đã copy ${label}!`);
       } catch (e) {
         ta.select();
         document.execCommand("copy");
-        showToast("✅ Đã copy!");
+        showToast(`✅ Đã copy ${label}!`);
       }
     }
 
@@ -1131,18 +1167,25 @@
             </div>
             <div class="history-preview">${escapeHtml((item.result || "").slice(0, 220))}...</div>
             <div class="history-actions">
-              <button type="button" data-act="copy">📋 Copy</button>
-              <button type="button" data-act="view">👁️ Xem đầy đủ</button>
+              <button type="button" data-act="copy-vi">📋 Copy VN</button>
+              <button type="button" data-act="copy-en" ${item.result_en ? "" : 'style="display:none;"'}>📋 Copy EN</button>
+              <button type="button" data-act="view">👁️ Xem</button>
               <button type="button" class="delete-btn" data-act="delete">🗑️ Xoá</button>
             </div>
           `;
-          card.querySelector('[data-act="copy"]').onclick = async () => {
+          card.querySelector('[data-act="copy-vi"]').onclick = async () => {
             await navigator.clipboard.writeText(item.result || "");
-            showToast("✅ Đã copy!");
+            showToast("✅ Đã copy bản Tiếng Việt!");
           };
+          if (item.result_en) {
+            card.querySelector('[data-act="copy-en"]').onclick = async () => {
+              await navigator.clipboard.writeText(item.result_en || "");
+              showToast("✅ Đã copy bản Tiếng Anh!");
+            };
+          }
           card.querySelector('[data-act="view"]').onclick = () => {
             switchTab("write");
-            showResult(item.result || "");
+            showResult(item.result || "", item.result_en || "");
           };
           card.querySelector('[data-act="delete"]').onclick = async () => {
             if (!confirm(`Xoá bài "${item.app_name}"?`)) return;
@@ -1368,6 +1411,8 @@
     document.getElementById("publishBtn")?.addEventListener("click", async () => {
       const title = document.getElementById("postTitle").value.trim();
       const content = document.getElementById("postContent").value.trim();
+      const titleEn = document.getElementById("postTitleEn").value.trim();
+      const contentEn = document.getElementById("postContentEn").value.trim();
       const categoryId = document.getElementById("postCategory").value;
       const isScheduled = document.getElementById("isScheduled").checked;
       const scheduleDate = document.getElementById("scheduleDate").value;
@@ -1384,6 +1429,8 @@
       const postData = {
         title,
         content,
+        title_en: titleEn || title,
+        content_en: contentEn || undefined,
         category_id: categoryId,
         tags: selectedTags,
         scheduled_at: isScheduled && scheduleDate ? new Date(scheduleDate).toISOString() : null
@@ -1497,7 +1544,9 @@
         const isHidden = publishForm.style.display === "none" || publishForm.style.display === "";
         if (isHidden) {
           document.getElementById("postTitle").value = "";
+          document.getElementById("postTitleEn").value = "";
           document.getElementById("postContent").value = "";
+          document.getElementById("postContentEn").value = "";
           document.getElementById("postCategory").value = "technology";
           selectedTags = [];
           renderTags();

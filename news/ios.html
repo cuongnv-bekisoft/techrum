@@ -119,15 +119,33 @@
     </div>
 
     <div class="output-section" id="outputSection" style="display: none">
-      <div class="output-header">
-        <span class="output-title">Output</span>
-        <div class="output-actions">
-          <button class="btn-sm" id="bbViewBtn">Preview</button>
-          <button class="btn-sm" id="copyBtn">📋 Copy</button>
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%;">
+        <!-- Vietnamese Output -->
+        <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 8px;">
+          <div class="output-header">
+            <span class="output-title">Tiếng Việt (Vietnamese)</span>
+            <div class="output-actions">
+              <button class="btn-sm" id="bbViewBtn" type="button">Preview</button>
+              <button class="btn-sm" id="copyBtn" type="button">📋 Copy VN</button>
+            </div>
+          </div>
+          <textarea id="outputArea" placeholder="BBCode Tiếng Việt sẽ hiển thị ở đây..."></textarea>
+          <div id="previewArea" class="preview" style="display: none;"></div>
+        </div>
+
+        <!-- English Output -->
+        <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 8px;">
+          <div class="output-header">
+            <span class="output-title">Tiếng Anh (English)</span>
+            <div class="output-actions">
+              <button class="btn-sm" id="bbViewBtnEn" type="button">Preview</button>
+              <button class="btn-sm" id="copyBtnEn" type="button">📋 Copy EN</button>
+            </div>
+          </div>
+          <textarea id="outputAreaEn" placeholder="BBCode Tiếng Anh sẽ hiển thị ở đây..."></textarea>
+          <div id="previewAreaEn" class="preview" style="display: none;"></div>
         </div>
       </div>
-      <textarea id="outputArea" placeholder="BBCode sẽ hiển thị ở đây..."></textarea>
-      <div id="previewArea" class="preview"></div>
     </div>
   </div>
 
@@ -369,11 +387,19 @@ ADD APP
       convertBtn.disabled = true;
       outputSection.style.display = "none";
 
+      const outputAreaEn = document.getElementById("outputAreaEn");
+      const previewAreaEn = document.getElementById("previewAreaEn");
+
       // reset preview state
       isPreview = false;
+      isPreviewEn = false;
       outputArea.style.display = "block";
       previewArea.style.display = "none";
       document.getElementById("bbViewBtn").textContent = "Preview";
+      
+      outputAreaEn.style.display = "block";
+      previewAreaEn.style.display = "none";
+      document.getElementById("bbViewBtnEn").textContent = "Preview";
 
       try {
         const res = await fetch(
@@ -399,16 +425,14 @@ ADD APP
           throw new Error("API lỗi: " + res.status);
         }
 
-        const text = await res.text();
+        const data = await res.json();
 
-        if (!text.trim()) {
-          throw new Error("API trả về rỗng");
-        }
-
-        outputArea.value = normalizeApiOutput(text);
+        outputArea.value = normalizeApiOutput(data.data || "");
+        outputAreaEn.value = normalizeApiOutput(data.data_en || "");
         outputSection.style.display = "block";
       } catch (err) {
         outputArea.value = "❌ Lỗi: " + err.message;
+        outputAreaEn.value = "";
         outputSection.style.display = "block";
       } finally {
         loadingText.classList.remove("show");
@@ -420,46 +444,43 @@ ADD APP
 📋 COPY
 ========================= */
 
-    document.getElementById("copyBtn").addEventListener("click", async () => {
-      const text = outputArea.value;
+    const copyBtn = document.getElementById("copyBtn");
+    const copyBtnEn = document.getElementById("copyBtnEn");
 
+    async function handleCopy(textarea, button, label) {
+      const text = textarea.value;
       if (!text) {
         alert("Không có nội dung để copy");
         return;
       }
-
       await navigator.clipboard.writeText(text);
-
-      const btn = document.getElementById("copyBtn");
-
-      btn.textContent = "✅ Copied";
-
+      button.textContent = "✅ Copied";
       setTimeout(() => {
-        btn.textContent = "📋 Copy";
+        button.textContent = `📋 Copy ${label}`;
       }, 1200);
-    });
+    }
+
+    copyBtn.addEventListener("click", () => handleCopy(outputArea, copyBtn, "VN"));
+    copyBtnEn.addEventListener("click", () => handleCopy(outputAreaEn, copyBtnEn, "EN"));
 
     /* ===============================
 🔄 BBCode ⇄ Preview
 =============================== */
 
     const bbBtn = document.getElementById("bbViewBtn");
+    const bbBtnEn = document.getElementById("bbViewBtnEn");
 
     let isPreview = false;
+    let isPreviewEn = false;
 
     bbBtn.addEventListener("click", () => {
       if (!isPreview) {
         const bbcode = outputArea.value;
-
         if (!bbcode.trim()) return;
-
         previewArea.innerHTML = renderBBCode(bbcode);
-
         outputArea.style.display = "none";
         previewArea.style.display = "block";
-
         bbBtn.textContent = "BBCode";
-
         isPreview = true;
       } else {
         outputArea.style.display = "block";
@@ -468,6 +489,25 @@ ADD APP
         bbBtn.textContent = "Preview";
 
         isPreview = false;
+      }
+    });
+
+    bbBtnEn.addEventListener("click", () => {
+      if (!isPreviewEn) {
+        const bbcode = outputAreaEn.value;
+        if (!bbcode.trim()) return;
+        previewAreaEn.innerHTML = renderBBCode(bbcode);
+        outputAreaEn.style.display = "none";
+        previewAreaEn.style.display = "block";
+        bbBtnEn.textContent = "BBCode";
+        isPreviewEn = true;
+      } else {
+        outputAreaEn.style.display = "block";
+        previewAreaEn.style.display = "none";
+
+        bbBtnEn.textContent = "Preview";
+
+        isPreviewEn = false;
       }
     });
 
