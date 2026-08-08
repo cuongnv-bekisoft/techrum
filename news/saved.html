@@ -1,182 +1,178 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Saved News</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../main.css" />
-  </head>
 
-  <body>
-    <nav class="navbar">
-      <div class="nav-left">
-        <button id="menuBtn" class="menu-btn">☰</button>
-        <a href="/"><div class="logo">TECHRUM</div></a>
-        <a href="/">Home</a>
-        <a href="/news/news.html">News</a>
-        <a href="/news/saved.html" class="active-link">Saved</a>
-        <a href="/news/deals.html">Deals</a>
-        <a href="/news/ios.html">iOS</a>
-        <a href="/news/android.html">Android</a>
-        <a href="/tools/buildImg.html">Image</a>
-        <a href="/tools/gendeal.html">Viết Deal</a>
-        <a href="/tools/facebook.html">Lịch FB</a>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saved News</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../main.css" />
+</head>
 
-      <div class="nav-center">
-        <a href="/" class="logo mobile-logo">TECHRUM<span>.</span></a>
-      </div>
-
-      <div class="nav-right">
-        <button id="themeToggle" class="theme-toggle">🌙</button>
-        <button
-          id="menuBtnRight"
-          class="menu-btn"
-          onclick="toggleRightSidebar()"
-        >
-          ☰
-        </button>
-      </div>
-    </nav>
-    <div class="news-shell">
-      <div class="news-sidebar" id="newsSidebar">
-        <div id="sources"></div>
-      </div>
-
-      <div id="sidebarRight" class="sidebar-right">
-        <a href="/">🏠 Home</a>
-        <a href="/news/news.html">📰 News</a>
-        <a href="/news/saved.html">💾 Saved</a>
-        <a href="/news/deals.html">🏷️ Deals</a>
-        <a href="/news/ios.html">🍎 iOS</a>
-        <a href="/news/android.html">🤖 Android</a>
-        <a href="/tools/buildImg.html">🖼️ Image</a>
-        <a href="/tools/gendeal.html">✍️ Viết Deal</a>
-        <a href="/tools/facebook.html">📅 Lịch FB</a>
-        <a href="#" id="themeToggleSide">🌓 Dark mode</a>
-      </div>
-
-      <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
-      <div class="news-content">
-        <h2 id="pageTitle">Chọn nguồn tin</h2>
-
-        <div class="news-grid" id="news"></div>
-
-        <div class="pagination" id="pagination"></div>
-
-        <div style="text-align: center">
-          <button class="loadmore" onclick="loadMore()">Load More</button>
-        </div>
-      </div>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <button id="menuBtn" class="menu-btn">☰</button>
+      <a href="/">
+        <div class="logo">TECHRUM</div>
+      </a>
+      <a href="/">Home</a>
+      <a href="/news/news.html">News</a>
+      <a href="/news/saved.html" class="active-link">Saved</a>
+      <a href="/news/deals.html">Deals</a>
+      <a href="/news/ios.html">iOS</a>
+      <a href="/news/android.html">Android</a>
+      <a href="/tools/buildImg.html">Image</a>
+      <a href="/tools/gendeal.html">Viết Deal</a>
+      <a href="/tools/facebook.html">Lịch FB</a>
     </div>
 
-    <!-- MODAL -->
+    <div class="nav-center">
+      <a href="/" class="logo mobile-logo">TECHRUM<span>.</span></a>
+    </div>
 
-    <div class="modal" id="modal">
-      <div class="modal-box">
-        <h3 id="modalTitle">Thêm nguồn tin</h3>
+    <div class="nav-right">
+      <button id="themeToggle" class="theme-toggle">🌙</button>
+      <button id="menuBtnRight" class="menu-btn" onclick="toggleRightSidebar()">
+        ☰
+      </button>
+    </div>
+  </nav>
+  <div class="news-shell">
+    <div class="news-sidebar" id="newsSidebar">
+      <div id="sources"></div>
+    </div>
 
-        <input id="name" placeholder="Tên nguồn" />
-        <input id="logo" placeholder="Logo URL" />
-        <input id="url" placeholder="RSS URL" />
-        <label
-          style="
+    <div id="sidebarRight" class="sidebar-right">
+      <a href="/">🏠 Home</a>
+      <a href="/news/news.html">📰 News</a>
+      <a href="/news/saved.html">💾 Saved</a>
+      <a href="/news/deals.html">🏷️ Deals</a>
+      <a href="/news/ios.html">🍎 iOS</a>
+      <a href="/news/android.html">🤖 Android</a>
+      <a href="/tools/buildImg.html">🖼️ Image</a>
+      <a href="/tools/gendeal.html">✍️ Viết Deal</a>
+      <a href="/tools/facebook.html">📅 Lịch FB</a>
+      <a href="#" id="themeToggleSide">🌓 Dark mode</a>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <div class="news-content">
+      <h2 id="pageTitle">Chọn nguồn tin</h2>
+
+      <div class="news-grid" id="news"></div>
+
+      <div class="pagination" id="pagination"></div>
+
+      <div style="text-align: center">
+        <button class="loadmore" onclick="loadMore()">Load More</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle">Thêm nguồn tin</h3>
+
+      <input id="name" placeholder="Tên nguồn" />
+      <input id="logo" placeholder="Logo URL" />
+      <input id="url" placeholder="RSS URL" />
+      <label style="
             display: flex;
             align-items: center;
             gap: 6px;
             margin-bottom: 10px;
-          "
-        >
-          <input type="checkbox" id="isBot" />
-          Site bị Cloudflare bot check
-        </label>
+          ">
+        <input type="checkbox" id="isBot" />
+        Site bị Cloudflare bot check
+      </label>
 
-        <button onclick="saveSource()">Lưu</button>
-        <button onclick="closeModal()">Hủy</button>
-      </div>
+      <button onclick="saveSource()">Lưu</button>
+      <button onclick="closeModal()">Hủy</button>
     </div>
+  </div>
 
-    <script>
-      const API = "https://getnews.cuongnv.workers.dev";
+  <script>
+    const API = "https://getnews.mdchannelvn.workers.dev";
 
-      let sourcesData = [];
-      let currentSource = null;
-      let currentPage = 1;
-      let totalPages = 1;
-      let limit = 10;
-      let editingId = null;
+    let sourcesData = [];
+    let currentSource = null;
+    let currentPage = 1;
+    let totalPages = 1;
+    let limit = 10;
+    let editingId = null;
 
-      function getArticleLink(article) {
-        return (
-          article?.link ||
-          article?.url ||
-          article?.original_link ||
-          article?.originalLink ||
-          article?.source_url ||
-          article?.sourceUrl ||
-          ""
-        );
-      }
+    function getArticleLink(article) {
+      return (
+        article?.link ||
+        article?.url ||
+        article?.original_link ||
+        article?.originalLink ||
+        article?.source_url ||
+        article?.sourceUrl ||
+        ""
+      );
+    }
 
-      function normalizeExternalUrl(url) {
-        const cleaned = (url || "").trim();
-        if (!cleaned) return "";
-        if (/^https?:\/\//i.test(cleaned)) return cleaned;
-        if (/^\/\//.test(cleaned)) return "https:" + cleaned;
-        if (/^[a-z]+:/i.test(cleaned)) return cleaned;
-        return "https://" + cleaned;
-      }
+    function normalizeExternalUrl(url) {
+      const cleaned = (url || "").trim();
+      if (!cleaned) return "";
+      if (/^https?:\/\//i.test(cleaned)) return cleaned;
+      if (/^\/\//.test(cleaned)) return "https:" + cleaned;
+      if (/^[a-z]+:/i.test(cleaned)) return cleaned;
+      return "https://" + cleaned;
+    }
 
-      function openExternalLink(url) {
-        const safeUrl = normalizeExternalUrl(url);
-        if (!safeUrl) return false;
+    function openExternalLink(url) {
+      const safeUrl = normalizeExternalUrl(url);
+      if (!safeUrl) return false;
 
-        const popup = window.open(safeUrl, "_blank", "noopener,noreferrer");
-        if (popup) {
-          return true;
-        }
-
-        const a = document.createElement("a");
-        a.href = safeUrl;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        // Edge/prod có thể chặn mở tab mới mà không báo lỗi.
-        // Fallback cuối cùng: mở cùng tab để user vẫn vào được bài.
-        setTimeout(() => {
-          if (document.visibilityState === "visible") {
-            window.location.assign(safeUrl);
-          }
-        }, 120);
-
+      const popup = window.open(safeUrl, "_blank", "noopener,noreferrer");
+      if (popup) {
         return true;
       }
 
-      // ================= LOAD SOURCES =================
+      const a = document.createElement("a");
+      a.href = safeUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
 
-      async function loadSources() {
-        const res = await fetch(API + "/sources");
-        sourcesData = await res.json();
+      // Edge/prod có thể chặn mở tab mới mà không báo lỗi.
+      // Fallback cuối cùng: mở cùng tab để user vẫn vào được bài.
+      setTimeout(() => {
+        if (document.visibilityState === "visible") {
+          window.location.assign(safeUrl);
+        }
+      }, 120);
 
-        const box = document.getElementById("sources");
-        box.innerHTML = "";
+      return true;
+    }
 
-        sourcesData.forEach((s) => {
-          const div = document.createElement("div");
-          div.className = "source";
+    // ================= LOAD SOURCES =================
 
-          if (currentSource?.id === s.id) div.classList.add("active");
+    async function loadSources() {
+      const res = await fetch(API + "/sources");
+      sourcesData = await res.json();
 
-          div.innerHTML = `
+      const box = document.getElementById("sources");
+      box.innerHTML = "";
+
+      sourcesData.forEach((s) => {
+        const div = document.createElement("div");
+        div.className = "source";
+
+        if (currentSource?.id === s.id) div.classList.add("active");
+
+        div.innerHTML = `
       <div class="source-left">
         <img src="${s.logo || ""}">
         <span>
@@ -187,58 +183,58 @@
       </div>
     `;
 
-          div.onclick = () => selectSource(s);
+        div.onclick = () => selectSource(s);
 
-          box.appendChild(div);
-        });
+        box.appendChild(div);
+      });
 
-        if (!currentSource && sourcesData.length > 0) {
-          selectSource(sourcesData[0]);
-        }
+      if (!currentSource && sourcesData.length > 0) {
+        selectSource(sourcesData[0]);
+      }
+    }
+
+    // ================= SELECT SOURCE =================
+
+    function selectSource(source) {
+      currentSource = source;
+      currentPage = 1;
+
+      pageTitle.innerText = "Saved - " + source.name;
+
+      document
+        .querySelectorAll(".source")
+        .forEach((el) => el.classList.remove("active"));
+
+      const idx = sourcesData.findIndex((s) => s.id === source.id);
+      document.querySelectorAll(".source")[idx]?.classList.add("active");
+
+      if (window.innerWidth <= 768) {
+        closeSidebar();
       }
 
-      // ================= SELECT SOURCE =================
+      loadSaved();
+    }
 
-      function selectSource(source) {
-        currentSource = source;
-        currentPage = 1;
+    // ================= LOAD NEWS =================
 
-        pageTitle.innerText = "Saved - " + source.name;
+    async function loadSaved(append = false) {
+      if (!currentSource) return;
 
-        document
-          .querySelectorAll(".source")
-          .forEach((el) => el.classList.remove("active"));
+      const res = await fetch(
+        `${API}/saved?source=${currentSource.id}&limit=${limit}&page=${currentPage}`,
+      );
 
-        const idx = sourcesData.findIndex((s) => s.id === source.id);
-        document.querySelectorAll(".source")[idx]?.classList.add("active");
+      const data = await res.json();
 
-        if (window.innerWidth <= 768) {
-          closeSidebar();
-        }
+      if (!append) news.innerHTML = "";
 
-        loadSaved();
-      }
+      let articles = data.articles;
 
-      // ================= LOAD NEWS =================
+      articles.forEach((n) => {
+        const div = document.createElement("div");
+        div.className = "news-item";
 
-      async function loadSaved(append = false) {
-        if (!currentSource) return;
-
-        const res = await fetch(
-          `${API}/saved?source=${currentSource.id}&limit=${limit}&page=${currentPage}`,
-        );
-
-        const data = await res.json();
-
-        if (!append) news.innerHTML = "";
-
-        let articles = data.articles;
-
-        articles.forEach((n) => {
-          const div = document.createElement("div");
-          div.className = "news-item";
-
-          div.innerHTML = `
+        div.innerHTML = `
       <img src="${n.image}">
       <h4>${n.title}</h4>
 
@@ -249,151 +245,152 @@
       </div>
     `;
 
-          const openBtn = div.querySelector(".open-btn");
-          const convertBtn = div.querySelector(".convert-btn");
-          const removeBtn = div.querySelector(".remove-btn");
+        const openBtn = div.querySelector(".open-btn");
+        const convertBtn = div.querySelector(".convert-btn");
+        const removeBtn = div.querySelector(".remove-btn");
 
-          openBtn.onclick = (e) => {
-            e.stopPropagation();
-            const articleLink = getArticleLink(n);
-            if (!articleLink) {
-              alert("Không tìm thấy link bài viết gốc");
-              return;
-            }
-            if (!openExternalLink(articleLink)) {
-              alert("Không mở được bài gốc");
-            }
-          };
+        openBtn.onclick = (e) => {
+          e.stopPropagation();
+          const articleLink = getArticleLink(n);
+          if (!articleLink) {
+            alert("Không tìm thấy link bài viết gốc");
+            return;
+          }
+          if (!openExternalLink(articleLink)) {
+            alert("Không mở được bài gốc");
+          }
+        };
 
-          convertBtn.onclick = (e) => {
-            e.stopPropagation();
+        convertBtn.onclick = (e) => {
+          e.stopPropagation();
 
-            const articleLink = getArticleLink(n);
-            if (!articleLink) {
-              alert("Không tìm thấy link để chuyển đổi");
-              return;
-            }
-            const encoded = encodeURIComponent(articleLink);
+          const articleLink = getArticleLink(n);
+          if (!articleLink) {
+            alert("Không tìm thấy link để chuyển đổi");
+            return;
+          }
+          const encoded = encodeURIComponent(articleLink);
 
-            let url = `/?url=${encoded}`;
+          let url = `/?url=${encoded}`;
 
-            if (currentSource?.isBot) {
-              url += "&bot=1";
-            }
+          if (currentSource?.isBot) {
+            url += "&bot=1";
+          }
 
-            window.location.href = url;
-          };
+          window.location.href = url;
+        };
 
-          removeBtn.onclick = async (e) => {
-            e.stopPropagation();
+        removeBtn.onclick = async (e) => {
+          e.stopPropagation();
 
-            if (!confirm("Xóa bài đã lưu?")) return;
+          if (!confirm("Xóa bài đã lưu?")) return;
 
-            await fetch(API + "/saved/" + n.id, {
-              method: "DELETE",
-            });
+          await fetch(API + "/saved/" + n.id, {
+            method: "DELETE",
+          });
 
-            div.remove();
-          };
+          div.remove();
+        };
 
-          news.appendChild(div);
-        });
-
-        totalPages = Math.ceil(data.total / limit);
-
-        renderPagination();
-      }
-
-      // ================= PAGINATION =================
-
-      function renderPagination() {
-        const box = document.getElementById("pagination");
-        box.innerHTML = "";
-
-        for (let i = 1; i <= totalPages; i++) {
-          const btn = document.createElement("button");
-          btn.innerText = i;
-
-          if (i === currentPage) btn.style.fontWeight = "bold";
-
-          btn.onclick = () => {
-            currentPage = i;
-            loadSaved();
-          };
-
-          box.appendChild(btn);
-        }
-      }
-
-      // ================= LOAD MORE =================
-
-      function loadMore() {
-        if (currentPage < totalPages) {
-          currentPage++;
-          loadSaved(true);
-        }
-      }
-
-      // ================= INIT =================
-
-      loadSources();
-
-      const menuBtn = document.getElementById("menuBtn");
-
-      menuBtn.addEventListener("click", () => {
-        document.getElementById("newsSidebar").classList.toggle("open");
-        document.getElementById("overlay").classList.toggle("show");
+        news.appendChild(div);
       });
 
-      function closeSidebar() {
+      totalPages = Math.ceil(data.total / limit);
+
+      renderPagination();
+    }
+
+    // ================= PAGINATION =================
+
+    function renderPagination() {
+      const box = document.getElementById("pagination");
+      box.innerHTML = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+
+        if (i === currentPage) btn.style.fontWeight = "bold";
+
+        btn.onclick = () => {
+          currentPage = i;
+          loadSaved();
+        };
+
+        box.appendChild(btn);
+      }
+    }
+
+    // ================= LOAD MORE =================
+
+    function loadMore() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        loadSaved(true);
+      }
+    }
+
+    // ================= INIT =================
+
+    loadSources();
+
+    const menuBtn = document.getElementById("menuBtn");
+
+    menuBtn.addEventListener("click", () => {
+      document.getElementById("newsSidebar").classList.toggle("open");
+      document.getElementById("overlay").classList.toggle("show");
+    });
+
+    function closeSidebar() {
+      document.getElementById("newsSidebar").classList.remove("open");
+      document.getElementById("sidebarRight").classList.remove("open");
+      document.getElementById("overlay").classList.remove("show");
+    }
+
+    function checkMobile() {
+      if (window.innerWidth <= 768) {
+        menuBtn.style.display = "inline-block";
+      } else {
+        menuBtn.style.display = "none";
         document.getElementById("newsSidebar").classList.remove("open");
-        document.getElementById("sidebarRight").classList.remove("open");
-        document.getElementById("overlay").classList.remove("show");
       }
+    }
 
-      function checkMobile() {
-        if (window.innerWidth <= 768) {
-          menuBtn.style.display = "inline-block";
-        } else {
-          menuBtn.style.display = "none";
-          document.getElementById("newsSidebar").classList.remove("open");
-        }
-      }
+    window.addEventListener("resize", checkMobile);
+    checkMobile();
 
-      window.addEventListener("resize", checkMobile);
-      checkMobile();
+    const themeToggle = document.getElementById("themeToggle");
 
-      const themeToggle = document.getElementById("themeToggle");
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
+      themeToggle.textContent = "☀️";
+    }
 
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-        themeToggle.textContent = "☀️";
-      }
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
 
-      themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
 
-        const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
 
-        localStorage.setItem("theme", isDark ? "dark" : "light");
+      themeToggle.textContent = isDark ? "☀️" : "🌙";
+    });
 
-        themeToggle.textContent = isDark ? "☀️" : "🌙";
+    function toggleRightSidebar() {
+      const sidebar = document.getElementById("sidebarRight");
+      const overlay = document.getElementById("overlay");
+
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("show");
+    }
+
+    document
+      .getElementById("themeToggleSide")
+      ?.addEventListener("click", (e) => {
+        e.preventDefault();
+        themeToggle.click();
       });
+  </script>
+</body>
 
-      function toggleRightSidebar() {
-        const sidebar = document.getElementById("sidebarRight");
-        const overlay = document.getElementById("overlay");
-
-        sidebar.classList.toggle("open");
-        overlay.classList.toggle("show");
-      }
-
-      document
-        .getElementById("themeToggleSide")
-        ?.addEventListener("click", (e) => {
-          e.preventDefault();
-          themeToggle.click();
-        });
-    </script>
-  </body>
 </html>
