@@ -734,6 +734,11 @@
           <input type="url" id="threadDealLink" placeholder="https://..." />
         </div>
 
+        <div style="margin-bottom: 16px;">
+          <label class="field-label">Giá gốc (Original Price - Tuỳ chọn)</label>
+          <input type="text" id="threadOriginalPrice" placeholder="Ví dụ: $4.99 hoặc 120.000đ" />
+        </div>
+
         <div style="margin-bottom: 16px; display: flex; gap: 12px;">
           <div style="flex: 1;">
             <label class="field-label">Hạn nhận deal (Tuỳ chọn)</label>
@@ -965,6 +970,7 @@
           document.getElementById("threadContentEn").value = data.data_en;
 
           document.getElementById("threadDealLink").value = redeemUrl || link;
+          document.getElementById("threadOriginalPrice").value = "";
           document.getElementById("threadDealEndsAt").value = "";
           document.getElementById("threadMaxClaims").value = "";
           document.getElementById("threadStatus").value = "published";
@@ -1479,6 +1485,7 @@
       const app_name = document.getElementById("threadAppName").value.trim();
       const platform_type = document.getElementById("threadPlatform").value;
       const image_url = document.getElementById("threadImageUrl").value.trim();
+      const original_price = document.getElementById("threadOriginalPrice").value.trim();
       const summary = document.getElementById("threadSummary").value.trim();
       const summary_en = document.getElementById("threadSummaryEn").value.trim();
       const content = document.getElementById("threadContent").value.trim();
@@ -1498,6 +1505,7 @@
         app_name,
         platform_type,
         image_url: image_url || undefined,
+        original_price: original_price || undefined,
         summary,
         summary_en: summary_en || undefined,
         content,
@@ -1521,6 +1529,7 @@
           document.getElementById("threadAppName").value = "";
           document.getElementById("threadPlatform").value = "android";
           document.getElementById("threadImageUrl").value = prefillIconUrl || coverImageUrl;
+          document.getElementById("threadOriginalPrice").value = "";
           document.getElementById("threadSummary").value = "";
           document.getElementById("threadSummaryEn").value = "";
           document.getElementById("threadContent").value = "";
