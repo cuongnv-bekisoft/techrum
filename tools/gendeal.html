@@ -1061,7 +1061,7 @@
       }
     }
 
-    // Đoán chuyên mục dựa theo link app/game để đỡ phải chọn tay
+    // Đoán chuyên mục dựa theo link app/game để đỡ phải  chọn tay
     function guessCategory(link) {
       const l = (link || "").toLowerCase();
       if (l.includes("apps.apple.com")) return "ios";
@@ -1144,6 +1144,7 @@
       if (Number.isNaN(d.getTime())) return t;
       return d.toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" });
     }
+
 
     async function loadHistory() {
       const loading = document.getElementById("historyLoading");
