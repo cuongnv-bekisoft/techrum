@@ -222,7 +222,7 @@ loginForm?.addEventListener("submit", async (e) => {
   submitLoginBtn.textContent = "Đang xác thực...";
 
   try {
-    const res = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/auth/login", {
+    const res = await fetch("https://api.techdeal.io.vn/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -260,7 +260,7 @@ async function publishPost(postData) {
   publishBtn.textContent = "Đang xử lý...";
 
   try {
-    const response = await fetch("https://techdeal-worker.mdchannelvn.workers.dev/api/posts", {
+    const response = await fetch("https://api.techdeal.io.vn/api/posts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -11,7 +11,7 @@ import ora from 'ora';
 const CONFIG_FILE = path.join(os.homedir(), '.techrum-cli.json');
 const API_NEWS = 'https://getnews.mdchannelvn.workers.dev';
 const API_CONVERT_BASE = 'https://convert_news.mdchannelvn.workers.dev';
-const API_POST_BASE = 'https://techdeal-worker.mdchannelvn.workers.dev/api';
+const API_POST_BASE = 'https://api.techdeal.io.vn/api';
 
 const CATEGORIES = [
   { title: 'Công nghệ (technology)', value: 'technology' },
